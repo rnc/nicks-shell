@@ -1,0 +1,18 @@
+# Global aliases suitable for /etc/gitconfig
+
+[alias]
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+	llg = log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --date=relative
+
+        # Last 5 commits
+        llg5 = !git llg -n 5
+
+        # Unpushed changes
+        up = !GIT_CURRENT_BRANCH=$(git name-rev --name-only HEAD) && git log origin/$GIT_CURRENT_BRANCH..$GIT_CURRENT_BRANCH
+        unpushed = !git up --oneline
+
+        # Diff with whitespace ignored
+        dw = diff --ignore-space-at-eol --ignore-all-space --ignore-space-change
+
+        # Show tracking branches
+        trackbranch = for-each-ref --format='%(refname:short) <- %(upstream:short)' refs/heads

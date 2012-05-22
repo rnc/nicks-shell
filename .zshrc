@@ -286,7 +286,7 @@ showoptions() {
 #
 [[ -z "$REMOTEUSER" ]] && REMOTEUSER=$USER
 source $HOME/.commonshell
-source $HOME/.corbashell
+[[ -f $HOME/.corbashell ]] && source $HOME/.corbashell
 
 function mvn-install-file-brms6()
 {

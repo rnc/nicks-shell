@@ -1,0 +1,385 @@
+#
+# $Id: .zshrc,v 1.20 2010/04/22 07:02:58 rnc Exp $
+#
+# .zshrc is sourced in interactive shells.  It
+# should contain commands to set up aliases, functions,
+# options, key bindings, etc.
+#
+
+### Configuration file may contain
+# Useful if user name does not equal remote RedHat login name
+# REMOTEUSER=xxx
+# Prefix where useful things are stored in the users file system
+# e.g. brew-koji zsh completion code. For example set it to $HOME/Work/Miscellaneous
+# PREFIX=xxx
+source $HOME/.shell-configuration
+
+# Source ZSH functions.
+fpath=($PREFIX/zsh-completions $PREFIX/brew-koji/zsh $fpath)
+
+####################################
+#### Set various options. ##########
+####################################
+
+setopt \
+ALL_EXPORT \
+ALWAYS_TO_END \
+ALWAYS_LAST_PROMPT \
+APPEND_HISTORY \
+AUTO_CD \
+NO_AUTO_LIST \
+AUTO_MENU \
+AUTO_NAME_DIRS \
+NO_AUTO_PARAM_KEYS \
+AUTO_PARAM_SLASH \
+AUTO_PUSHD \
+AUTO_REMOVE_SLASH \
+NO_AUTO_RESUME \
+BAD_PATTERN \
+BANG_HIST \
+BARE_GLOB_QUAL \
+BASH_AUTO_LIST \
+NO_BEEP \
+NO_BG_NICE \
+NO_BRACE_CCL \
+NO_BSD_ECHO \
+NO_CDABLE_VARS \
+CHASE_DOTS \
+NO_CHASE_LINKS \
+CHECK_JOBS \
+NO_CLOBBER \
+NO_COMPLETE_ALIASES \
+COMPLETE_IN_WORD \
+CORRECT \
+CORRECT_ALL \
+NO_CSH_JUNKIE_HISTORY \
+NO_CSH_JUNKIE_LOOPS \
+NO_CSH_JUNKIE_QUOTES \
+NO_CSH_NULLCMD \
+NO_DVORAK \
+EQUALS \
+NO_ERR_EXIT \
+EXEC \
+EXTENDED_GLOB \
+NO_EXTENDED_HISTORY \
+FLOW_CONTROL \
+FUNCTION_ARGZERO \
+GLOB \
+GLOBAL_EXPORT \
+NO_GLOBAL_RCS \
+GLOB_COMPLETE \
+GLOB_DOTS \
+NO_GLOB_SUBST \
+HASH_CMDS \
+HASH_DIRS \
+HASH_LIST_ALL \
+HIST_IGNORE_DUPS \
+NO_HIST_ALLOW_CLOBBER \
+NO_HIST_BEEP \
+HIST_EXPIRE_DUPS_FIRST \
+HIST_FIND_NO_DUPS \
+HIST_IGNORE_ALL_DUPS \
+HIST_IGNORE_DUPS \
+NO_HIST_IGNORE_SPACE \
+NO_HIST_NO_FUNCTIONS \
+NO_HIST_NO_STORE \
+HIST_REDUCE_BLANKS \
+HIST_SAVE_NO_DUPS \
+NO_HIST_VERIFY \
+NO_HUP \
+NO_IGNORE_BRACES \
+IGNORE_EOF \
+INC_APPEND_HISTORY \
+INTERACTIVE_COMMENTS \
+NO_KSH_ARRAYS \
+NO_KSH_AUTOLOAD \
+NO_KSH_GLOB \
+NO_KSH_OPTION_PRINT \
+LIST_AMBIGUOUS \
+NO_LIST_BEEP \
+NO_LIST_PACKED \
+LIST_ROWS_FIRST \
+LIST_TYPES \
+LONG_LIST_JOBS \
+MAGIC_EQUAL_SUBST \
+NO_MAIL_WARNING \
+MARK_DIRS \
+NO_MENU_COMPLETE \
+MONITOR \
+MULTIOS \
+NO_NOMATCH \
+NOTIFY \
+NO_NULL_GLOB \
+NO_NUMERIC_GLOB_SORT \
+NO_OCTAL_ZEROES \
+NO_OVERSTRIKE \
+NO_PATH_DIRS \
+NO_PRINT_EIGHT_BIT \
+NO_PRINT_EXIT_VALUE \
+NO_PRIVILEGED \
+NO_PROMPT_BANG \
+PROMPT_CR \
+PROMPT_PERCENT \
+NO_PROMPT_SUBST \
+PUSHD_IGNORE_DUPS \
+NO_PUSHD_MINUS \
+NO_PUSHD_SILENT \
+PUSHD_TO_HOME \
+NO_RC_EXPAND_PARAM \
+NO_RC_QUOTES \
+RCS \
+NO_REC_EXACT \
+NO_RESTRICTED \
+NO_RM_STAR_SILENT \
+NO_RM_STAR_WAIT \
+SHARE_HISTORY \
+NO_SH_FILE_EXPANSION \
+NO_SH_GLOB \
+NO_SHIN_STDIN \
+NO_SH_NULLCMD \
+NO_SH_OPTION_LETTERS \
+NO_SHORT_LOOPS \
+NO_SH_WORD_SPLIT \
+NO_SINGLE_COMMAND \
+NO_SINGLE_LINE_ZLE \
+NO_SUN_KEYBOARD_HACK \
+UNSET \
+NO_VERBOSE \
+NO_XTRACE
+
+
+###########################################
+##### autoload functions ##################
+#########################'#################
+
+# Autoload all shell functions from all directories in $fpath
+autoload $^fpath/*(N.)
+
+if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ]
+then
+    export __GIT_PROMPT_DIR=$PREFIX/zsh-git-prompt
+    source $PREFIX/zsh-git-prompt/zshrc.sh
+
+    # This prompt uses the above GIT system.
+    PROMPT='%m: $(git_super_status)$ '
+
+    RPROMPT='%T'
+fi
+
+########################################
+#### Key Bindings ######################
+########################################
+
+#
+# Remember - try doing ctrl-v [key we wish to get esc sequence e.g. ctrl-h]
+#
+
+#bindkey "" list-choices
+#bindkey "\C- " set-mark-command
+#bindkey "\C-w" kill-region
+#bindkey '^H'   delete-char
+#bindkey -e
+bindkey "^Z" undo
+bindkey '\xfd' backward-delete-word
+bindkey '\xff' history-beginning-search-backward
+bindkey '\xfe' history-beginning-search-forward
+
+# Backward delete appears to be correct as ^H on all platforms
+
+# Foward Delete
+if [ "$ARCH" = "i686" ]
+then
+    bindkey '^[[3~' delete-char
+else
+   bindkey '^?' backward-delete-char
+   bindkey '^[[3~' delete-char
+fi
+
+# Complete in the middle of some text ignoring the suffix.
+bindkey '^i' expand-or-complete-prefix
+
+#########################################
+#### File system options ################
+#########################################
+
+umask 002
+
+#################################
+#### remove shell limits ########
+#################################
+
+unlimit
+
+#################################
+#### history , mail      ########
+#################################
+
+HISTFILE=$HOME/.history
+HISTSIZE=10000
+SAVEHIST=10000
+
+#################
+### Functions ###
+#################
+
+# Instead of using chpwd just use zsh built in which is executed
+# just before prompt is drawn. chpwd can clash with functions.
+precmd () {
+    title
+}
+
+# From http://zshwiki.org/home/examples/hardstatus
+# Used by preexec to print '<pwd> : <cmd>'
+title () {
+    # Previously was just using %~ but named directory expansion means
+    # that just printed JACORB_DIR which is not very helpful.
+    local cwd=`print -Pn "${PWD/$HOME/~}"`
+    # If we have arguments (e.g. from preexec) use a separator.
+    (( $# > 0 )) && local separator=" : "
+    print -nR $'\033]0;'$cwd$separator$*$'\a'
+}
+
+preexec() {
+  emulate -L zsh
+
+  local -a cmd; cmd=(${(z)1})             # Re-parse the command line
+
+  # Construct a command that will output the desired job number.
+  case $cmd[1] in
+      fg)
+        if (( $#cmd == 1 )); then
+          # No arguments, must find the current job
+          cmd=(builtin jobs -l %+)
+        else
+          # Replace the command name, ignore extra args.
+          cmd=(builtin jobs -l ${(Q)cmd[2]})
+        fi;;
+       %*) cmd=(builtin jobs -l ${(Q)cmd[1]});; # Same as "else" above
+       exec) shift cmd;& # If the command is 'exec', drop that, because
+          # we'd rather just see the command that is being
+          # exec'd. Note the ;& to fall through.
+       *)  title $cmd[1]:t "$cmd[2,-1]"    # Not resuming a job,
+          return;;                        # so we're all done
+      esac
+
+  local -A jt; jt=(${(kv)jobtexts})       # Copy jobtexts for subshell
+
+  # Run the command, read its output, and look up the jobtext.
+  # Could parse $rest here, but $jobtexts (via $jt) is easier.
+  $cmd >>(read num rest
+          cmd=(${(z)${(e):-\$jt$num}})
+          title $cmd[1]:t "$cmd[2,-1]") 2>/dev/null
+}
+
+# Show current status of ZSH options (from mailing list).
+showoptions() {
+  local k
+  zmodload -i zsh/parameter
+
+  for k in ${(ok)options}; do
+    printf "%-20s\t%s\n" $k ${options[$k]}
+  done
+}
+
+#
+# Get common aliases and functions
+#
+[[ -z "$REMOTEUSER" ]] && REMOTEUSER=$USER
+source $HOME/.commonshell
+source $HOME/.corbashell
+
+function mvn-install-file-brms6()
+{
+   # Takes groupID, version artifactID & & source repo [ defaults to m2-scratch ]
+   if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
+   then
+      echo "Pass in groupID, artifactID & version"
+      return
+   fi
+
+   local GROUP=$1 ; shift
+   local ARTIFACT=$1 ; shift
+   local VERSION=$1 ; shift
+   [[ -n "$1" ]] && SOURCEREPO=$1 && shift
+   local SOURCEREPO=$HOME/.m2-scratch
+   local TD=`echo $GROUP | tr . /`/$ARTIFACT/$VERSION
+
+   [[ ! -d "$SOURCEREPO/$TD" ]] && echo "Invalid group/artifact/version - directory $TD does not exist" && return
+
+   local FILE=$SOURCEREPO/$TD/$ARTIFACT-$VERSION.jar
+   if [ ! -f $FILE ]
+   then
+      local FILE=$SOURCEREPO/$TD/dummy-file
+      touch $FILE
+   fi
+
+   mvn-mead-brms6 install:install-file \
+      -Dpackaging=maven-plugin \
+      -DgroupId=$GROUP \
+      -DartifactId=$ARTIFACT \
+      -Dversion=$VERSION \
+      -Dfile=$FILE \
+      -DpomFile=$SOURCEREPO/$TD/$ARTIFACT-$VERSION.pom
+}
+
+function meadimport()
+{
+    for i in `/bin/ls -1`
+    do
+        (
+            setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD ; cd $i/*
+            ~/Downloads/mikeb-mead-scripts/import-maven --owner=$REMOTEUSER `/bin/ls *.pom(N) *.jar(N)`
+            cd ../../
+        )
+    done
+}
+
+
+
+##############
+### Styles ###
+##############
+
+autoload -U compinit && compinit
+
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zcache
+
+# # Maximum spelling errors allowed
+#zstyle ':completion:*' max-errors 2
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
+
+# Ignore parent directory
+# Useful for cd, mv and cp. Ex, cd will never select the parent directory (ie cd ../<TAB>):
+zstyle ':completion:*:(cd|mv|cp):*' ignore-parents parent pwd
+
+zstyle ':completion:*' completer _complete _ignored _approximate
+#zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+# If you end up using a directory as argument, this will remove the trailing slash (useful in ln):
+zstyle ':completion:*' squeeze-slashes true
+
+
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format $'%{\e[0;31m%}%d%{\e[0m%}'
+zstyle ':completion:*:messages' format $'%{\e[0;31m%}%d%{\e[0m%}'
+zstyle ':completion:*:warnings' format $'%{\e[0;31m%}No matches for: %d%{\e[0m%}'
+zstyle ':completion:*:corrections' format $'%{\e[0;31m%}%d (errors: %e)%{\e[0m%}'
+zstyle ':completion:*' group-name ''
+#zstyle ':completion:*' format 'Completing %d'
+#zstyle ':completion:*' group-name ''
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' menu select
+
+# zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+# zstyle ':completion:*' list-prompt '%SAt %p: Hit TAB for more, or the character to insert%s'
+# zstyle :compinstall filename '/home/rnc/.zshrc'
+
+zstyle ':completion:*:descriptions' format "- %d -"
+zstyle ':completion:*:corrections' format "- %d - (errors %e})"
+
+# Make completion lists scrollable so "do you wish to see all n possibilities"
+# is no longer displayed.
+zstyle ':completion:*' list-prompt '%p'
+
+# End of lines added by compinstall

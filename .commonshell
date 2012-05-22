@@ -1,0 +1,337 @@
+# -*- sh -*-
+#
+
+#################
+### Variables ###
+#################
+
+UARCH=`uname -sm`
+ARCH=`uname -m`
+HOST=`hostname | sed 's/\..*//'`
+ARCHBIN="$HOME/bin/`echo $UARCH| sed 's/ /\//'`"
+
+SVN_EDITOR="emacs -nw --no-init-file --no-site-file"
+
+export UARCH ARCH HOST ARCHBIN SVN_EDITOR
+
+[[ -z "$REMOTEUSER" ]] && REMOTEUSER=$USER
+
+###############
+### Aliases ###
+###############
+
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+alias l='ls -l -F --color'
+alias ls='ls -F --color'
+alias df='df -h'
+alias env='env | sort'
+alias jobs='jobs -p'
+alias diff='colordiff'
+
+alias classpath='echo $CLASSPATH | tr ":" "\n"'
+alias cvsStat='cvs status |& grep 'File:' | grep -v Up-to-date'
+alias emacs='emacs --no-site-file'
+alias pp='ps -u$USER -ww -o pid,etime,pcpu,rss,args'
+
+alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms5 $* '
+alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 $*'
+
+#################
+### Functions ###
+#################
+
+# Note - unset NO_LOCAL_OPTIONS from .zshrc as using LOCAL_OPTIONS in
+# below functions to override .zshrc options temporarily. Also tried
+# resetting zsh to known default using emulate -L zsh but my nested
+# function calls don't work correctly then.
+
+if [ "$SHELL" = "/bin/bash" ]
+then
+    # If we are a bash shell define noop function to work around zsh specific calls.
+    function setopt ()
+    {
+        :
+    }
+fi
+
+
+function ssh()
+{
+   if [ "$1" = "-l" ]
+   then
+       /usr/bin/ssh $*
+   elif [ -n "`echo $* | grep www.jacorb.org`" ]
+   then
+       /usr/bin/ssh -X -Y -l cross $*
+   else
+       # Default to also creating a SSH tunnnel as well. Useful if we are doing smoke testing
+       # and we need to see the admin console etc.
+       /usr/bin/ssh -L8080:localhost:8080 -X -Y -l $REMOTEUSER $*
+   fi
+}
+
+# Reverse based listing of last 10 entries. Useful for listing my downloads directory.
+# Defaults to time based. Pass in args (e.g. -S for size based).
+function lt()
+{
+    ARGS="-t"
+    while [[ "$1" == -* ]] ; do
+       ARGS="$1" ; shift
+    done
+
+    [[ -z "$1" ]] && echo "Usage: lt <directory>" && return
+    [[ ! -d "$1" ]] && echo "Usage: lt <directory>" && return
+
+    ls $ARGS -lr $1 |& tail -10
+}
+
+function eclipse()
+{
+   /usr/local/eclipse/eclipse
+}
+
+# Override for git to handle wrapping. I only want to use fmt for the log command.
+function git()
+{
+   # Was using hardcoded width of 108 for columns - now dynamic.
+   if [ "$1" = "lg" ]
+   then
+      /usr/bin/git -c core.pager="fmt -w `expr $COLUMNS + 25` -t | sed 's/^   /        /' | less -FrX" $*
+   elif [ "$1" = "llg" ] || [ "$1" = "llg5" ]
+   then
+      /usr/bin/git -c  core.pager="fmt -w `expr $COLUMNS + 22` -t | sed 's/^   /        /' | less -FrX"  $*
+   else
+      /usr/bin/git -c core.pager="less -Fr" $*
+   fi
+}
+
+# Show status of files
+function gistat()
+{
+   setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+   local cpwd=$PWD REPO
+
+   if [ -d $cpwd/.git ]
+   then
+      echo -e "\e[01;32m$cpwd\e[00m"
+      if [ `git status -s | wc -l` = 0 ]
+      then
+         echo "   No changes or untracked files"
+      else
+         git status -s
+      fi
+   else
+      # Lets recurse and look for one.
+      for REPO in `find . -type d -name .git | sed 's/\.\/\(.*\)\/.git/\1/'`
+      do
+         cd $REPO
+         echo -e "\e[01;32m$REPO\e[00m"
+         if [ `git status -s | wc -l ` = 0 ]
+         then
+            echo "   No changes or untracked files"
+         else
+            git status -s
+         fi
+         cd $cpwd
+      done
+      cd $cpwd
+   fi
+}
+
+# Recursive git implementation.
+function rgit()
+{
+    (( $# == 0 )) && echo "Usage: $0 <git-cmd> ... [Run git command recursively over subdirs]" && return 1
+
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    local cwd=`pwd`
+
+    for i in `find . -type d -name .git | sort`
+    do
+        local d=`dirname $i | sed 's/\.\///'`
+        echo "### -> $d"
+
+        cd $d
+        git $*
+        cd $cwd
+    done
+}
+
+
+# SVN Log implementation. It will print the log changes that are not in the local repository
+# (or status message that we are up to date) and then print the last five local log entries.
+# The problem occurs when we have mixed revisions in the working copy. It uses svnversion to
+# try and establish the best point to do the log from.
+function svnl()
+{
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    [[ "$1" = "-v" ]]  && local verbose="-v" && shift
+
+    # From http://austinmatzko.com/2008/04/26/sed-multi-line-search-and-replace/
+    local lastremoterev=`svn info -r HEAD 2> /dev/null | sed -rn '
+    # if the first line copy the pattern to the hold buffer
+    1h
+    # if not the first line then append the pattern to the hold buffer
+    1!H
+    # if the last line then ...
+    $ {
+        # copy from the hold to the pattern buffer
+        g
+        # do the search and replace
+        s/.*Last Changed Rev: ([0-9]*).*/\1/
+        # print
+        p
+    }'`
+    [[ -z "$lastremoterev" ]] && echo "Not a svn repository" && return 1
+    local revcheck=`svnversion .`
+    #local lastcommittedrev=`svn status --verbose | cut -d ' ' -f 14 | sort | tail -1`
+    #echo "Last committed revision: $lastcommittedrev"
+
+    if [ -n "`echo $revcheck | grep :`" ]
+    then
+        local subrange=`echo $revcheck | sed 's/.*:\([0-9]*\).*/\1/'`
+        echo "Mixed revision working copy ($revcheck / range $subrange)"
+    else
+        local subrange=`echo $revcheck | sed 's/\([0-9]*\).*/\1/'`
+    fi
+
+    if [ $subrange != $lastremoterev ]
+    then
+        # Print remote log between HEAD and working copy 'base head' ignoring the last '-' line
+        # We add one so to get the difference between HEAD and local + 1
+        svn log $verbose -r HEAD:$(($subrange+1)) $* | head --lines=-1
+    else
+        echo "[Up to date (rev: $revcheck)]"
+    fi
+    echo -e "\033[49;32;1m========================================================================\033[0m"
+    # Print local log ignoring the first '-' line
+    svn log $verbose -l 5 $* | tail --lines=+2
+}
+
+function sunjava6()
+{
+   export JAVA_HOME=/usr/local/jdk1.6.0_27
+   export PATH=$JAVA_HOME/bin:$PATH
+}
+
+function sunjava5()
+{
+   export JAVA_HOME=/usr/local/jdk1.5.0_22
+   export PATH=$JAVA_HOME/bin:$PATH
+}
+
+function sunjava7()
+{
+   export JAVA_HOME=/usr/local/jdk1.7.0_02
+   export PATH=$JAVA_HOME/bin:$PATH
+}
+
+function ant170()
+{
+    export ANT_HOME=/usr/local/apache-ant-1.7.0
+    export PATH=$ANT_HOME/bin:$PATH
+
+    alias ant='ant -logger org.apache.tools.ant.NoBannerLogger'
+}
+
+function maven()
+{
+    M2_HOME=/usr/share/maven
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function unsignjar()
+{
+    [[ -z "$*" ]] && echo "Usage: unsignjar <jar> <jar>...." && return
+
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    local i
+
+    for i in "$@"
+    do
+        if [ ! -f $i ]
+        then
+            echo "Unable to find $i"
+        else
+            local RESULT="`zip -v $i -d 'META-INF/*.RSA' | grep deleting`"
+            local RESULT="`zip -v $i -d 'META-INF/*.SF' | grep deleting`"
+            [[ -n $RESULT ]] && echo "$i: $RESULT"
+        fi
+    done
+}
+
+function checkSigning()
+{
+    [[ -z "$*" ]] && echo "Usage: checkSigning <pattern> <jars>[default to all]" && return
+
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    local i
+
+    if [ -z "$2" ]
+    then
+        JARS="`find . -name "*.jar"`"
+    else
+        JARS="$2"
+    fi
+
+    for i in `echo $JARS`
+    do
+        if [ -n "`jar tf $i | grep $1`" ]
+        then
+            echo $i
+
+            jarsigner -verbose -certs -verify $i | grep --after-context=8 --max-count=1 "$1.*\.class"
+            jar tvf $i | grep RSA
+
+            echo "===================================================="
+            echo ""
+        fi
+    done
+}
+
+function searchJars()
+{
+    [[ "$1" = "-v" ]] && local VERBOSE=true && shift
+    [[ -z "$1" ]] && echo "Usage: searchJars <pattern>" && return
+
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    local i
+    local pattern=`echo $1 | sed 's/\./\//g'`
+
+    for i in `find . -name "*.jar"`
+    do
+        if [ -f $i ] && [ -n "`jar tf $i | grep $pattern`" ]
+        then
+            echo "Found pattern $pattern in $i"
+            if [ "$VERBOSE" = "true" ]
+            then
+                echo "`jar vtf $i | grep $1 | sed 's/^/\t\t/g'`"
+            fi
+        fi
+    done
+}
+
+function mvn-mead-hudson()
+{
+    local TRUST_STORE=-Djavax.net.ssl.trustStore=$HOME/Work/jssecacerts
+    local TRUST_STORE_PASSWORD=-Djavax.net.ssl.trustStorePassword=changeit
+    local TRUST_STORE_TYPE=-Djavax.net.ssl.trustStoreType=jks
+    local KEY_STORE=-Djavax.net.ssl.keyStore=$HOME/Work/jssecacerts
+    local KEY_STORE_PASSWORD=-Djavax.net.ssl.keyStorePassword=changeit
+    local KEY_STORE_TYPE=-Djavax.net.ssl.keyStoreType=jks
+#    local DEBUG=-Djavax.net.debug=ssl:handshake:data
+
+    local MAVEN_OPTS="$TRUST_STORE $KEY_STORE $TRUST_STORE_PASSWORD $KEY_STORE_PASSWORD $TRUST_STORE_TYPE $KEY_STORE_TYPE $DEBUG $MAVEN_OPTS"
+
+    [[ `basename $PWD` == brms-p ]] && PROFILE="-Dsoa"
+
+    mvn -s $HOME/Work/maven-hudson-mead-mirror.xml -DskipTests=true -Dmaven.repo.local=$HOME/.m2-mead-hudson -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-hudson $PROFILE $*
+}

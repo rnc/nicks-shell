@@ -212,7 +212,7 @@ function svnl()
     else
         local subrange=`echo $revcheck | sed 's/\([0-9]*\).*/\1/'`
     fi
-    local EXTERNALS=`svn propget svn:externals -R | grep http | head -1 | awk '{print $1"/"$3}'`
+    local EXTERNALS=`svn propget svn:externals -R | egrep '^[a-zA-Z]+' | head -1 | awk '{print $1"/"$3}'`
 
     if [ $subrange != $lastremoterev ]
     then

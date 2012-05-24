@@ -170,7 +170,22 @@ function svnl()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    [[ "$1" = "-v" ]]  && local verbose="-v" && shift
+    local cwd=`pwd`
+    local log=5
+    local textcol=32 # Green
+
+    while [[ $1 == -* ]]
+    do
+        [[ "$1" = "-e" ]]  && textcol="33" && shift # Hidden externals call
+        [[ "$1" = "-v" ]]  && verbose="-v" && shift
+        [[ "$1" = "-l" && -n "$2" ]] && log="$2" && shift && shift
+    done
+
+    # last-changed-revision is the last changed under the current path. If svnl
+    # is not being run at top level then this can produce curious results.
+    #
+    # Using the below command will give the overall revision of HEAD.
+    # Combining this with svnversion will give a comparison between current point and HEAD.
 
     # From http://austinmatzko.com/2008/04/26/sed-multi-line-search-and-replace/
     local lastremoterev=`svn info -r HEAD 2> /dev/null | sed -rn '
@@ -183,14 +198,12 @@ function svnl()
         # copy from the hold to the pattern buffer
         g
         # do the search and replace
-        s/.*Last Changed Rev: ([0-9]*).*/\1/
+        s/.*Revision: ([0-9]*).*/\1/
         # print
         p
     }'`
     [[ -z "$lastremoterev" ]] && echo "Not a svn repository" && return 1
     local revcheck=`svnversion .`
-    #local lastcommittedrev=`svn status --verbose | cut -d ' ' -f 14 | sort | tail -1`
-    #echo "Last committed revision: $lastcommittedrev"
 
     if [ -n "`echo $revcheck | grep :`" ]
     then
@@ -199,6 +212,7 @@ function svnl()
     else
         local subrange=`echo $revcheck | sed 's/\([0-9]*\).*/\1/'`
     fi
+    local EXTERNALS=`svn propget svn:externals -R | grep http | head -1 | awk '{print $1"/"$3}'`
 
     if [ $subrange != $lastremoterev ]
     then
@@ -208,9 +222,19 @@ function svnl()
     else
         echo "[Up to date (rev: $revcheck)]"
     fi
-    echo -e "\033[49;32;1m========================================================================\033[0m"
+    echo -e "\033[49;$textcol;1m========================================================================\033[0m"
     # Print local log ignoring the first '-' line
-    svn log $verbose -l 5 $* | tail --lines=+2
+    svn log $verbose -l $log $* | tail --lines=+2
+
+    # svn log doesn't cross into externals directories so recursively check them as well.
+    if [ -n "$EXTERNALS" ]
+    then
+         echo "\033[49;$textcol;1mExternals detected ($EXTERNALS):\033[0m"
+         cd $EXTERNALS
+         svnl -e -l 3
+    fi
+
+    cd $cwd
 }
 
 function sunjava6()

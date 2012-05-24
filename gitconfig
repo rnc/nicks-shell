@@ -16,3 +16,7 @@
 
         # Show tracking branches
         trackbranch = for-each-ref --format='%(refname:short) <- %(upstream:short)' refs/heads
+
+        # Tell me what branch or tag etc I am on.
+        sm = describe --tags --all
+

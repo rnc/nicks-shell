@@ -57,6 +57,8 @@ then
 fi
 
 
+# Note: while this does create a tunnel by default, it uses a different local port (18080)
+# to avoid clashing with any local processes.
 function ssh()
 {
    if [ "$1" = "-l" ]
@@ -68,7 +70,7 @@ function ssh()
    else
        # Default to also creating a SSH tunnnel as well. Useful if we are doing smoke testing
        # and we need to see the admin console etc.
-       /usr/bin/ssh -L8080:localhost:8080 -X -Y -l $REMOTEUSER $*
+       /usr/bin/ssh -L18080:localhost:8080 -X -Y -l $REMOTEUSER $*
    fi
 }
 

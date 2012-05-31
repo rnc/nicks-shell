@@ -231,9 +231,13 @@ precmd () {
 # From http://zshwiki.org/home/examples/hardstatus
 # Used by preexec to print '<pwd> : <cmd>'
 title () {
+    # The hardcoded limit is because KDE konsole only appears to support 74 characters
+    # for a title. See http://www.debian-administration.org/articles/548
+    #
     # Previously was just using %~ but named directory expansion means
     # that just printed JACORB_DIR which is not very helpful.
-    local cwd=`print -Pn "${PWD/$HOME/~}"`
+    local cwd=`print -Pn "%74<...<${PWD/$HOME/~}"`
+
     # If we have arguments (e.g. from preexec) use a separator.
     (( $# > 0 )) && local separator=" : "
     print -nR $'\033]0;'$cwd$separator$*$'\a'

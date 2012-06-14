@@ -26,7 +26,6 @@ alias rm='rm -i'
 alias l='ls -l -F --color'
 alias ls='ls -F --color'
 alias df='df -h'
-alias env='env | sort'
 alias jobs='jobs -p'
 alias diff='colordiff'
 
@@ -55,6 +54,17 @@ then
         :
     }
 fi
+
+# If we are printing the environment (no arguments) print it sorted.
+function env()
+{
+    if [ $# == 0 ]
+    then
+        /usr/bin/env | env "LC_ALL=C" sort
+    else
+        /usr/bin/env $*
+    fi
+}
 
 
 # Note: while this does create a tunnel by default, it uses a different local port (18080)
@@ -152,7 +162,7 @@ function rgit()
 
     local cwd=`pwd`
 
-    for i in `find . -type d -name .git | sort`
+    for i in `find . -type d -name .git | env "LC_ALL=C" sort`
     do
         local d=`dirname $i | sed 's/\.\///'`
         echo "### -> $d"

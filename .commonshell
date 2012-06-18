@@ -251,19 +251,19 @@ function svnl()
 
 function sunjava6()
 {
-   export JAVA_HOME=/usr/local/jdk1.6.0_27
+   export JAVA_HOME=/usr/local/jdk1.6.0
    export PATH=$JAVA_HOME/bin:$PATH
 }
 
 function sunjava5()
 {
-   export JAVA_HOME=/usr/local/jdk1.5.0_22
+   export JAVA_HOME=/usr/local/jdk1.5.0
    export PATH=$JAVA_HOME/bin:$PATH
 }
 
 function sunjava7()
 {
-   export JAVA_HOME=/usr/local/jdk1.7.0_02
+   export JAVA_HOME=/usr/local/jdk1.7.0
    export PATH=$JAVA_HOME/bin:$PATH
 }
 

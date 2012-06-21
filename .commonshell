@@ -34,8 +34,8 @@ alias cvsStat='cvs status |& grep 'File:' | grep -v Up-to-date'
 alias emacs='emacs --no-site-file'
 alias pp='ps -u$USER -ww -o pid,etime,pcpu,rss,args'
 
-alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms5 $* '
-alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 $*'
+alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms5 "$@"'
+alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 "$@"'
 
 #################
 ### Functions ###
@@ -62,7 +62,7 @@ function env()
     then
         /usr/bin/env | env "LC_ALL=C" sort
     else
-        /usr/bin/env $*
+        /usr/bin/env "$@"
     fi
 }
 
@@ -73,14 +73,14 @@ function ssh()
 {
    if [ "$1" = "-l" ]
    then
-       /usr/bin/ssh $*
-   elif [ -n "`echo $* | grep www.jacorb.org`" ]
+       /usr/bin/ssh "$@"
+   elif [ -n "`echo "$@" | grep www.jacorb.org`" ]
    then
-       /usr/bin/ssh -X -Y -l cross $*
+       /usr/bin/ssh -X -Y -l cross "$@"
    else
        # Default to also creating a SSH tunnnel as well. Useful if we are doing smoke testing
        # and we need to see the admin console etc.
-       /usr/bin/ssh -L18080:localhost:8080 -X -Y -l $REMOTEUSER $*
+       /usr/bin/ssh -L18080:localhost:8080 -X -Y -l $REMOTEUSER "$@"
    fi
 }
 
@@ -107,15 +107,19 @@ function eclipse()
 # Override for git to handle wrapping. I only want to use fmt for the log command.
 function git()
 {
-   # Was using hardcoded width of 108 for columns - now dynamic.
-   if [ "$1" = "lg" ]
+   if [ "$1" = "clone" ]
    then
-      /usr/bin/git -c core.pager="fmt -w `expr $COLUMNS + 25` -t | sed 's/^   /        /' | less -FrX" $*
+       /usr/bin/git "$@"
+       echo "Remember to set local email *if* required via 'git config user.email xxxx'"
+   # Was using hardcoded width of 108 for columns - now dynamic.
+   elif [ "$1" = "lg" ]
+   then
+      /usr/bin/git -c core.pager="fmt -w `expr $COLUMNS + 25` -t | sed 's/^   /        /' | less -FrX" "$@"
    elif [ "$1" = "llg" ] || [ "$1" = "llg5" ]
    then
-      /usr/bin/git -c  core.pager="fmt -w `expr $COLUMNS + 22` -t | sed 's/^   /        /' | less -FrX"  $*
+      /usr/bin/git -c  core.pager="fmt -w `expr $COLUMNS + 22` -t | sed 's/^   /        /' | less -FrX"  "$@"
    else
-      /usr/bin/git -c core.pager="less -Fr" $*
+      /usr/bin/git -c core.pager="less -Fr" "$@"
    fi
 }
 
@@ -168,7 +172,7 @@ function rgit()
         echo "### -> $d"
 
         cd $d
-        git $*
+        git "$@"
         cd $cwd
     done
 }
@@ -230,13 +234,13 @@ function svnl()
     then
         # Print remote log between HEAD and working copy 'base head' ignoring the last '-' line
         # We add one so to get the difference between HEAD and local + 1
-        svn log $verbose -r HEAD:$(($subrange+1)) $* | head --lines=-1
+        svn log $verbose -r HEAD:$(($subrange+1)) "$@" | head --lines=-1
     else
         echo "[Up to date (rev: $revcheck)]"
     fi
     echo -e "\033[49;$textcol;1m========================================================================\033[0m"
     # Print local log ignoring the first '-' line
-    svn log $verbose -l $log $* | tail --lines=+2
+    svn log $verbose -l $log "$@" | tail --lines=+2
 
     # svn log doesn't cross into externals directories so recursively check them as well.
     if [ -n "$EXTERNALS" ]
@@ -283,7 +287,7 @@ function maven()
 
 function unsignjar()
 {
-    [[ -z "$*" ]] && echo "Usage: unsignjar <jar> <jar>...." && return
+    [[ -z "$@" ]] && echo "Usage: unsignjar <jar> <jar>...." && return
 
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
@@ -304,7 +308,7 @@ function unsignjar()
 
 function checkSigning()
 {
-    [[ -z "$*" ]] && echo "Usage: checkSigning <pattern> <jars>[default to all]" && return
+    [[ -z "$@" ]] && echo "Usage: checkSigning <pattern> <jars>[default to all]" && return
 
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
@@ -369,5 +373,5 @@ function mvn-mead-hudson()
 
     [[ `basename $PWD` == brms-p ]] && PROFILE="-Dsoa"
 
-    mvn -s $HOME/Work/maven-hudson-mead-mirror.xml -DskipTests=true -Dmaven.repo.local=$HOME/.m2-mead-hudson -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-hudson $PROFILE $*
+    mvn -s $HOME/Work/maven-hudson-mead-mirror.xml -DskipTests=true -Dmaven.repo.local=$HOME/.m2-mead-hudson -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-hudson $PROFILE "$@"
 }

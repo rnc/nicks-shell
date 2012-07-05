@@ -110,7 +110,7 @@ function git()
    if [ "$1" = "clone" ]
    then
        /usr/bin/git "$@"
-       echo "Remember to set local email *if* required via 'git config user.email xxxx'"
+       echo "\033[49;32;1mRemember to set local email *if* required via 'git config user.email xxxx\033[0m'"
    # Was using hardcoded width of 108 for columns - now dynamic.
    elif [ "$1" = "lg" ]
    then

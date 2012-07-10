@@ -33,6 +33,7 @@ alias classpath='echo $CLASSPATH | tr ":" "\n"'
 alias cvsStat='cvs status |& grep 'File:' | grep -v Up-to-date'
 alias emacs='emacs --no-site-file'
 alias pp='ps -u$USER -ww -o pid,etime,pcpu,rss,args'
+alias axel='axel --num-connections=25 --alternate'
 
 alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms5 "$@"'
 alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 "$@"'

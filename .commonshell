@@ -35,7 +35,7 @@ alias emacs='emacs --no-site-file'
 alias pp='ps -u$USER -ww -o pid,etime,pcpu,rss,args'
 
 alias axel='axel --num-connections=25 --alternate'
-alias aria2c='aria2c --min-split-size=1M --max-connection-per-server=16 --split=25 --max-concurrent-downloads=25 --summary-interval=0 --truncate-console-readout=false'
+alias aria2c='aria2c --min-split-size=1M --max-connection-per-server=16 --split=25 --max-concurrent-downloads=25 --summary-interval=0 --truncate-console-readout=false --check-certificate=false'
 
 alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms5 "$@"'
 alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 "$@"'
@@ -377,4 +377,10 @@ function mvn-mead-hudson()
     [[ `basename $PWD` == brms-p ]] && PROFILE="-Dsoa"
 
     mvn -s $HOME/Work/maven-hudson-mead-mirror.xml -DskipTests=true -Dmaven.repo.local=$HOME/.m2-mead-hudson -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-hudson $PROFILE "$@"
+}
+
+
+ruby()
+{
+    [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"  # This loads RVM into a shell session.
 }

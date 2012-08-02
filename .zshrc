@@ -326,13 +326,68 @@ function mvn-install-file-brms6()
       -DpomFile=$SOURCEREPO/$TD/$ARTIFACT-$VERSION.pom
 }
 
+#
+# Usage:
+# mead-import [--dry-run] [-d <subdirectory-pattern>] <version> [<tag>]
+# Supports mutiple patterns e.g. -d foo,bar,goo
 function meadimport()
 {
-    for i in `/bin/ls -1`
+    if [ "$1" == "--dry-run" ]
+    then
+        shift
+        DRYRUN="echo '###' "
+    else
+        DRYRUN=""
+    fi
+
+    if [ "$1" = "-d" ]
+    then
+        shift
+        PATTERN="$1"
+        shift
+        if [ -n "`echo $PATTERN | grep ','`" ]
+        then
+            # Multiple patterns - split them up.
+            local ORIGP=$PATTERN
+            local PATTERN=""
+            local OLDIFS=$IFS
+            local IFS=','
+            for v in `echo $ORIGP`
+            do
+                PATTERN="$PATTERN -o -name $v"
+            done
+            IFS=$OLDIFS
+            PATTERN=`echo $PATTERN | sed 's/^ -o -name//'`
+        fi
+    else
+        PATTERN="*"
+    fi
+    echo "Using pattern: $PATTERN"
+
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    if [ -z "$1" ]
+    then
+        echo "Invalid version"
+        return
+    else
+        local VERSION=$1
+    fi
+    [[ -n "$2" ]] && local TAG="--tag $2"
+    for i in `eval find . -maxdepth 1 -name $PATTERN`
     do
         (
-            setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD ; cd $i/*
-            ~/Downloads/mikeb-mead-scripts/import-maven --owner=$REMOTEUSER `/bin/ls *.pom(N) *.jar(N)`
+            echo "Using directory: $i"
+            setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+            if [ ! -d $i/$VERSION ]
+            then
+                echo "Invalid directory $i/$VERSION" ; return
+            else
+                cd $i/$VERSION
+            fi
+            [[ -n "$TAG" ]] && eval $DRYRUN brew add-pkg --owner=ncross `echo $TAG | sed 's/--tag//'` `grep -m1 groupId $i-$VERSION.pom | sed "s/<groupId>\(.*\)<\/groupId>/\1/" | tr -d "[:blank:]"`-$i
+            echo "Importing..."
+            eval $DRYRUN ~/Downloads/mikeb-mead-scripts/import-maven `echo $TAG` --owner=$REMOTEUSER `/bin/ls *.pom(N) *.jar(N)`
             cd ../../
         )
     done

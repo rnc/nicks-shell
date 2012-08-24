@@ -104,7 +104,14 @@ function lt()
 
 function eclipse()
 {
-   /usr/local/eclipse/eclipse
+    (
+        if [ "$KDE_FULL_SESSION" = "true" ]
+        then
+            # Override GTK settings for running in KDE - fixes a tooltip issue.
+            export GTK2_RC_FILES=~/.gtkrc-2.0-eclipse
+        fi
+        /usr/local/eclipse/eclipse
+    )
 }
 
 # Override for git to handle wrapping. I only want to use fmt for the log command.
@@ -113,7 +120,7 @@ function git()
    if [ "$1" = "clone" ]
    then
        /usr/bin/git "$@"
-       echo "\033[49;32;1mRemember to set local email *if* required via 'git config user.email xxxx\033[0m'"
+       echo "\033[49;32;1mRemember to set local email *if* required via 'git config user.email xxxx'\033[0m"
    # Was using hardcoded width of 108 for columns - now dynamic.
    elif [ "$1" = "lg" ]
    then
@@ -172,7 +179,7 @@ function rgit()
     for i in `find . -type d -name .git | env "LC_ALL=C" sort`
     do
         local d=`dirname $i | sed 's/\.\///'`
-        echo "### -> $d"
+        echo "\033[49;32;1m### -> $d\033[0m"
 
         cd $d
         git "$@"

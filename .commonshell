@@ -88,18 +88,24 @@ function ssh()
 }
 
 # Reverse based listing of last 10 entries. Useful for listing my downloads directory.
-# Defaults to time based. Pass in args (e.g. -S for size based).
+# Defaults to time based listing. Pass in args (e.g. -S for size based).
+# Defaults to current directory. Pass in optional directory.
+# lt [-S] [<dir>]
 function lt()
 {
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
     ARGS="-t"
     while [[ "$1" == -* ]] ; do
        ARGS="$1" ; shift
     done
 
-    [[ -z "$1" ]] && echo "Usage: lt <directory>" && return
-    [[ ! -d "$1" ]] && echo "Usage: lt <directory>" && return
+    local TARGET=$1
 
-    ls $ARGS -lr $1 |& tail -10
+    [[ -z "$TARGET" ]] && TARGET="."
+    [[ ! -d "$TARGET" ]] && echo "Usage: lt <directory>" && return
+
+    ls $ARGS -lr $TARGET |& tail -10
 }
 
 function eclipse()

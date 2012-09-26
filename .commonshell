@@ -30,7 +30,7 @@ alias jobs='jobs -p'
 alias diff='colordiff'
 
 alias classpath='echo $CLASSPATH | tr ":" "\n"'
-alias cvsStat='cvs status |& grep 'File:' | grep -v Up-to-date'
+alias cvsStat='cvs status 2>&1 | grep 'File:' | grep -v Up-to-date'
 alias emacs='emacs --no-site-file'
 alias pp='ps -u$USER -ww -o pid,etime,pcpu,rss,args'
 
@@ -105,7 +105,7 @@ function lt()
     [[ -z "$TARGET" ]] && TARGET="."
     [[ ! -d "$TARGET" ]] && echo "Usage: lt <directory>" && return
 
-    ls $ARGS -lr $TARGET |& tail -10
+    ls $ARGS -lr $TARGET 2>&1 | tail -10
 }
 
 function eclipse()
@@ -123,21 +123,23 @@ function eclipse()
 # Override for git to handle wrapping. I only want to use fmt for the log command.
 function git()
 {
+   [[ -f /usr/local/bin/git ]] && local g=/usr/local/bin/git || local g=/usr/bin/git
    if [ "$1" = "clone" ]
    then
-       /usr/bin/git "$@"
+       $g "$@"
        echo "\033[49;32;1mRemember to set local email *if* required via 'git config user.email xxxx'\033[0m"
    # Was using hardcoded width of 108 for columns - now dynamic.
    elif [ "$1" = "lg" ]
    then
-      /usr/bin/git -c core.pager="fmt -w `expr $COLUMNS + 25` -t | sed 's/^   /        /' | less -FrX" "$@"
+      $g -c core.pager="fmt -w `expr $COLUMNS + 25` -t | sed 's/^   /        /' | less -FrX" "$@"
    elif [ "$1" = "llg" ] || [ "$1" = "llg5" ]
    then
-      /usr/bin/git -c  core.pager="fmt -w `expr $COLUMNS + 22` -t | sed 's/^   /        /' | less -FrX"  "$@"
+      $g -c  core.pager="fmt -w `expr $COLUMNS + 22` -t | sed 's/^   /        /' | less -FrX"  "$@"
    else
-      /usr/bin/git -c core.pager="less -Fr" "$@"
+      $g -c core.pager="less -Fr" "$@"
    fi
 }
+
 
 # Show status of files
 function gistat()
@@ -377,6 +379,8 @@ function searchJars()
 
 function mvn-mead-hudson()
 {
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
     local TRUST_STORE=-Djavax.net.ssl.trustStore=$HOME/Work/jssecacerts
     local TRUST_STORE_PASSWORD=-Djavax.net.ssl.trustStorePassword=changeit
     local TRUST_STORE_TYPE=-Djavax.net.ssl.trustStoreType=jks
@@ -392,8 +396,26 @@ function mvn-mead-hudson()
     mvn -s $HOME/Work/maven-hudson-mead-mirror.xml -DskipTests=true -Dmaven.repo.local=$HOME/.m2-mead-hudson -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-hudson $PROFILE "$@"
 }
 
-
-ruby()
+function ruby()
 {
     [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"  # This loads RVM into a shell session.
+}
+
+# MAKE_MEAD - checkout of make_mead location.
+# VMAN_HOME - checkout of vman.
+function vman()
+{
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    [[ -z "$VMAN_HOME" ]] && echo "Set VMAN_HOME" && return 1
+
+    if [ -n "$MAKE_MEAD" ]
+    then
+        local KEYSTORE=$MAKE_MEAD/jssecacerts
+        local CERT="-Djavax.net.ssl.trustStore=${KEYSTORE} -Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStoreType=jks -Djavax.net.ssl.keyStore=${KEYSTORE} -Djavax.net.ssl.keyStorePassword=changeit -Djavax.net.ssl.keyStoreType=jks"
+    else
+        echo "MAKE_MEAD not set; not setting jssecacerts"
+    fi
+    #echo java `echo $CERT` -jar `/bin/ls $VMAN_HOME/target/pom-version-manipulator*-bin.jar` "$@"
+    java `echo $CERT` -jar `/bin/ls $VMAN_HOME/target/pom-version-manipulator*-bin.jar` "$@"
 }

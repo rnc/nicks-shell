@@ -9,9 +9,13 @@
 ### Configuration file may contain
 # Useful if user name does not equal remote RedHat login name
 # REMOTEUSER=xxx
+#
 # Prefix where useful things are stored in the users file system
-# e.g. brew-koji zsh completion code. For example set it to $HOME/Work/Miscellaneous
 # PREFIX=xxx
+# e.g. brew-koji zsh completion code. For example set it to $HOME/Work/Miscellaneous
+# PREFIX is added to the fpath and used to source zsh-git-prompt.
+#
+# Any other functions etc can also be put in here.
 source $HOME/.shell-configuration
 
 # Source ZSH functions.
@@ -157,11 +161,16 @@ autoload $^fpath/*(N.)
 
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ]
 then
-    export __GIT_PROMPT_DIR=$PREFIX/zsh-git-prompt
-    source $PREFIX/zsh-git-prompt/zshrc.sh
+    if [ -d $PREFIX/zsh-git-prompt ]
+    then
+        export __GIT_PROMPT_DIR=$PREFIX/zsh-git-prompt
+        source $PREFIX/zsh-git-prompt/zshrc.sh
+    else
+        echo "$PREFIX/zsh-git-prompt does not exist."
+    fi
 
     # This prompt uses the above GIT system.
-    PROMPT='%m: $(git_super_status)$ '
+    PROMPT='%m$(git_super_status)$PROMPT_JAVA $ '
 
     RPROMPT='%T'
 fi
@@ -231,16 +240,20 @@ precmd () {
 # From http://zshwiki.org/home/examples/hardstatus
 # Used by preexec to print '<pwd> : <cmd>'
 title () {
-    # The hardcoded limit is because KDE konsole only appears to support 74 characters
-    # for a title. See http://www.debian-administration.org/articles/548
+    # The hardcoded limit is because KDE konsole only appears to support 74
+    # characters for a title. See
+    # http://www.debian-administration.org/articles/548
     #
     # Previously was just using %~ but named directory expansion means
     # that just printed JACORB_DIR which is not very helpful.
-    local cwd=`print -Pn "%74<...<${PWD/$HOME/~}"`
+    if (( $# > 0 ))
+    then
+        print -nR $'\033]0;'`print -Pn "%74<..<${PWD/$HOME/~} : $*"`$'\a'
+    else
+        local cwd=`print -Pn "%74<..<${PWD/$HOME/~}"`
 
-    # If we have arguments (e.g. from preexec) use a separator.
-    (( $# > 0 )) && local separator=" : "
-    print -nR $'\033]0;'$cwd$separator$*$'\a'
+        print -nR $'\033]0;'$cwd$'\a'
+    fi
 }
 
 preexec() {
@@ -387,12 +400,11 @@ function meadimport()
             fi
             [[ -n "$TAG" ]] && eval $DRYRUN brew add-pkg --owner=ncross `echo $TAG | sed 's/--tag//'` `grep -m1 groupId $i-$VERSION.pom | sed "s/<groupId>\(.*\)<\/groupId>/\1/" | tr -d "[:blank:]"`-$i
             echo "Importing..."
-            eval $DRYRUN ~/Downloads/mikeb-mead-scripts/import-maven `echo $TAG` --owner=$REMOTEUSER `/bin/ls *.pom(N) *.jar(N)`
+            eval $DRYRUN ~/Work/Miscellaneous/mikeb-mead-scripts/import-maven `echo $TAG` --owner=$REMOTEUSER `/bin/ls *.pom(N) *.jar(N)`
             cd ../../
         )
     done
 }
-
 
 
 ##############

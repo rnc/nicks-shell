@@ -271,22 +271,80 @@ function svnl()
     cd $cwd
 }
 
-function sunjava6()
+
+function _java_prompt_()
 {
-   export JAVA_HOME=/usr/local/jdk1.6.0
-   export PATH=$JAVA_HOME/bin:$PATH
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    [[ -z "$1" && "$1" != "sunjava5" && "$1" != "sunjava6" && "$1" != "sunjava7" \
+        && "$1" != "ibmjava6"  && "$1" != "ibmjava7" ]] && echo "Private java setup function" && return
+
+    local sunjava5=/usr/local/jdk1.5.0
+    local sunjava6=/usr/local/jdk1.6.0
+    local sunjava7=/usr/local/jdk1.7.0
+    local ibmjava6=/usr/local/jdk1.7.0
+    local ibmjava7=/usr/local/jdk1.7.0
+
+    for i in $sunjava5 $sunjava6 $sunjava7 $ibmjava6 $ibmjava7
+    do
+        local replace="$i/bin:"
+        PATH=`echo ${PATH//$replace/}`
+    done
+
+    case $1 in
+      "sunjava5")
+        export JAVA_HOME=$sunjava5
+        ;;
+      "sunjava6")
+        export JAVA_HOME=$sunjava6
+        ;;
+      "sunjava7")
+        export JAVA_HOME=$sunjava7
+        ;;
+      "ibmjava6")
+        export JAVA_HOME=$ibmjava6
+        ;;
+      "ibmjava7")
+        export JAVA_HOME=$ibmjava7
+        ;;
+    esac
+
+    export PATH=$JAVA_HOME/bin:$PATH
 }
 
 function sunjava5()
 {
-   export JAVA_HOME=/usr/local/jdk1.5.0
-   export PATH=$JAVA_HOME/bin:$PATH
+    _java_prompt_ sunjava5
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(SUN5)%{"$'\e[00m''%}'
+}
+
+function sunjava6()
+{
+    _java_prompt_ sunjava6
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(SUN6)%{"$'\e[00m''%}'
 }
 
 function sunjava7()
 {
-   export JAVA_HOME=/usr/local/jdk1.7.0
-   export PATH=$JAVA_HOME/bin:$PATH
+    _java_prompt_ sunjava7
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(SUN7)%{"$'\e[00m''%}'
+}
+
+function ibmjava6()
+{
+    _java_prompt_ ibmjava6
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(IBM6)%{"$'\e[00m''%}'
+}
+
+function ibmjava7()
+{
+    _java_prompt_ ibmjava7
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(IBM7)%{"$'\e[00m''%}'
 }
 
 function ant170()
@@ -418,4 +476,47 @@ function vman()
     fi
     #echo java `echo $CERT` -jar `/bin/ls $VMAN_HOME/target/pom-version-manipulator*-bin.jar` "$@"
     java `echo $CERT` -jar `/bin/ls $VMAN_HOME/target/pom-version-manipulator*-bin.jar` "$@"
+}
+
+#
+# This script is sourced from
+# https://community.jboss.org/blogs/stuartdouglas/2011/09/06/merging-github-pull-requests?_sscc=t
+# and is designed to handle pull requests from github without leading to merges
+# in the history (it does a rebase instead.
+function mergePullRequest()
+{
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    local cmd="git fetch origin "
+    local branch=`git rev-parse --abbrev-ref HEAD`
+
+    for var in "$@"
+    do
+        cmd="$cmd pull/$var/head:pullRequest$var"
+    done
+
+    echo "\033[49;32;1m### -> Will merge pull request onto $branch'\033[0m"
+
+    echo "Running: '$cmd"
+    eval $cmd
+
+    for var in "$@"
+    do
+        echo "### Checking out pullRequest$var"
+        git checkout pullRequest$var
+        [[ "$?" != "0" ]] && echo "Error checking out branch; aborting..." && return 1
+        echo "### Rebasing to $branch"
+        git rebase $branch
+        [[ "$?" != "0" ]] && echo "Error rebasing $branch; aborting..." && return 1
+        echo "### Checking out $branch"
+        git checkout $branch
+        [[ "$?" != "0" ]] && echo "Error checking out $branch; aborting..." && return 1
+        echo "### Merging pullRequest$var"
+        git merge pullRequest$var
+        [[ "$?" != "0" ]] && echo "Error merging pull request; aborting..." && return 1
+        echo "### Deleting branch pullRequest$var"
+        git branch -D pullRequest$var
+        [[ "$?" != "0" ]] && echo "Error deleting branch; aborting..." && return 1
+    done
+    echo "\033[49;32;1mFinished\033[0m"
 }

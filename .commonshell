@@ -127,7 +127,11 @@ function git()
    if [ "$1" = "clone" ]
    then
        $g "$@"
-       echo "\033[49;32;1mRemember to set local email *if* required via 'git config user.email xxxx'\033[0m"
+       echo -e "\033[49;32;1mRemember to set local email *if* required via 'git config user.email xxxx'\033[0m"
+   elif [ "$1" = "interactivestash" ]
+   then
+       echo -e "\033[49;32;1mUsage:\n\ny - stash this hunk\nn - do not stash this hunk\nq - quit; do not stash this hunk nor any of the remaining ones\na - stash this hunk and all later hunks in the file\nd - do not stash this hunk nor any of the later hunks in the file\ng - select a hunk to go to\n/ - search for a hunk matching the given regex\nj - leave this hunk undecided, see next undecided hunk\nJ - leave this hunk undecided, see next hunk\nk - leave this hunk undecided, see previous undecided hunk\nK - leave this hunk undecided, see previous hunk\ns - split the current hunk into smaller hunks\ne - manually edit the current hunk\n? - print help\033[0m"
+       $g "$@"
    # Was using hardcoded width of 108 for columns - now dynamic.
    elif [ "$1" = "lg" ]
    then
@@ -187,7 +191,7 @@ function rgit()
     for i in `find . -type d -name .git | env "LC_ALL=C" sort`
     do
         local d=`dirname $i | sed 's/\.\///'`
-        echo "\033[49;32;1m### -> $d\033[0m"
+        echo -e "\033[49;32;1m### -> $d\033[0m"
 
         cd $d
         git "$@"
@@ -263,7 +267,7 @@ function svnl()
     # svn log doesn't cross into externals directories so recursively check them as well.
     if [ -n "$EXTERNALS" ]
     then
-         echo "\033[49;$textcol;1mExternals detected ($EXTERNALS):\033[0m"
+         echo -e "\033[49;$textcol;1mExternals detected ($EXTERNALS):\033[0m"
          cd $EXTERNALS
          svnl -e -l 3
     fi
@@ -282,8 +286,8 @@ function _java_prompt_()
     local sunjava5=/usr/local/jdk1.5.0
     local sunjava6=/usr/local/jdk1.6.0
     local sunjava7=/usr/local/jdk1.7.0
-    local ibmjava6=/usr/local/jdk1.7.0
-    local ibmjava7=/usr/local/jdk1.7.0
+    local ibmjava6=/usr/local/ibm-jdk1.6.0
+    local ibmjava7=/usr/local/ibm-jdk1.7.0
 
     for i in $sunjava5 $sunjava6 $sunjava7 $ibmjava6 $ibmjava7
     do
@@ -495,7 +499,7 @@ function mergePullRequest()
         cmd="$cmd pull/$var/head:pullRequest$var"
     done
 
-    echo "\033[49;32;1m### -> Will merge pull request onto $branch'\033[0m"
+    echo -e "\033[49;32;1m### -> Will merge pull request onto $branch\033[0m"
 
     echo "Running: '$cmd"
     eval $cmd
@@ -518,5 +522,5 @@ function mergePullRequest()
         git branch -D pullRequest$var
         [[ "$?" != "0" ]] && echo "Error deleting branch; aborting..." && return 1
     done
-    echo "\033[49;32;1mFinished\033[0m"
+    echo -e "\033[49;32;1mFinished\033[0m"
 }

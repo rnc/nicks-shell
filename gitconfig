@@ -20,3 +20,5 @@
         # Tell me what branch or tag etc I am on.
         sm = describe --tags --all
 
+        # Interactive stash
+        interactivestash = stash save --patch

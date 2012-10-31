@@ -4,8 +4,8 @@
 	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
 	llg = log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --date=relative
 
-        # Last 5 commits
-        llg5 = !git llg -n 5
+        # Last 5 commits (!git llg -n 5)
+        llg5 = log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --date=relative -n 5
 
         # Unpushed changes
         up = !GIT_CURRENT_BRANCH=$(git name-rev --name-only HEAD) && git log origin/$GIT_CURRENT_BRANCH..$GIT_CURRENT_BRANCH

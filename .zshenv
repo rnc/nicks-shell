@@ -24,3 +24,4 @@ export LD_LIBRARY_PATH
 export CLASSPATH
 export PATH
 export COLUMNS
+export SHELL=`which zsh`

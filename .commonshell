@@ -439,23 +439,22 @@ function searchJars()
     done
 }
 
-function mvn-mead-hudson()
+# MAKE_MEAD - checkout of make_mead location.
+function mvn-mead-jenkins()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    local TRUST_STORE=-Djavax.net.ssl.trustStore=$HOME/Work/jssecacerts
+    local TRUST_STORE=-Djavax.net.ssl.trustStore=$MAKE_MEAD/jssecacerts
     local TRUST_STORE_PASSWORD=-Djavax.net.ssl.trustStorePassword=changeit
     local TRUST_STORE_TYPE=-Djavax.net.ssl.trustStoreType=jks
-    local KEY_STORE=-Djavax.net.ssl.keyStore=$HOME/Work/jssecacerts
+    local KEY_STORE=-Djavax.net.ssl.keyStore=$MAKE_MEAD/jssecacerts
     local KEY_STORE_PASSWORD=-Djavax.net.ssl.keyStorePassword=changeit
     local KEY_STORE_TYPE=-Djavax.net.ssl.keyStoreType=jks
 #    local DEBUG=-Djavax.net.debug=ssl:handshake:data
 
-    local MAVEN_OPTS="$TRUST_STORE $KEY_STORE $TRUST_STORE_PASSWORD $KEY_STORE_PASSWORD $TRUST_STORE_TYPE $KEY_STORE_TYPE $DEBUG $MAVEN_OPTS"
+    local -x MAVEN_OPTS="$TRUST_STORE $KEY_STORE $TRUST_STORE_PASSWORD $KEY_STORE_PASSWORD $TRUST_STORE_TYPE $KEY_STORE_TYPE $DEBUG $MAVEN_OPTS"
 
-    [[ `basename $PWD` == brms-p ]] && PROFILE="-Dsoa"
-
-    mvn -s $HOME/Work/maven-hudson-mead-mirror.xml -DskipTests=true -Dmaven.repo.local=$HOME/.m2-mead-hudson -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-hudson $PROFILE "$@"
+    mvn -s $HOME/Work/maven-mead-brms6-jenkins.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 $PROFILE "$@"
 }
 
 function ruby()
@@ -479,7 +478,7 @@ function vman()
         echo "MAKE_MEAD not set; not setting jssecacerts"
     fi
     #echo java `echo $CERT` -jar `/bin/ls $VMAN_HOME/target/pom-version-manipulator*-bin.jar` "$@"
-    java `echo $CERT` -jar `/bin/ls $VMAN_HOME/target/pom-version-manipulator*-bin.jar` "$@"
+    java `echo $CERT` -jar $VMAN_HOME/target/vman-bin.jar "$@"
 }
 
 #

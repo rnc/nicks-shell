@@ -20,6 +20,7 @@
         # Interactive stash
         interactivestash = stash save --patch
 
-        # Short git remote / status
+        # Short git remote / status / branch
         s = status -sb
         r = remote -v
+        b = branch -av

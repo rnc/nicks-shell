@@ -10,6 +10,18 @@ if [ -f /etc/bash_completion ]; then
    . /etc/bash_completion
 fi
 
+### Configuration file may contain
+# Useful if user name does not equal remote login name
+# REMOTEUSER=xxx
+#
+# Prefix where useful things are stored in the users file system
+# PREFIX=xxx
+# e.g. brew-koji zsh completion code. For example set it to $HOME/Work/Miscellaneous
+# PREFIX is added to the fpath and used to source zsh-git-prompt.
+#
+# Any other functions etc can also be put in here.
+source $HOME/.shell-configuration
+
 # Defs
 set show-all-if-ambiguous on
 set expand-tilde on

@@ -7,7 +7,7 @@
 #
 
 ### Configuration file may contain
-# Useful if user name does not equal remote RedHat login name
+# Useful if user name does not equal remote login name
 # REMOTEUSER=xxx
 #
 # Prefix where useful things are stored in the users file system
@@ -161,8 +161,10 @@ autoload $^fpath/*(N.)
 
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ]
 then
+    # Using https://github.com/rnc/zsh-git-prompt / Fork branch
     if [ -d $PREFIX/zsh-git-prompt ]
     then
+        export ZSH_THEME_GIT_PROMPT_STASHED_ACTIVE=1
         export __GIT_PROMPT_DIR=$PREFIX/zsh-git-prompt
         source $PREFIX/zsh-git-prompt/zshrc.sh
     else
@@ -304,107 +306,6 @@ showoptions() {
 [[ -z "$REMOTEUSER" ]] && REMOTEUSER=$USER
 source $HOME/.commonshell
 [[ -f $HOME/.corbashell ]] && source $HOME/.corbashell
-
-function mvn-install-file-brms6()
-{
-   # Takes groupID, version artifactID & & source repo [ defaults to m2-scratch ]
-   if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
-   then
-      echo "Pass in groupID, artifactID & version"
-      return
-   fi
-
-   local GROUP=$1 ; shift
-   local ARTIFACT=$1 ; shift
-   local VERSION=$1 ; shift
-   [[ -n "$1" ]] && SOURCEREPO=$1 && shift
-   local SOURCEREPO=$HOME/.m2-scratch
-   local TD=`echo $GROUP | tr . /`/$ARTIFACT/$VERSION
-
-   [[ ! -d "$SOURCEREPO/$TD" ]] && echo "Invalid group/artifact/version - directory $TD does not exist" && return
-
-   local FILE=$SOURCEREPO/$TD/$ARTIFACT-$VERSION.jar
-   if [ ! -f $FILE ]
-   then
-      local FILE=$SOURCEREPO/$TD/dummy-file
-      touch $FILE
-   fi
-
-   mvn-mead-brms6 install:install-file \
-      -Dpackaging=maven-plugin \
-      -DgroupId=$GROUP \
-      -DartifactId=$ARTIFACT \
-      -Dversion=$VERSION \
-      -Dfile=$FILE \
-      -DpomFile=$SOURCEREPO/$TD/$ARTIFACT-$VERSION.pom
-}
-
-#
-# Usage:
-# mead-import [--dry-run] [-d <subdirectory-pattern>] <version> [<tag>]
-# Supports mutiple patterns e.g. -d foo,bar,goo
-function meadimport()
-{
-    if [ "$1" == "--dry-run" ]
-    then
-        shift
-        DRYRUN="echo '###' "
-    else
-        DRYRUN=""
-    fi
-
-    if [ "$1" = "-d" ]
-    then
-        shift
-        PATTERN="$1"
-        shift
-        if [ -n "`echo $PATTERN | grep ','`" ]
-        then
-            # Multiple patterns - split them up.
-            local ORIGP=$PATTERN
-            local PATTERN=""
-            local OLDIFS=$IFS
-            local IFS=','
-            for v in `echo $ORIGP`
-            do
-                PATTERN="$PATTERN -o -name $v"
-            done
-            IFS=$OLDIFS
-            PATTERN=`echo $PATTERN | sed 's/^ -o -name//'`
-        fi
-    else
-        PATTERN="*"
-    fi
-    echo "Using pattern: $PATTERN"
-
-    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
-
-    if [ -z "$1" ]
-    then
-        echo "Invalid version"
-        return
-    else
-        local VERSION=$1
-    fi
-    [[ -n "$2" ]] && local TAG="--tag $2"
-    for i in `eval find . -maxdepth 1 -name $PATTERN`
-    do
-        (
-            echo "Using directory: $i"
-            setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
-            if [ ! -d $i/$VERSION ]
-            then
-                echo "Invalid directory $i/$VERSION" ; return
-            else
-                cd $i/$VERSION
-            fi
-            [[ -n "$TAG" ]] && eval $DRYRUN brew add-pkg --owner=ncross `echo $TAG | sed 's/--tag//'` `grep -m1 groupId $i-$VERSION.pom | sed "s/<groupId>\(.*\)<\/groupId>/\1/" | tr -d "[:blank:]"`-$i
-            echo "Importing..."
-            eval $DRYRUN ~/Work/Miscellaneous/mikeb-mead-scripts/import-maven `echo $TAG` --owner=$REMOTEUSER `/bin/ls *.pom(N) *.jar(N)`
-            cd ../../
-        )
-    done
-}
 
 
 ##############

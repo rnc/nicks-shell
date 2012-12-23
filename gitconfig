@@ -1,8 +1,8 @@
 # Global aliases suitable for /etc/gitconfig
 
 [alias]
-	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
-	llg = log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --date=relative
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) (%an)%Creset' --abbrev-commit --date=relative
+	llg = log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) (%an)%Creset' --date=relative
 
         # Last 5 commits (!git llg -n 5)
         llg5 = log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --date=relative -n 5

@@ -49,7 +49,7 @@ alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOM
 # resetting zsh to known default using emulate -L zsh but my nested
 # function calls don't work correctly then.
 
-if [ "$SHELL" = "/bin/bash" ]
+if [ "$SHELL" = "/bin/bash" ] || [ "$SHELL" = "/usr/bin/bash" ]
 then
     # If we are a bash shell define noop function to work around zsh specific calls.
     function setopt ()
@@ -111,12 +111,27 @@ function lt()
 function eclipse()
 {
     (
+        if [ "-h" == "$1" ]
+        then
+            echo "Usage: -s [DevStudio] | -i [indigo] | (-j [juno] *DEFAULT*)"
+            return 1
+        fi
         if [ "$KDE_FULL_SESSION" = "true" ]
         then
             # Override GTK settings for running in KDE - fixes a tooltip issue.
             export GTK2_RC_FILES=~/.gtkrc-2.0-eclipse
         fi
-        /usr/local/eclipse/eclipse
+        rm -f $HOME/tmp/eclipse.log
+        if [ "$1" == "-s" ]
+        then
+            /usr/local/jbdevstudio/jbdevstudio &> $HOME/tmp/eclipse.log
+        elif  [ "$1" == "-i" ]
+        then
+            /usr/local/eclipse/eclipse &> $HOME/tmp/eclipse.log
+        elif [ "$1" == "-j" ] || [ -z "$1" ]
+        then
+            /usr/local/eclipse-juno/eclipse &> $HOME/tmp/eclipse.log
+        fi
     )
 }
 
@@ -127,7 +142,7 @@ function git()
    if [ "$1" = "clone" ]
    then
        $g "$@"
-       echo -e "\033[49;32;1mRemember to set local email *if* required via 'git config user.email xxxx'\033[0m"
+       [[ "$?" == "0" ]] && echo -e "\033[49;32;1mRemember to set local email *if* required via 'git config user.email xxxx'\033[0m"
    elif [ "$1" = "interactivestash" ]
    then
        echo -e "\033[49;32;1mUsage:\n\ny - stash this hunk\nn - do not stash this hunk\nq - quit; do not stash this hunk nor any of the remaining ones\na - stash this hunk and all later hunks in the file\nd - do not stash this hunk nor any of the later hunks in the file\ng - select a hunk to go to\n/ - search for a hunk matching the given regex\nj - leave this hunk undecided, see next undecided hunk\nJ - leave this hunk undecided, see next hunk\nk - leave this hunk undecided, see previous undecided hunk\nK - leave this hunk undecided, see previous hunk\ns - split the current hunk into smaller hunks\ne - manually edit the current hunk\n? - print help\033[0m"
@@ -351,7 +366,7 @@ function ibmjava7()
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(IBM7)%{"$'\e[00m''%}'
 }
 
-function ant170()
+function ant17()
 {
     export ANT_HOME=/usr/local/apache-ant-1.7.0
     export PATH=$ANT_HOME/bin:$PATH
@@ -359,9 +374,25 @@ function ant170()
     alias ant='ant -logger org.apache.tools.ant.NoBannerLogger'
 }
 
-function maven()
+function ant18()
 {
-    M2_HOME=/usr/share/maven
+    export ANT_HOME=/usr/local/apache-ant-1.8.4
+    export PATH=$ANT_HOME/bin:$PATH
+
+    alias ant='ant -logger org.apache.tools.ant.NoBannerLogger'
+}
+
+function maven-3.0.3()
+{
+    M2_HOME=/usr/local/apache-maven-3.0.3
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function maven-3.0.4()
+{
+    M2_HOME=/usr/local/apache-maven-3.0.4
+    PATH=$M2_HOME/bin:$PATH
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
@@ -444,6 +475,15 @@ function mvn-mead-jenkins()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
+    if [ "$1" = "-s" ]
+    then
+        shift
+        local SETTINGS=$1
+        shift
+    else
+        local SETTINGS=$HOME/Work/maven-mead-brms6-jenkins.xml
+    fi
+
     local TRUST_STORE=-Djavax.net.ssl.trustStore=$MAKE_MEAD/jssecacerts
     local TRUST_STORE_PASSWORD=-Djavax.net.ssl.trustStorePassword=changeit
     local TRUST_STORE_TYPE=-Djavax.net.ssl.trustStoreType=jks
@@ -454,7 +494,7 @@ function mvn-mead-jenkins()
 
     local -x MAVEN_OPTS="$TRUST_STORE $KEY_STORE $TRUST_STORE_PASSWORD $KEY_STORE_PASSWORD $TRUST_STORE_TYPE $KEY_STORE_TYPE $DEBUG $MAVEN_OPTS"
 
-    mvn -s $HOME/Work/maven-mead-brms6-jenkins.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 $PROFILE "$@"
+    mvn -s $SETTINGS -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 $PROFILE "$@"
 }
 
 function ruby()
@@ -558,69 +598,32 @@ function mvn-install-file-brms6()
       -DpomFile=$SOURCEREPO/$TD/$ARTIFACT-$VERSION.pom
 }
 
-#
-# Usage:
-# mead-import [--dry-run] [-d <subdirectory-pattern>] <version> [<tag>]
-# Supports mutiple patterns e.g. -d foo,bar,goo
-function meadimport()
+
+# Information sourced from
+#  http://git-scm.com/book/ch8-2.html
+#  http://dereenigne.org/git/git-svn-mirror
+# Takes project source URL [target-dir]
+gitsvnclone()
 {
-    if [ "$1" == "--dry-run" ]
-    then
-        shift
-        DRYRUN="echo '###' "
-    else
-        DRYRUN=""
-    fi
-
-    if [ "$1" = "-d" ]
-    then
-        shift
-        PATTERN="$1"
-        shift
-        if [ -n "`echo $PATTERN | grep ','`" ]
-        then
-            # Multiple patterns - split them up.
-            local ORIGP=$PATTERN
-            local PATTERN=""
-            local OLDIFS=$IFS
-            local IFS=','
-            for v in `echo $ORIGP`
-            do
-                PATTERN="$PATTERN -o -name $v"
-            done
-            IFS=$OLDIFS
-            PATTERN=`echo $PATTERN | sed 's/^ -o -name//'`
-        fi
-    else
-        PATTERN="*"
-    fi
-    echo "Using pattern: $PATTERN"
-
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    if [ -z "$1" ]
-    then
-        echo "Invalid version"
-        return
-    else
-        local VERSION=$1
-    fi
-    [[ -n "$2" ]] && local TAG="--tag $2"
-    for i in `eval find . -maxdepth 1 -name $PATTERN`
-    do
-        (
-            echo "Using directory: $i"
-            setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
-            if [ ! -d $i/$VERSION ]
-            then
-                echo "Invalid directory $i/$VERSION" ; return
-            else
-                cd $i/$VERSION
-            fi
-            [[ -n "$TAG" ]] && eval $DRYRUN brew add-pkg --owner=ncross `echo $TAG | sed 's/--tag//'` `grep -m1 groupId $i-$VERSION.pom | sed "s/<groupId>\(.*\)<\/groupId>/\1/" | tr -d "[:blank:]"`-$i
-            echo "Importing..."
-            eval $DRYRUN ~/Work/Miscellaneous/mikeb-mead-scripts/import-maven `echo $TAG` --owner=$REMOTEUSER `/bin/ls *.pom(N) *.jar(N)`
-            cd ../../
-        )
-    done
+    [[ -z "$1" ]] && echo "No source URL specified." && return 1
+
+    TARGETDIR=`basename $1`
+    [[ -n "$2" ]] && TARGETDIR=$2
+
+    [[ -d $TARGETDIR ]] && echo "Target directory already exists" && return 1
+
+    git svn --stdlayout clone $1 $TARGETDIR
+
+    echo "Resetting tags and branches"
+    cd $TARGETDIR
+    git for-each-ref refs/remotes/tags | cut -d / -f 4- | grep -v @ | while read tagname; do git tag "$tagname" "tags/$tagname"; git branch -r -d "tags/$tagname"; done
+
+    git for-each-ref refs/remotes | cut -d / -f 3- | grep -v @ | while read branchname; do git branch "$branchname" "refs/remotes/$branchname"; git branch -r -d "$branchname"; done
+
+    echo "Completed cloning svn repository."
+    echo ""
+    echo "Now add a remote (git remote add gitapp ....)"
+    echo "and push the tags: git push --tags gitapp"
 }

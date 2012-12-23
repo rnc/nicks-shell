@@ -18,7 +18,11 @@ bg[NORMAL] = "#e8e8e8"
 fg[NORMAL] = "#000000"
 }
 
+style "eclipse" {
+  font_name = "Sans Condensed 8"
+}
+
 # Load settings.
+class "GtkWidget" style "eclipse"
 class "GtkTreeView" style "eclipse-autocompletion"
 widget "gtk-tooltip*" style "eclipse-tooltips"
-

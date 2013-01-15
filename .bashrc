@@ -60,8 +60,11 @@ CLASSPATH=.
 export LD_LIBRARY_PATH
 export CLASSPATH
 export PATH
-export COLUMNS
 export SHELL=`which bash`
+
+unset COLUMNS
+export COLUMNS
+[[ -z "$COLUMNS" ]] && COLUMNS=`tput cols` && echo "Forcing columns value to $COLUMNS"
 
 #
 # Get common aliases and functions
@@ -73,5 +76,6 @@ if [ -n "`shopt | grep "login_shell.*off"`" ] && [ -n "$PS1" ]
 then
     echo "Running .bashrc..."
 
+    export PS1='\[\e[1;32m\]\h:\W $\[\e[0m\] '
     export PS1='\[\e[1;32m\]\h:\W $\[\e[0m\] '
 fi

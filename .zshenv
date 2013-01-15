@@ -23,5 +23,8 @@ CLASSPATH=.
 export LD_LIBRARY_PATH
 export CLASSPATH
 export PATH
-export COLUMNS
 export SHELL=`which zsh`
+
+unset COLUMNS
+export COLUMNS
+[[ -z "$COLUMNS" ]] && COLUMNS=`tput cols` && echo "Forcing columns value to $COLUMNS"

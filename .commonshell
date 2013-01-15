@@ -510,6 +510,8 @@ function vman()
 
     [[ -z "$VMAN_HOME" ]] && echo "Set VMAN_HOME" && return 1
 
+    [[ "$1" = "-clean" ]] && echo "Cleaning for vman..." && rm -rf `find . -type d -name target` && rm -rf `find . -name vman-workspace` && rgit reset --hard && shift
+
     if [ -n "$MAKE_MEAD" ]
     then
         local KEYSTORE=$MAKE_MEAD/jssecacerts
@@ -618,12 +620,69 @@ gitsvnclone()
 
     echo "Resetting tags and branches"
     cd $TARGETDIR
-    git for-each-ref refs/remotes/tags | cut -d / -f 4- | grep -v @ | while read tagname; do git tag "$tagname" "tags/$tagname"; git branch -r -d "tags/$tagname"; done
-
-    git for-each-ref refs/remotes | cut -d / -f 3- | grep -v @ | while read branchname; do git branch "$branchname" "refs/remotes/$branchname"; git branch -r -d "$branchname"; done
-
+    git for-each-ref refs/remotes/tags | cut -d / -f 4- | grep -v @ | while read tagname; do echo "Processing $tagname"; git tag "$tagname" "tags/$tagname"; git branch -r -d "tags/$tagname"; done
+    echo "Done tags; now branches..."
+    git for-each-ref refs/remotes | cut -d / -f 3- | grep -v @ | while read branchname; do echo "Processing $tagname"; git branch "$branchname" "refs/remotes/$branchname"; git branch -r -d "$branchname"; done
     echo "Completed cloning svn repository."
     echo ""
     echo "Now add a remote (git remote add gitapp ....)"
     echo "and push the tags: git push --tags gitapp"
+}
+
+
+#
+# Runs get-maven-artifacts and import-maven.
+# Optional parameets:
+#    --tag <tag> to import into.
+#    --owner <name> owner name to user (normally defaults to $USER)
+#    --save <dir> copy downloaded dirs to dir
+get-and-import()
+{
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    local owner=$USER
+    local cwd=`pwd`
+
+    command -v get-maven-artifacts >/dev/null 2>&1 || { echo "Mike Bonnet's get-maven-artifacts and import-maven must be in the path. Aborting." >&2; return }
+
+    while :
+    do
+        case "$1" in
+          --tag)
+            shift
+            local TAG="--tag $1"
+            shift
+            ;;
+          --owner)
+            shift
+            local owner=$1
+            shift
+            ;;
+          --save)
+            shift
+            local SAVE=$1
+            shift
+            ;;
+          *)
+            break;
+        esac
+    done
+
+    local package=$1
+    [[ -z "$package" ]] && "Package to import is not set" && return 1
+    echo "Importing package $package with owner $owner and tag '$TAG'"
+
+    local ddir=`mktemp -d`
+    cd $ddir
+    get-maven-artifacts $package
+    echo "Downloaded artifacts now importing"
+    import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir`
+
+    if [ -n "$SAVE" ]
+    then
+        /bin/cp -f $ddir/* $SAVE
+    fi
+
+    cd $cwd
+    rm -rf $ddir
 }

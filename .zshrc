@@ -159,7 +159,7 @@ NO_XTRACE
 # Autoload all shell functions from all directories in $fpath
 autoload $^fpath/*(N.)
 
-if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ]
+if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ]
 then
     # Using https://github.com/rnc/zsh-git-prompt / Fork branch
     if [ -d $PREFIX/zsh-git-prompt ]

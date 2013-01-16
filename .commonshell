@@ -619,7 +619,8 @@ get-and-import()
         rm -rf $ddir
     }
 
-    command -v get-maven-artifacts > /dev/null 2>&1 || echo "Mike Bonnet's get-maven-artifacts and import-maven must be in the path. Aborting." && return
+    which get-maven-artifacts 2> /dev/null
+    [[ "$?" != 0 ]] && echo "Mike Bonnet's get-maven-artifacts and import-maven must be in the path. Aborting." && return 1
 
     while [ -n "$1" ]
     do

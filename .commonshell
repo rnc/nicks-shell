@@ -598,7 +598,7 @@ gitsvnclone()
 
 #
 # Runs get-maven-artifacts and import-maven.
-# Optional parameets:
+# Optional parameters:
 #    --tag <tag> to import into.
 #    --owner <name> owner name to user (normally defaults to $USER)
 #    --save <dir> copy downloaded dirs to dir
@@ -613,7 +613,7 @@ get-and-import()
     local owner=$USER
     local cwd=`pwd`
 
-    function cleanup()
+    cleanup()
     {
         cd $cwd
         rm -rf $ddir

@@ -566,40 +566,6 @@ function mergePullRequest()
     echo -e "\033[49;32;1mFinished\033[0m"
 }
 
-function mvn-install-file-brms6()
-{
-   # Takes groupID, version artifactID & & source repo [ defaults to m2-scratch ]
-   if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
-   then
-      echo "Pass in groupID, artifactID & version"
-      return
-   fi
-
-   local GROUP=$1 ; shift
-   local ARTIFACT=$1 ; shift
-   local VERSION=$1 ; shift
-   [[ -n "$1" ]] && SOURCEREPO=$1 && shift
-   local SOURCEREPO=$HOME/.m2-scratch
-   local TD=`echo $GROUP | tr . /`/$ARTIFACT/$VERSION
-
-   [[ ! -d "$SOURCEREPO/$TD" ]] && echo "Invalid group/artifact/version - directory $TD does not exist" && return
-
-   local FILE=$SOURCEREPO/$TD/$ARTIFACT-$VERSION.jar
-   if [ ! -f $FILE ]
-   then
-      local FILE=$SOURCEREPO/$TD/dummy-file
-      touch $FILE
-   fi
-
-   mvn-mead-brms6 install:install-file \
-      -Dpackaging=maven-plugin \
-      -DgroupId=$GROUP \
-      -DartifactId=$ARTIFACT \
-      -Dversion=$VERSION \
-      -Dfile=$FILE \
-      -DpomFile=$SOURCEREPO/$TD/$ARTIFACT-$VERSION.pom
-}
-
 
 # Information sourced from
 #  http://git-scm.com/book/ch8-2.html
@@ -636,6 +602,8 @@ gitsvnclone()
 #    --tag <tag> to import into.
 #    --owner <name> owner name to user (normally defaults to $USER)
 #    --save <dir> copy downloaded dirs to dir
+#    --install <repo> optionally install the artifact to the specified local repository.
+#                     This saves having to wait for repository regeneration.
 # Then takes e.g.
 # org.apache.derby:derby-project:pom:10.8.2.2 org.eclipse.jetty:jetty-util:jar:7.6.3 ....
 get-and-import()
@@ -671,6 +639,11 @@ get-and-import()
             local SAVE=$1
             shift
             ;;
+          --install)
+            shift
+            local INSTALL=$1
+            shift
+            ;;
           *)
             break;
         esac
@@ -680,7 +653,8 @@ get-and-import()
 
     while [ -n "$1" ]
     do
-        local package=$1
+        # Strip off any comma if we cut and pasted from a maven log.
+        local package=`echo $1 | tr -d ','`
         echo "Importing package $package with owner $owner and tag '$TAG'"
 
         local ddir=`mktemp -d`
@@ -695,7 +669,17 @@ get-and-import()
         then
             /bin/cp -f $ddir/* $SAVE
         fi
-
+        if [ -n "$INSTALL" ]
+        then
+            /bin/ls "*.jar" > /dev/null 2>&1
+            if [ "$?" != 0 ]
+            then
+                F=`find . -name "*.pom"`
+            else
+                F=`find . -name "*.jar"`
+            fi
+            mvn -Dmaven.repo.local=$INSTALL -DpomFile=`find . -name "*.pom"` -Dfile=$F install:install-file
+        fi
         shift
         cleanup
     done

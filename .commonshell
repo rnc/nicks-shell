@@ -636,6 +636,8 @@ gitsvnclone()
 #    --tag <tag> to import into.
 #    --owner <name> owner name to user (normally defaults to $USER)
 #    --save <dir> copy downloaded dirs to dir
+# Then takes e.g.
+# org.apache.derby:derby-project:pom:10.8.2.2 org.eclipse.jetty:jetty-util:jar:7.6.3 ....
 get-and-import()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
@@ -643,9 +645,15 @@ get-and-import()
     local owner=$USER
     local cwd=`pwd`
 
+    function cleanup()
+    {
+        cd $cwd
+        rm -rf $ddir
+    }
+
     command -v get-maven-artifacts >/dev/null 2>&1 || { echo "Mike Bonnet's get-maven-artifacts and import-maven must be in the path. Aborting." >&2; return }
 
-    while :
+    while [ -n "$1" ]
     do
         case "$1" in
           --tag)
@@ -668,21 +676,27 @@ get-and-import()
         esac
     done
 
-    local package=$1
-    [[ -z "$package" ]] && "Package to import is not set" && return 1
-    echo "Importing package $package with owner $owner and tag '$TAG'"
+    [[ -z "$1" ]] && "Package to import is not set" && return 1
 
-    local ddir=`mktemp -d`
-    cd $ddir
-    get-maven-artifacts $package
-    echo "Downloaded artifacts now importing"
-    import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir`
+    while [ -n "$1" ]
+    do
+        local package=$1
+        echo "Importing package $package with owner $owner and tag '$TAG'"
 
-    if [ -n "$SAVE" ]
-    then
-        /bin/cp -f $ddir/* $SAVE
-    fi
+        local ddir=`mktemp -d`
+        cd $ddir
+        get-maven-artifacts $package
 
-    cd $cwd
-    rm -rf $ddir
+        [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && continue
+        echo "Downloaded artifacts now importing"
+        import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir`
+
+        if [ -n "$SAVE" ]
+        then
+            /bin/cp -f $ddir/* $SAVE
+        fi
+
+        shift
+        cleanup
+    done
 }

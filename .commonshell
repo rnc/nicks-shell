@@ -672,12 +672,12 @@ get-and-import()
         fi
         if [ -n "$INSTALL" ]
         then
-            /bin/ls "*.jar" > /dev/null 2>&1
+            find . -name "*.jar" > /dev/null 2>&1
             if [ "$?" != 0 ]
             then
                 F=`find . -name "*.pom"`
             else
-                F=`find . -name "*.jar"`
+                F=`find . -name "*.jar" | egrep '(sources|javadoc)'`
             fi
             mvn -Dmaven.repo.local=$INSTALL -DpomFile=`find . -name "*.pom"` -Dfile=$F install:install-file
         fi

@@ -670,10 +670,10 @@ get-and-import()
         then
             /bin/cp -f $ddir/* $SAVE
         fi
+
         if [ -n "$INSTALL" ]
         then
-            find . -name "*.jar" > /dev/null 2>&1
-            if [ "$?" != 0 ]
+            if [ "`find . -name "*.jar" | wc -l`" = 0 ]
             then
                 F=`find . -name "*.pom"`
             else

@@ -675,9 +675,9 @@ get-and-import()
         then
             if [ "`find . -name "*.jar" | wc -l`" = 0 ]
             then
-                F=`find . -name "*.pom"`
+                local F=`find . -name "*.pom"`
             else
-                F=`find . -name "*.jar" | egrep -v '(sources\.jar|javadoc\.jar|tests\.jar)'`
+                local F=`find . -name "*.jar" | egrep -v '(sources\.jar|javadoc\.jar|tests\.jar)'`
             fi
             mvn -Dmaven.repo.local=$INSTALL -DpomFile=`find . -name "*.pom"` -Dfile=$F install:install-file
         fi

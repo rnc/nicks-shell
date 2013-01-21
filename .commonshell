@@ -645,6 +645,10 @@ get-and-import()
             local INSTALL=$1
             shift
             ;;
+          --noimport)
+            local NOIMPORT=true
+            shift
+            ;;
           *)
             break;
         esac
@@ -663,8 +667,8 @@ get-and-import()
         get-maven-artifacts $package
 
         [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && continue
-        echo "Downloaded artifacts now importing"
-        import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir`
+        echo "Downloaded artifacts..."
+        [[ "$NOIMPORT" != "true" ]] && import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir`
 
         if [ -n "$SAVE" ]
         then
@@ -678,8 +682,9 @@ get-and-import()
                 local F=`find . -name "*.pom"`
             else
                 local F=`find . -name "*.jar" | egrep -v '(sources\.jar|javadoc\.jar|tests\.jar)'`
+                local PACKAGING="-Dpackaging=jar"
             fi
-            mvn -Dmaven.repo.local=$INSTALL -DpomFile=`find . -name "*.pom"` -Dfile=$F install:install-file
+            mvn -Dmaven.repo.local=$INSTALL -DpomFile=`find . -name "*.pom"` -Dfile=$F $PACKAGING install:install-file
         fi
         shift
         cleanup

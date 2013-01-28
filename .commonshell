@@ -660,9 +660,9 @@ get-and-import()
     do
         # Strip off any comma if we cut and pasted from a maven log.
         local package=`echo $1 | tr -d ','`
-        echo "Importing package $package with owner $owner and tag '$TAG'"
+        local ddir=`pwd`/`mktemp -d tmp.XXXXXX`
+        echo "Importing package $package with owner $owner and tag '$TAG' to dir $ddir"
 
-        local ddir=`mktemp -d`
         cd $ddir
         get-maven-artifacts $package
 
@@ -677,13 +677,14 @@ get-and-import()
 
         if [ -n "$INSTALL" ]
         then
-            if [ "`find . -name "*.jar" | wc -l`" = 0 ]
+            if [ "`find . -name "*.jar" | egrep -v '(sources\.jar|javadoc\.jar|tests\.jar)' | wc -l`" = 0 ]
             then
                 local F=`find . -name "*.pom"`
             else
                 local F=`find . -name "*.jar" | egrep -v '(sources\.jar|javadoc\.jar|tests\.jar)'`
                 local PACKAGING="-Dpackaging=jar"
             fi
+            echo "Running mvn -Dmaven.repo.local=$INSTALL -DpomFile=`find . -name "*.pom"` -Dfile=$F $PACKAGING install:install-file"
             mvn -Dmaven.repo.local=$INSTALL -DpomFile=`find . -name "*.pom"` -Dfile=$F $PACKAGING install:install-file
         fi
         shift

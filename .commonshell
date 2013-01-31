@@ -677,11 +677,11 @@ get-and-import()
 
         if [ -n "$INSTALL" ]
         then
-            if [ "`find . -name "*.jar" | egrep -v '(sources\.jar|javadoc\.jar|tests\.jar)' | wc -l`" = 0 ]
+            if [ "`find . -name "*.jar" | egrep -v '(site\.jar|sources\.jar|javadoc\.jar|tests\.jar)' | wc -l`" = 0 ]
             then
                 local F=`find . -name "*.pom"`
             else
-                local F=`find . -name "*.jar" | egrep -v '(sources\.jar|javadoc\.jar|tests\.jar)'`
+                local F=`find . -name "*.jar" | egrep -v '(site\.jar|sources\.jar|javadoc\.jar|tests\.jar)'`
                 local PACKAGING="-Dpackaging=jar"
             fi
             echo "Running mvn -Dmaven.repo.local=$INSTALL -DpomFile=`find . -name "*.pom"` -Dfile=$F $PACKAGING install:install-file"

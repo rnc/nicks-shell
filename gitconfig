@@ -24,3 +24,9 @@
         s = status -sb
         r = remote -v
         b = branch -av
+
+        # Show the commit a tag is pointing at.
+        tagcommit = "!f() { git rev-parse --verify $1^{commit}; }; f"
+
+        # Show what changes there are in the tracking branch.
+        changes = "!f() { [[ -z "$1" ]] && o=origin || o=$1 ; git remote update $o ; git llg `git symbolic-ref --short HEAD`..$o/`git symbolic-ref --short HEAD` ; }; f"

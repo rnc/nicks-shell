@@ -300,6 +300,12 @@ showoptions() {
   done
 }
 
+
+# This is used in conjunction with the git alias tagcommit in gitconfig file.
+# This allows the tagcommit alias to use rev-parse completion.
+_git-tagcommit () { _git-rev-parse "$@" }
+
+
 #
 # Get common aliases and functions
 #
@@ -355,3 +361,13 @@ zstyle ':completion:*:corrections' format "- %d - (errors %e})"
 zstyle ':completion:*' list-prompt '%p'
 
 # End of lines added by compinstall
+
+# http://michael.stapelberg.de/Artikel/zsh_recent_completion
+# 'ctrl-x r' will complete the 12 last modified (mtime) files/directories
+zle -C newest-files complete-word _generic
+bindkey '^Xr' newest-files
+zstyle ':completion:newest-files:*' completer _files
+zstyle ':completion:newest-files:*' file-patterns '*~.*(omN[1,12])'
+zstyle ':completion:newest-files:*' menu select yes
+zstyle ':completion:newest-files:*' sort false
+zstyle ':completion:newest-files:*' matcher-list 'b:=*' # important

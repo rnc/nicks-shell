@@ -677,15 +677,25 @@ get-and-import()
 
         if [ -n "$INSTALL" ]
         then
-            if [ "`find . -name "*.jar" | egrep -v '(site\.jar|sources\.jar|javadoc\.jar|tests\.jar)' | wc -l`" = 0 ]
+            local pom=`find . -name "*.pom"`
+            local jar=`find . -name "*.jar" | sort | head -1`
+            local x=""
+
+            if [ -z "$jar" ]
             then
-                local F=`find . -name "*.pom"`
+                mvn -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$pom install:install-file
             else
-                local F=`find . -name "*.jar" | egrep -v '(site\.jar|sources\.jar|javadoc\.jar|tests\.jar)'`
-                local PACKAGING="-Dpackaging=jar"
+                echo "Running mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file"
+                mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file
+
+                # Now install any other jar files (e.g. sources, javadoc)
+                for x in `find . -name \*.jar | grep -v $jar`
+                do
+                    local classifier=`echo $x | sed 's/.*[-]\(.*\).jar/\1/'`
+                    echo "Running mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file"
+                    mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file
+                done
             fi
-            echo "Running mvn -Dmaven.repo.local=$INSTALL -DpomFile=`find . -name "*.pom"` -Dfile=$F $PACKAGING install:install-file"
-            mvn -Dmaven.repo.local=$INSTALL -DpomFile=`find . -name "*.pom"` -Dfile=$F $PACKAGING install:install-file
         fi
         shift
         cleanup

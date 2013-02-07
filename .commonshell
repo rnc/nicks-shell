@@ -691,7 +691,8 @@ get-and-import()
                 # Now install any other jar files (e.g. sources, javadoc)
                 for x in `find . -name \*.jar | grep -v $jar`
                 do
-                    local classifier=`echo $x | sed 's/.*[-]\(.*\).jar/\1/'`
+                    local classifier=`echo $x | sed 's/.*-\(.*\).jar/\1/'`
+                    [[ -z "$classifier" ]] && echo "Error obtaining classifier for $x : aborting..." && return 1
                     echo "Running mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file"
                     mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file
                 done

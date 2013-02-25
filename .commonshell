@@ -40,6 +40,12 @@ alias aria2c='aria2c --min-split-size=1M --max-connection-per-server=16 --split=
 alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms5 "$@"'
 alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 "$@"'
 
+type ifconfig 2> /dev/null
+if [ "$?" != 0 ]
+then
+    alias ifconfig="echo -e '\t\033[49;32;1mifconfig deprecated; using ip addr\033[0m' ; ip addr"
+fi
+
 #################
 ### Functions ###
 #################

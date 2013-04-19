@@ -314,11 +314,20 @@ source $HOME/.commonshell
 [[ -f $HOME/.corbashell ]] && source $HOME/.corbashell
 
 
+#################
+### Autoloads ###
+#################
+
+autoload -U compinit && compinit
+autoload -U zmv
+
+alias cpz='noglob zmv -W -C'
+alias mvz='noglob zmv -W'
+
+
 ##############
 ### Styles ###
 ##############
-
-autoload -U compinit && compinit
 
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zcache

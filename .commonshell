@@ -40,7 +40,7 @@ alias aria2c='aria2c --min-split-size=1M --max-connection-per-server=16 --split=
 alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms5 "$@"'
 alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 "$@"'
 
-which ifconfig 2> /dev/null
+unalias ifconfig 2> /dev/null ; which ifconfig 2> /dev/null
 if [ "$?" != 0 ]
 then
     alias ifconfig="echo -e '\t\033[49;32;1mifconfig deprecated; using ip addr\033[0m' ; ip addr"
@@ -117,26 +117,24 @@ function lt()
 function eclipse()
 {
     (
+        sunjava7
+
         if [ "-h" == "$1" ]
         then
-            echo "Usage: -s [DevStudio] | -i [indigo] | (-j [juno] *DEFAULT*)"
+            echo "Usage: -s [DevStudio] | (-j [juno] *DEFAULT*)"
             return 1
         fi
-        if [ "$KDE_FULL_SESSION" = "true" ]
-        then
-            # Override GTK settings for running in KDE - fixes a tooltip issue.
-            export GTK2_RC_FILES=~/.gtkrc-2.0-eclipse
-        fi
-        rm -f $HOME/tmp/eclipse.log
+
+        # Override GTK settings for running in KDE - fixes a tooltip issue.
+        [[ "$KDE_FULL_SESSION" = "true" ]] && export GTK2_RC_FILES=$HOME/.gtkrc-2.0-eclipse
+
+        rm -f /tmp/eclipse.log
         if [ "$1" == "-s" ]
         then
-            /usr/local/jbdevstudio/jbdevstudio &> $HOME/tmp/eclipse.log
-        elif  [ "$1" == "-i" ]
-        then
-            /usr/local/eclipse/eclipse &> $HOME/tmp/eclipse.log
+            /usr/local/jbdevstudio/jbdevstudio &> /tmp/eclipse.log
         elif [ "$1" == "-j" ] || [ -z "$1" ]
         then
-            /usr/local/eclipse-juno/eclipse &> $HOME/tmp/eclipse.log
+            /usr/bin/eclipse &> /tmp/eclipse.log
         fi
     )
 }

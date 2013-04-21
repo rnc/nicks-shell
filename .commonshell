@@ -207,7 +207,7 @@ function rgit()
 
     local cwd=`pwd`
 
-    for i in `find -L . \( -type d -o -xtype l \) -name .git | env "LC_ALL=C" sort`
+    for i in `find -L . -maxdepth 2 -type d -name .git | env "LC_ALL=C" sort`
     do
         local d=`dirname $i | sed 's/\.\///'`
         echo -e "\033[49;32;1m### -> $d\033[0m"

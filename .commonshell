@@ -170,6 +170,7 @@ function gistat()
    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
    local cpwd=$PWD REPO
+   [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
 
    if [ -d $cpwd/.git ]
    then
@@ -184,7 +185,7 @@ function gistat()
       # Lets recurse and look for one.
       for REPO in `find . -type d -name .git | sed 's/\.\/\(.*\)\/.git/\1/'`
       do
-         cd $REPO
+         cd $NOCHPWD $REPO
          echo -e "\e[01;32m$REPO\e[00m"
          if [ `git status -s | wc -l ` = 0 ]
          then
@@ -192,9 +193,9 @@ function gistat()
          else
             git status -s
          fi
-         cd $cpwd
+         cd $NOCHPWD $cpwd
       done
-      cd $cpwd
+      cd $NOCHPWD $cpwd
    fi
 }
 
@@ -206,15 +207,20 @@ function rgit()
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
     local cwd=`pwd`
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+
+    # Any ctrl-c breaks the loop and resets the directory.
+    trap "cd $NOCHPWD $cwd && trap - 2 3 15 && break" 2 3 15
 
     for i in `find -L . -maxdepth 2 -type d -name .git | env "LC_ALL=C" sort`
     do
         local d=`dirname $i | sed 's/\.\///'`
-        echo -e "\033[49;32;1m### -> $d\033[0m"
+        cd $NOCHPWD $d
 
-        cd $d
+        echo -e "\033[49;32;1m### -> $d\033[0m"
         git "$@"
-        cd $cwd
+
+        cd $NOCHPWD $cwd
     done
 }
 
@@ -230,6 +236,7 @@ function svnl()
     local cwd=`pwd`
     local log=5
     local textcol=32 # Green
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
 
     while [[ $1 == -* ]]
     do
@@ -287,11 +294,11 @@ function svnl()
     if [ -n "$EXTERNALS" ]
     then
          echo -e "\033[49;$textcol;1mExternals detected ($EXTERNALS):\033[0m"
-         cd $EXTERNALS
+         cd $NOCHPWD $EXTERNALS
          svnl -e -l 3
     fi
 
-    cd $cwd
+    cd $NOCHPWD $cwd
 }
 
 
@@ -616,10 +623,11 @@ get-and-import()
 
     local owner=$USER
     local cwd=`pwd`
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
 
     cleanup()
     {
-        cd $cwd
+        cd $NOCHPWD $cwd
         rm -rf $ddir
     }
 
@@ -667,7 +675,7 @@ get-and-import()
         local ddir=`pwd`/`mktemp -d tmp.XXXXXX`
         echo "Importing package $package with owner $owner and tag '$TAG' to dir $ddir"
 
-        cd $ddir
+        cd $NOCHPWD $ddir
         get-maven-artifacts $package
 
         [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && continue

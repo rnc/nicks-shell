@@ -121,7 +121,7 @@ function eclipse()
 
         if [ "-h" == "$1" ]
         then
-            echo "Usage: -s [DevStudio] | (-j [juno] *DEFAULT*)"
+            echo "Usage: [eclipse-binary-to-start] (else default eclipse is started)"
             return 1
         fi
 
@@ -129,11 +129,16 @@ function eclipse()
         [[ "$KDE_FULL_SESSION" = "true" ]] && export GTK2_RC_FILES=$HOME/.gtkrc-2.0-eclipse
 
         rm -f /tmp/eclipse.log
-        if [ "$1" == "-s" ]
+        if [ -n "$1" ]
         then
-            /usr/local/jbdevstudio/jbdevstudio &> /tmp/eclipse.log
-        elif [ "$1" == "-j" ] || [ -z "$1" ]
-        then
+            if [ -f $1 ]
+            then
+                $1 &> /tmp/eclipse.log
+            else
+                echo "Invalid eclipse to start"
+                exit 1
+            fi
+        else
             /usr/bin/eclipse &> /tmp/eclipse.log
         fi
     )
@@ -222,6 +227,8 @@ function rgit()
 
         cd $NOCHPWD $cwd
     done
+
+    trap - 2 3 15
 }
 
 

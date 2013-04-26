@@ -117,7 +117,7 @@ function lt()
 function eclipse()
 {
     (
-        sunjava7
+        oraclejava7
 
         if [ "-h" == "$1" ]
         then
@@ -313,30 +313,30 @@ function _java_prompt_()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    [[ -z "$1" && "$1" != "sunjava5" && "$1" != "sunjava6" && "$1" != "sunjava7" \
+    [[ -z "$1" && "$1" != "oraclejava5" && "$1" != "oraclejava6" && "$1" != "oraclejava7" \
         && "$1" != "ibmjava6"  && "$1" != "ibmjava7" ]] && echo "Private java setup function" && return
 
-    local sunjava5=/usr/local/jdk1.5.0
-    local sunjava6=/usr/local/jdk1.6.0
-    local sunjava7=/usr/local/jdk1.7.0
+    local oraclejava5=/usr/local/jdk1.5.0
+    local oraclejava6=/usr/local/jdk1.6.0
+    local oraclejava7=/usr/local/jdk1.7.0
     local ibmjava6=/usr/local/ibm-jdk1.6.0
     local ibmjava7=/usr/local/ibm-jdk1.7.0
 
-    for i in $sunjava5 $sunjava6 $sunjava7 $ibmjava6 $ibmjava7
+    for i in $oraclejava5 $oraclejava6 $oraclejava7 $ibmjava6 $ibmjava7
     do
         local replace="$i/bin:"
         PATH=`echo ${PATH//$replace/}`
     done
 
     case $1 in
-      "sunjava5")
-        export JAVA_HOME=$sunjava5
+      "oraclejava5")
+        export JAVA_HOME=$oraclejava5
         ;;
-      "sunjava6")
-        export JAVA_HOME=$sunjava6
+      "oraclejava6")
+        export JAVA_HOME=$oraclejava6
         ;;
-      "sunjava7")
-        export JAVA_HOME=$sunjava7
+      "oraclejava7")
+        export JAVA_HOME=$oraclejava7
         ;;
       "ibmjava6")
         export JAVA_HOME=$ibmjava6
@@ -349,23 +349,23 @@ function _java_prompt_()
     export PATH=$JAVA_HOME/bin:$PATH
 }
 
-function sunjava5()
+function oraclejava5()
 {
-    _java_prompt_ sunjava5
+    _java_prompt_ oraclejava5
 
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(SUN5)%{"$'\e[00m''%}'
 }
 
-function sunjava6()
+function oraclejava6()
 {
-    _java_prompt_ sunjava6
+    _java_prompt_ oraclejava6
 
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(SUN6)%{"$'\e[00m''%}'
 }
 
-function sunjava7()
+function oraclejava7()
 {
-    _java_prompt_ sunjava7
+    _java_prompt_ oraclejava7
 
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(SUN7)%{"$'\e[00m''%}'
 }
@@ -501,18 +501,22 @@ function mvn-mead-jenkins()
     else
         local SETTINGS=$HOME/Work/maven-mead-brms6-jenkins.xml
     fi
+    if [ -n "$MAKE_MEAD" ]
+    then
+        local TRUST_STORE=-Djavax.net.ssl.trustStore=$MAKE_MEAD/jssecacerts
+        local TRUST_STORE_PASSWORD=-Djavax.net.ssl.trustStorePassword=changeit
+        local TRUST_STORE_TYPE=-Djavax.net.ssl.trustStoreType=jks
+        local KEY_STORE=-Djavax.net.ssl.keyStore=$MAKE_MEAD/jssecacerts
+        local KEY_STORE_PASSWORD=-Djavax.net.ssl.keyStorePassword=changeit
+        local KEY_STORE_TYPE=-Djavax.net.ssl.keyStoreType=jks
+        #    local DEBUG=-Djavax.net.debug=ssl:handshake:data
 
-    local TRUST_STORE=-Djavax.net.ssl.trustStore=$MAKE_MEAD/jssecacerts
-    local TRUST_STORE_PASSWORD=-Djavax.net.ssl.trustStorePassword=changeit
-    local TRUST_STORE_TYPE=-Djavax.net.ssl.trustStoreType=jks
-    local KEY_STORE=-Djavax.net.ssl.keyStore=$MAKE_MEAD/jssecacerts
-    local KEY_STORE_PASSWORD=-Djavax.net.ssl.keyStorePassword=changeit
-    local KEY_STORE_TYPE=-Djavax.net.ssl.keyStoreType=jks
-#    local DEBUG=-Djavax.net.debug=ssl:handshake:data
+        local -x MAVEN_OPTS="$TRUST_STORE $KEY_STORE $TRUST_STORE_PASSWORD $KEY_STORE_PASSWORD $TRUST_STORE_TYPE $KEY_STORE_TYPE $DEBUG $MAVEN_OPTS"
+    else
+        echo "MAKE_MEAD not set; not setting jssecacerts"
+    fi
 
-    local -x MAVEN_OPTS="$TRUST_STORE $KEY_STORE $TRUST_STORE_PASSWORD $KEY_STORE_PASSWORD $TRUST_STORE_TYPE $KEY_STORE_TYPE $DEBUG $MAVEN_OPTS"
-
-    mvn -s $SETTINGS -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 $PROFILE "$@"
+    mvn -s $SETTINGS -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local $PROFILE "$@"
 }
 
 function ruby()

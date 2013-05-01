@@ -40,7 +40,7 @@ alias aria2c='aria2c --min-split-size=1M --max-connection-per-server=16 --split=
 alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms5 "$@"'
 alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 "$@"'
 
-unalias ifconfig 2> /dev/null ; which ifconfig 2> /dev/null
+unalias ifconfig 2> /dev/null ; which ifconfig >& /dev/null
 if [ "$?" != 0 ]
 then
     alias ifconfig="echo -e '\t\033[49;32;1mifconfig deprecated; using ip addr\033[0m' ; ip addr"
@@ -87,9 +87,18 @@ function ssh()
    then
        /usr/bin/ssh -X -Y -l cross "$@"
    else
+       # Attempt to find a free local port to use.
+       local -a ports
+       ports=(18080 18081 18082 18083 18084 18085 18086 18087 18088 18089 18090 18091 18092 18093 18094 18095 18096 18097 18098 18099 18100)
+       for myport in ${ports[@]}; do
+           lsof -i -n -P | grep LISTEN | grep -q ":${myport}"
+           [ "$?" -eq 1 ] && break
+       done
+       echo "Using forwarding port $myport"
+
        # Default to also creating a SSH tunnnel as well. Useful if we are doing smoke testing
        # and we need to see the admin console etc.
-       /usr/bin/ssh -L18080:localhost:8080 -X -Y -l $REMOTEUSER "$@"
+       /usr/bin/ssh -L"$myport":localhost:8080 -X -Y -l $REMOTEUSER "$@"
    fi
 }
 

@@ -16,7 +16,7 @@
 # PREFIX is added to the fpath and used to source zsh-git-prompt.
 #
 # Any other functions etc can also be put in here.
-source $HOME/.shell-configuration
+[[ -f $HOME/.shell-configuration ]] && source $HOME/.shell-configuration
 
 # Source ZSH functions.
 fpath=($PREFIX/zsh-completions $PREFIX/brew-koji/zsh $fpath)

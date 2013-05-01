@@ -362,21 +362,21 @@ function oraclejava5()
 {
     _java_prompt_ oraclejava5
 
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(SUN5)%{"$'\e[00m''%}'
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE5)%{"$'\e[00m''%}'
 }
 
 function oraclejava6()
 {
     _java_prompt_ oraclejava6
 
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(SUN6)%{"$'\e[00m''%}'
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE6)%{"$'\e[00m''%}'
 }
 
 function oraclejava7()
 {
     _java_prompt_ oraclejava7
 
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(SUN7)%{"$'\e[00m''%}'
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE7)%{"$'\e[00m''%}'
 }
 
 function ibmjava6()

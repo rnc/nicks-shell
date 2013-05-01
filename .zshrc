@@ -167,12 +167,14 @@ then
         export ZSH_THEME_GIT_PROMPT_STASHED_ACTIVE=1
         export __GIT_PROMPT_DIR=$PREFIX/zsh-git-prompt
         source $PREFIX/zsh-git-prompt/zshrc.sh
+
+        # This prompt uses the above GIT system.
+        PROMPT='%m$(git_super_status)$PROMPT_JAVA $ '
     else
         echo "$PREFIX/zsh-git-prompt does not exist."
-    fi
 
-    # This prompt uses the above GIT system.
-    PROMPT='%m$(git_super_status)$PROMPT_JAVA $ '
+        PROMPT='%m$PROMPT_JAVA $ '
+    fi
 
     RPROMPT='%T'
 fi

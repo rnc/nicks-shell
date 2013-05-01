@@ -158,7 +158,7 @@ function git()
 {
    [[ -f /usr/local/bin/git ]] && local g=/usr/local/bin/git || local g=/usr/bin/git
    $g -c core.pager="less" >& /dev/null
-   [[ "$?" != "129" ]] && local NOCMDCONFIG=true
+   [[ "$?" == "129" ]] && local NOCMDCONFIG=true
 
    if [ "$1" = "clone" ]
    then

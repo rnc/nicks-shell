@@ -1,11 +1,14 @@
 # Global aliases suitable for /etc/gitconfig
 
 [alias]
+        # Log aliases
 	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) (%an)%Creset' --abbrev-commit --date=relative
 	llg = log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) (%an)%Creset' --date=relative
 
         # Last 5 commits (!git llg -n 5)
         llg5 = log --graph --pretty=format:'%Cred%H%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --date=relative -n 5
+        # Last commit
+        l = log --name-status HEAD^..HEAD --summary
 
         # Unpushed changes
         up = !GIT_CURRENT_BRANCH=$(git name-rev --name-only HEAD) && git log origin/$GIT_CURRENT_BRANCH..$GIT_CURRENT_BRANCH
@@ -19,6 +22,8 @@
 
         # Interactive stash
         interactivestash = stash save --patch
+
+        sl=stash list --pretty=format:'%C(yellow)%gd(%cr)%Creset: %gs'
 
         # Short git remote / status / branch
         s = status -sb

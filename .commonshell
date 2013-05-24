@@ -531,7 +531,7 @@ function mvn-mead-jenkins()
         echo "MAKE_MEAD not set; not setting jssecacerts"
     fi
 
-    mvn -s $SETTINGS -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local $PROFILE "$@"
+    mvn -s $SETTINGS -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local "$@"
 }
 
 function ruby()
@@ -540,12 +540,13 @@ function ruby()
 }
 
 # MAKE_MEAD - checkout of make_mead location.
-# VMAN_HOME - checkout of vman.
+# VMAN_HOME - location of VMAN. This may either be a path to a binary jar or a path to the checkout of built sources.
 function vman()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
     [[ -z "$VMAN_HOME" ]] && echo "Set VMAN_HOME" && return 1
+    [[ -f "$VMAN_HOME" ]] && local JAR=$VMAN_HOME || local JAR=$VMAN_HOME/target/vman.jar
 
     [[ "$1" = "-clean" ]] && echo "Cleaning for vman..." && rm -rf `find . -type d -name target` && rm -rf `find . -name vman-workspace` && rgit reset --hard && shift
 
@@ -556,8 +557,20 @@ function vman()
     else
         echo "MAKE_MEAD not set; not setting jssecacerts"
     fi
-    #echo java `echo $CERT` -jar `/bin/ls $VMAN_HOME/target/pom-version-manipulator*-bin.jar` "$@"
-    java `echo $CERT` -jar $VMAN_HOME/target/vman-bin.jar "$@"
+    # JAVA_OPTS allow dynamic configuration of the VM for e.g. debugging etc.
+    java $JAVA_OPTS `echo $CERT` -jar $JAR "$@"
+    echo "Vman exit code: $?"
+
+    if [ "$?" = "0" ]
+    then
+        echo ""
+        echo "For modified dependencies either:"
+        echo "\033[49;32;1m    less vman-workspace/reports/modified-dependencies.md\033[0m"
+        echo "or if https://addons.mozilla.org/en-US/firefox/addon/markdown-viewer is installed:"
+        echo "\033[49;32;1m    firefox -new-tab vman-workspace/reports/modified-dependencies.md\033[0m"
+    else
+        echo "" ; echo "Errors running vman."
+    fi
 }
 
 #
@@ -619,7 +632,7 @@ gitsvnclone()
 
     [[ -d $TARGETDIR ]] && echo "Target directory already exists" && return 1
 
-    git svn --stdlayout clone $1 $TARGETDIR
+    git svn --stdlayout --branches="branches/*/*" --tags="tags/*/*" clone $1 $TARGETDIR
 
     echo "Resetting tags and branches"
     cd $TARGETDIR
@@ -637,6 +650,7 @@ gitsvnclone()
 # Runs get-maven-artifacts and import-maven.
 # Optional parameters:
 #    --tag <tag> to import into.
+#    --noimport - Don't do any importing
 #    --owner <name> owner name to user (normally defaults to $USER)
 #    --save <dir> copy downloaded dirs to dir
 #    --install <repo> optionally install the artifact to the specified local repository.

@@ -222,17 +222,18 @@ function gistat()
 # Recursive git implementation.
 function rgit()
 {
-    (( $# == 0 )) && echo "Usage: $0 <git-cmd> ... [Run git command recursively over subdirs]" && return 1
+    (( $# == 0 )) && echo "Usage: $0 [-d <max-depth>] <git-cmd> ... [Run git command recursively over subdirs]" && return 1
 
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
     local cwd=`pwd`
     [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+    [[ "$1" = "-d" ]] && shift && local DEPTH=$1 && shift || local DEPTH="2"
 
     # Any ctrl-c breaks the loop and resets the directory.
     trap "cd $NOCHPWD $cwd && trap - 2 3 15 && break" 2 3 15
 
-    for i in `find -L . -maxdepth 2 -type d -name .git | env "LC_ALL=C" sort`
+    for i in `find -L . -maxdepth $DEPTH -type d -name .git | env "LC_ALL=C" sort`
     do
         local d=`dirname $i | sed 's/\.\///'`
         cd $NOCHPWD $d
@@ -559,7 +560,6 @@ function vman()
     fi
     # JAVA_OPTS allow dynamic configuration of the VM for e.g. debugging etc.
     java $JAVA_OPTS `echo $CERT` -jar $JAR "$@"
-    echo "Vman exit code: $?"
 
     if [ "$?" = "0" ]
     then
@@ -710,10 +710,13 @@ get-and-import()
 
     while [ -n "$1" ]
     do
-        # Strip off any comma if we cut and pasted from a maven log.
-        local package=`echo $1 | tr -d ','`
+        # Strip off any comma/trailing colon if we cut and pasted from a maven log.
+        local package=`echo ${1%:} | tr -d ','`
         local ddir=`pwd`/`mktemp -d tmp.XXXXXX`
-        echo "Importing package $package with owner $owner and tag '$TAG' to dir $ddir"
+        echo -n "\033[49;32;1mImporting package $package "
+        [[ -n "$owner" ]] && echo -n "with owner $owner "
+        [[ -n "$TAG" ]] && echo -n "into tag ${TAG#--tag } "
+        echo "to dir $ddir\033[0m"
 
         cd $NOCHPWD $ddir
         get-maven-artifacts $package
@@ -735,10 +738,11 @@ get-and-import()
 
             if [ -z "$jar" ]
             then
-                mvn -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$pom install:install-file
+                echo "Running mvn -q -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file"
+                mvn -q -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$pom install:install-file
             else
-                echo "Running mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file"
-                mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file
+                echo "Running mvn -q -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file"
+                mvn -q -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file
 
                 # Now install any other jar files (e.g. sources, javadoc)
                 for x in `find . -name \*.jar | grep -v $jar`
@@ -746,11 +750,12 @@ get-and-import()
                     local classifier=`echo $x | sed 's/.*-\(.*\).jar/\1/'`
                     [[ -z "$classifier" ]] && echo "Error obtaining classifier for $x : aborting..." && return 1
                     echo "Running mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file"
-                    mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file
+                    mvn -q -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file
                 done
             fi
         fi
         shift
         cleanup
     done
+    echo -e "\033[49;32;1mFinished\033[0m"
 }

@@ -10,6 +10,10 @@
         # Last commit
         l = log --name-status HEAD^..HEAD --summary
 
+        # Git pull but with fast forwarding only allowed. Prevent merge commits.
+        # http://stackoverflow.com/questions/15316601/why-is-git-pull-considered-harmful
+        p = pull --ff-only
+
         # Unpushed changes
         up = !GIT_CURRENT_BRANCH=$(git name-rev --name-only HEAD) && git log origin/$GIT_CURRENT_BRANCH..$GIT_CURRENT_BRANCH
         unpushed = !git up --oneline
@@ -23,6 +27,7 @@
         # Interactive stash
         interactivestash = stash save --patch
 
+        # Stash listing
         sl=stash list --pretty=format:'%C(yellow)%gd(%cr)%Creset: %gs'
 
         # Short git remote / status / branch

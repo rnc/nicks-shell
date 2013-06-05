@@ -252,7 +252,7 @@ title () {
     # that just printed JACORB_DIR which is not very helpful.
     if (( $# > 0 ))
     then
-        print -nR $'\033]0;'`print -Pn "%74<..<${PWD/$HOME/~} : $*"`$'\a'
+        print -nR $'\033]0;'`print -Pn "%74<..<${PWD/$HOME/~} : "``echo $*`$'\a'
     else
         local cwd=`print -Pn "%74<..<${PWD/$HOME/~}"`
 

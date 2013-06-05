@@ -240,6 +240,7 @@ function rgit()
 
         echo -e "\033[49;32;1m### -> $d\033[0m"
         git "$@"
+        [[ "$?" != "0" ]] && echo "Error running git command; aborting..." && break
 
         cd $NOCHPWD $cwd
     done
@@ -720,10 +721,10 @@ get-and-import()
 
         cd $NOCHPWD $ddir
         get-maven-artifacts $package
-
-        [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && continue
+        [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && return 1
         echo "Downloaded artifacts..."
-        [[ "$NOIMPORT" != "true" ]] && import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir`
+        [[ "$NOIMPORT" != "true" ]] && import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir` && \
+            [[ "$?" != "0" ]] && echo "Error importing packages" && shift && cleanup && return 1
 
         if [ -n "$SAVE" ]
         then

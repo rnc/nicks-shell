@@ -723,7 +723,7 @@ get-and-import()
         get-maven-artifacts $package
         [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && return 1
         echo "Downloaded artifacts..."
-        [[ "$NOIMPORT" != "true" ]] && import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir` && \
+        [[ "$NOIMPORT" != "true" ]] && import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir` ; \
             [[ "$?" != "0" ]] && echo "Error importing packages" && shift && cleanup && return 1
 
         if [ -n "$SAVE" ]

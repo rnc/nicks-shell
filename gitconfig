@@ -13,6 +13,10 @@
         # Git pull but with fast forwarding only allowed. Prevent merge commits.
         # http://stackoverflow.com/questions/15316601/why-is-git-pull-considered-harmful
         p = pull --ff-only
+        # Git pull with rebase. Saves having to do a fetch followed by a rebase.
+        # http://gitolite.com/tips/git-pull--rebase.html
+        # https://coderwall.com/p/7aymfa
+        pr = pull --rebase
 
         # Unpushed changes
         up = !GIT_CURRENT_BRANCH=$(git name-rev --name-only HEAD) && git log origin/$GIT_CURRENT_BRANCH..$GIT_CURRENT_BRANCH

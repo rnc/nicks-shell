@@ -672,7 +672,7 @@ get-and-import()
         rm -rf $ddir
     }
 
-    which get-maven-artifacts 2> /dev/null
+    which get-maven-artifacts >& /dev/null
     [[ "$?" != 0 ]] && echo "Mike Bonnet's get-maven-artifacts and import-maven must be in the path. Aborting." && return 1
 
     while [ -n "$1" ]
@@ -723,8 +723,11 @@ get-and-import()
         get-maven-artifacts $package
         [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && return 1
         echo "Downloaded artifacts..."
-        [[ "$NOIMPORT" != "true" ]] && import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir` ; \
+        if [ "$NOIMPORT" != "true" ]
+        then
+            import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir`
             [[ "$?" != "0" ]] && echo "Error importing packages" && shift && cleanup && return 1
+        fi
 
         if [ -n "$SAVE" ]
         then

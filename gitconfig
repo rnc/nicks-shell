@@ -19,8 +19,7 @@
         pr = pull --rebase
 
         # Unpushed changes
-        up = !GIT_CURRENT_BRANCH=$(git name-rev --name-only HEAD) && git log origin/$GIT_CURRENT_BRANCH..$GIT_CURRENT_BRANCH
-        unpushed = !git up --oneline
+        unpushed = "!f() { [[ -z \"$1\" ]] && o=origin || o=$1 ; GIT_CURRENT_BRANCH=$(git name-rev --name-only HEAD) ; if [ -n \"$(git ls-remote --heads origin $GIT_CURRENT_BRANCH)\" ]; then git log origin/$GIT_CURRENT_BRANCH..$GIT_CURRENT_BRANCH --oneline ;else echo \"Branch does not exist in remote\" ;fi  }; f"
 
         # Diff with whitespace ignored
         dw = diff --ignore-space-at-eol --ignore-all-space --ignore-space-change
@@ -43,4 +42,7 @@
         tagcommit = "!f() { git rev-parse --verify $1^{commit}; }; f"
 
         # Show what changes there are in the tracking branch.
-        changes = "!f() { [[ -z \"$1\" ]] && o=origin || o=$1 ; git remote update $o ; echo Changes... ; git llg `git symbolic-ref --short HEAD`..$o/`git symbolic-ref --short HEAD` ; }; f"
+        changesupstream = "!f() { [[ -z \"$1\" ]] && o=origin || o=$1 ; GIT_CURRENT_BRANCH=$(git name-rev --name-only HEAD) ; if [ -n \"$(git ls-remote --heads origin $GIT_CURRENT_BRANCH)\" ]; then git remote update $o ; echo Changes... ; git llg `git symbolic-ref --short HEAD`..$o/`git symbolic-ref --short HEAD` ;else echo \"Branch does not exist in remote\" ;fi }; f"
+
+        # Print out current aliases
+        alias = !git config -l | grep alias

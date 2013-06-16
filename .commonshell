@@ -509,15 +509,25 @@ function searchJars()
 function mvn-mead-jenkins()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+    local options
+    options=()
 
-    if [ "$1" = "-s" ]
-    then
-        shift
-        local SETTINGS=$1
-        shift
-    else
-        local SETTINGS=$HOME/Work/maven-mead-brms6-jenkins.xml
-    fi
+    while [ $1 ]
+    do
+        case "$1" in
+          -s)
+            shift
+            local SETTINGS="$1"
+            shift
+            ;;
+          *)
+            options+=("$1")
+            shift
+            ;;
+        esac
+    done
+    [[ -z "$SETTINGS" ]] && local SETTINGS=$HOME/Work/maven-mead-brms6-jenkins.xml
+
     if [ -n "$MAKE_MEAD" ]
     then
         local TRUST_STORE=-Djavax.net.ssl.trustStore=$MAKE_MEAD/jssecacerts
@@ -533,7 +543,7 @@ function mvn-mead-jenkins()
         echo "MAKE_MEAD not set; not setting jssecacerts"
     fi
 
-    mvn -s $SETTINGS -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local "$@"
+    mvn -s $SETTINGS -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local "${options[@]}"
 }
 
 function ruby()

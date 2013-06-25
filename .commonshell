@@ -483,8 +483,11 @@ function checkSigning()
 }
 
 # Search jars and wars recursively for a pattern.
+# Standard usage is [-v] <pattern>
 function searchJars()
 {
+    # -i is hidden indent output flag for recursive calls
+    [[ "$1" = "-i" ]] && shift && local INDENT=$1 && shift
     [[ "$1" = "-v" ]] && local VERBOSE=true && shift
     [[ -z "$1" ]] && echo "Usage: searchJars <pattern>" && return
 
@@ -500,7 +503,7 @@ function searchJars()
         then
             if [ -n "`jar tf $i | egrep \"$pattern\"`" ]
             then
-                echo "Found pattern $pattern in $i"
+                echo "$INDENT""\033[49;32;1mFound pattern $pattern in $i\033[0m"
                 if [ "$VERBOSE" = "true" ]
                 then
                     echo "`jar vtf $i | egrep $1 | sed 's/^/\t\t/g'`"
@@ -509,12 +512,12 @@ function searchJars()
             if [ -n "`jar tf $i | egrep '(war|jar)'`" ]
             then
                 # Jar/war containing jar/war
-                echo "Searching inside $i..."
+                echo "$INDENT""Searching inside $i ..."
                 local ddir=`pwd`/`mktemp -d tmp.XXXXXX`
                 unzip -q -d $ddir $i
                 cd $NOCHPWD $ddir
                 [[ "$VERBOSE" == "true" ]] && local v="-v"
-                searchJars $v $pattern
+                searchJars -i "$INDENT\t" $v $pattern
                 cd $NOCHPWD ..
                 rm -rf $ddir
             fi

@@ -482,6 +482,7 @@ function checkSigning()
     done
 }
 
+# Search jars and wars recursively for a pattern.
 function searchJars()
 {
     [[ "$1" = "-v" ]] && local VERBOSE=true && shift
@@ -491,15 +492,31 @@ function searchJars()
 
     local i
     local pattern=`echo $1 | sed 's/\./\//g'`
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
 
-    for i in `find . -name "*.jar"`
+    for i in `find . \( -name "*.jar" -o -name "*.war" \)`
     do
-        if [ -f $i ] && [ -n "`jar tf $i | grep $pattern`" ]
+        if [ -f $i ]
         then
-            echo "Found pattern $pattern in $i"
-            if [ "$VERBOSE" = "true" ]
+            if [ -n "`jar tf $i | egrep \"$pattern\"`" ]
             then
-                echo "`jar vtf $i | grep $1 | sed 's/^/\t\t/g'`"
+                echo "Found pattern $pattern in $i"
+                if [ "$VERBOSE" = "true" ]
+                then
+                    echo "`jar vtf $i | egrep $1 | sed 's/^/\t\t/g'`"
+                fi
+            fi
+            if [ -n "`jar tf $i | egrep '(war|jar)'`" ]
+            then
+                # Jar/war containing jar/war
+                echo "Searching inside $i..."
+                local ddir=`pwd`/`mktemp -d tmp.XXXXXX`
+                unzip -q -d $ddir $i
+                cd $NOCHPWD $ddir
+                [[ "$VERBOSE" == "true" ]] && local v="-v"
+                searchJars $v $pattern
+                cd $NOCHPWD ..
+                rm -rf $ddir
             fi
         fi
     done

@@ -1,4 +1,8 @@
-# Global aliases suitable for /etc/gitconfig
+# Global config suitable for /etc/gitconfig
+
+[color]
+        # Note : In git 1.8.4 this defaults to true and won't be needed.
+	ui = true
 
 [alias]
         # Log aliases

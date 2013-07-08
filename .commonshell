@@ -37,8 +37,8 @@ alias pp='ps -u$USER -ww -o pid,etime,pcpu,rss,args'
 alias axel='axel --num-connections=25 --alternate'
 alias aria2c='aria2c --min-split-size=1M --max-connection-per-server=16 --split=25 --max-concurrent-downloads=25 --summary-interval=0 --truncate-console-readout=false --check-certificate=false'
 
-alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms5 "$@"'
-alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-mead-brms6 "$@"'
+alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local "$@"'
+alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local "$@"'
 
 unalias ifconfig 2> /dev/null ; which ifconfig >& /dev/null
 if [ "$?" != 0 ]
@@ -83,11 +83,12 @@ function ssh()
    if [ "$1" = "-l" ]
    then
        /usr/bin/ssh "$@"
-   elif [ -n "`echo "$@" | grep www.jacorb.org`" ]
+   elif [[ $@ = *www.jacorb.org* ]]
    then
        /usr/bin/ssh -X -Y -l cross "$@"
    else
        # Attempt to find a free local port to use.
+       local myport
        local -a ports
        ports=(18080 18081 18082 18083 18084 18085 18086 18087 18088 18089 18090 18091 18092 18093 18094 18095 18096 18097 18098 18099 18100)
        for myport in ${ports[@]}; do
@@ -226,7 +227,8 @@ function rgit()
 
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    local cwd=`pwd`
+    local i
+    local cwd=$PWD
     [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
     [[ "$1" = "-d" ]] && shift && local DEPTH=$1 && shift || local DEPTH="2"
 
@@ -257,7 +259,7 @@ function svnl()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    local cwd=`pwd`
+    local cwd=$PWD
     local log=5
     local textcol=32 # Green
     [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
@@ -338,6 +340,7 @@ function _java_prompt_()
     local oraclejava7=/usr/local/jdk1.7.0
     local ibmjava6=/usr/local/ibm-jdk1.6.0
     local ibmjava7=/usr/local/ibm-jdk1.7.0
+    local i
 
     for i in $oraclejava5 $oraclejava6 $oraclejava7 $ibmjava6 $ibmjava7
     do
@@ -431,6 +434,13 @@ function maven-3.0.4()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.0.5()
+{
+    M2_HOME=/usr/local/apache-maven-3.0.5
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 function unsignjar()
 {
     [[ -z "$@" ]] && echo "Usage: unsignjar <jar> <jar>...." && return
@@ -513,7 +523,7 @@ function searchJars()
             then
                 # Jar/war containing jar/war
                 echo "$INDENT""Searching inside $i ..."
-                local ddir=`pwd`/`mktemp -d tmp.XXXXXX`
+                local ddir=$PWD/`mktemp -d tmp.XXXXXX`
                 unzip -q -d $ddir $i
                 cd $NOCHPWD $ddir
                 [[ "$VERBOSE" == "true" ]] && local v="-v"
@@ -563,7 +573,7 @@ function mvn-mead-jenkins()
         echo "MAKE_MEAD not set; not setting jssecacerts"
     fi
 
-    mvn -s $SETTINGS -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local "${options[@]}"
+    mvn -s $SETTINGS -Dmaven.repo.local=$HOME/.m2-mead-brms6-jenkins -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local "${options[@]}"
 }
 
 function ruby()
@@ -693,7 +703,7 @@ get-and-import()
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
     local owner=$USER
-    local cwd=`pwd`
+    local cwd=$PWD
     [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
 
     cleanup()
@@ -743,7 +753,7 @@ get-and-import()
     do
         # Strip off any comma/trailing colon if we cut and pasted from a maven log.
         local package=`echo ${1%:} | tr -d ','`
-        local ddir=`pwd`/`mktemp -d tmp.XXXXXX`
+        local ddir=$PWD/`mktemp -d tmp.XXXXXX`
         echo -n "\033[49;32;1mImporting package $package "
         [[ -n "$owner" ]] && echo -n "with owner $owner "
         [[ -n "$TAG" ]] && echo -n "into tag ${TAG#--tag } "
@@ -769,14 +779,40 @@ get-and-import()
             local pom=`find . -name "*.pom"`
             local jar=`find . -name "*.jar" | sort | head -1`
             local x=""
+            local tp=""
 
             if [ -z "$jar" ]
             then
-                echo "Running mvn -q -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file"
-                mvn -q -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$pom install:install-file
+                echo "Running mvn -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file"
+                # http://austinmatzko.com/2008/04/26/sed-multi-line-search-and-replace/
+                TP=`dirname $(mvn -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$pom install:install-file | sed -n '
+                # if the first line copy the pattern to the hold buffer
+                1h
+                # if not the first line then append the pattern to the hold buffer
+                1!H
+                # if the last line then ...
+                $ {
+                  g
+                  s/.*to\(.*pom\).*/\1/g
+                  p
+                  }
+                ')`
             else
                 echo "Running mvn -q -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file"
-                mvn -q -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file
+                echo $TP
+                # http://austinmatzko.com/2008/04/26/sed-multi-line-search-and-replace/
+                TP=`dirname $(mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file | sed -n '
+                # if the first line copy the pattern to the hold buffer
+                1h
+                # if not the first line then append the pattern to the hold buffer
+                1!H
+                # if the last line then ...
+                $ {
+                  g
+                  s/.*to\(.*pom\).*/\1/g
+                  p
+                  }
+                ')`
 
                 # Now install any other jar files (e.g. sources, javadoc)
                 for x in `find . -name \*.jar | grep -v $jar`
@@ -787,6 +823,7 @@ get-and-import()
                     mvn -q -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file
                 done
             fi
+            [[ "$NOIMPORT" = "true" ]] && echo "Copying .noimport marker file to $TP" && touch .noimport && cp .noimport $TP
         fi
         shift
         cleanup

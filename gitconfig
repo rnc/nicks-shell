@@ -22,7 +22,7 @@
         # https://coderwall.com/p/7aymfa
         pr = pull --rebase
         # Git pr but autostashing as well.
-        prs = "!f() { git stash ; git pr ; git stash pop ; }; f"
+        prs = "!f() { [[ `git ls-files -m | wc -l` != 0 ]] && s=true ; if [ \"$s\" = true ]; then git stash; fi; git pr ; if [ \"$s\" = true ]; then git stash pop ; fi }; f"
 
         # Unpushed changes
         unpushed = "!f() { [[ -z \"$1\" ]] && o=origin || o=$1 ; GIT_CURRENT_BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD) ; if [ -n \"$(git ls-remote --heads $o $GIT_CURRENT_BRANCH)\" ]; then git log $o/$GIT_CURRENT_BRANCH..$GIT_CURRENT_BRANCH --oneline ;else echo \"Branch does not exist in remote\" ;fi  }; f"

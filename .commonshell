@@ -799,7 +799,6 @@ get-and-import()
                 ')`
             else
                 echo "Running mvn -q -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file"
-                echo $TP
                 # http://austinmatzko.com/2008/04/26/sed-multi-line-search-and-replace/
                 TP=`dirname $(mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file | sed -n '
                 # if the first line copy the pattern to the hold buffer
@@ -823,7 +822,7 @@ get-and-import()
                     mvn -q -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file
                 done
             fi
-            [[ "$NOIMPORT" = "true" ]] && echo "Copying .noimport marker file to $TP" && touch .noimport && cp .noimport $TP
+            [[ "$NOIMPORT" = "true" ]] && echo "\033[49;33;1mCopying .noimport marker file to $TP\033[0m" && touch .noimport && cp .noimport $TP
         fi
         shift
         cleanup

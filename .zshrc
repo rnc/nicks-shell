@@ -19,7 +19,7 @@
 [[ -f $HOME/.shell-configuration ]] && source $HOME/.shell-configuration
 
 # Source ZSH functions.
-fpath=($PREFIX/zsh-completions $PREFIX/brew-koji/zsh $fpath)
+fpath=($PREFIX/brew-koji/zsh $PREFIX/zsh-completions/src $fpath)
 
 ####################################
 #### Set various options. ##########

@@ -25,6 +25,9 @@ export CLASSPATH
 export PATH
 export SHELL=`which zsh`
 
-unset COLUMNS
-export COLUMNS
-[[ -z "$COLUMNS" ]] && COLUMNS=`tput cols` && echo "Forcing columns value to $COLUMNS"
+if [[ $- == *i* ]]
+then
+    unset COLUMNS
+    export COLUMNS
+    [[ -z "$COLUMNS" ]] && COLUMNS=`tput cols` && echo "Forcing columns value to $COLUMNS"
+fi

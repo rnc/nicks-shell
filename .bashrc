@@ -62,18 +62,18 @@ export CLASSPATH
 export PATH
 export SHELL=`which bash`
 
-unset COLUMNS
-export COLUMNS
-[[ -z "$COLUMNS" ]] && COLUMNS=`tput cols` && echo "Forcing columns value to $COLUMNS"
-
 #
 # Get common aliases and functions
 #
 source $HOME/.commonshell
 
-# Setup prompt
-if [ -n "`shopt | grep "login_shell.*off"`" ] && [ -n "$PS1" ]
+# Setup prompt and columns
+if [[ $- == *i* ]]
 then
+    unset COLUMNS
+    export COLUMNS
+    [[ -z "$COLUMNS" ]] && COLUMNS=`tput cols` && echo "Forcing columns value to $COLUMNS"
+
     echo "Running .bashrc..."
 
     export PS1='\[\e[1;32m\]\h:\W $\[\e[0m\] '

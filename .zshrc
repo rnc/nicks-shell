@@ -250,13 +250,13 @@ title () {
     #
     # Previously was just using %~ but named directory expansion means
     # that just printed JACORB_DIR which is not very helpful.
+    [[ -n "$SSH_CONNECTION" ]] && local rhs="$HOST:"
     if (( $# > 0 ))
     then
-        print -nR $'\033]0;'`print -Pn "%74<..<${PWD/$HOME/~} : "``echo $*`$'\a'
+        print -nR $'\033]0;'$rhs`print -Pn "%74<..<${PWD/$HOME/~} : "``echo $*`$'\a'
     else
         local cwd=`print -Pn "%74<..<${PWD/$HOME/~}"`
-
-        print -nR $'\033]0;'$cwd$'\a'
+        print -nR $'\033]0;'$rhs$cwd$'\a'
     fi
 }
 
@@ -382,3 +382,10 @@ zstyle ':completion:newest-files:*' file-patterns '*~.*(omN[1,12])'
 zstyle ':completion:newest-files:*' menu select yes
 zstyle ':completion:newest-files:*' sort false
 zstyle ':completion:newest-files:*' matcher-list 'b:=*' # important
+
+
+# Delegate the completion
+# http://stackoverflow.com/questions/4221239/zsh-use-completions-for-command-x-when-i-type-command-y
+#
+# For makemead make completion
+compdef _make makemead

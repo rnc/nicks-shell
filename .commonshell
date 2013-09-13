@@ -37,8 +37,8 @@ alias pp='ps -u$USER -ww -o pid,etime,pcpu,rss,args'
 alias axel='axel --num-connections=25 --alternate'
 alias aria2c='aria2c --min-split-size=1M --max-connection-per-server=16 --split=25 --max-concurrent-downloads=25 --summary-interval=0 --truncate-console-readout=false --check-certificate=false'
 
-alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local "$@"'
-alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -Dmaven.repo.local=$HOME/.m2-mead-brms6 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local "$@"'
+alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local -DskipTests=true "$@"'
+alias mvn-mead-brms6='mvn -s ~/Work/maven-mead-brms6.xml -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local -DskipTests=true "$@"'
 
 unalias ifconfig 2> /dev/null ; which ifconfig >& /dev/null
 if [ "$?" != 0 ]
@@ -505,7 +505,11 @@ function searchJars()
 
     local i
     local pattern=`echo $1 | sed 's/\./\//g'`
+    local cwd=$PWD
     [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+
+    # Any ctrl-c breaks the loop and resets the directory.
+    trap "cd $NOCHPWD $cwd && trap - 2 3 15 && break" 2 3 15
 
     for i in `find . \( -name "*.jar" -o -name "*.war" \)`
     do
@@ -533,6 +537,8 @@ function searchJars()
             fi
         fi
     done
+
+    trap - 2 3 15
 }
 
 # MAKE_MEAD - checkout of make_mead location.
@@ -573,8 +579,45 @@ function mvn-mead-jenkins()
         echo "MAKE_MEAD not set; not setting jssecacerts"
     fi
 
-    mvn -s $SETTINGS -Dmaven.repo.local=$HOME/.m2-mead-brms6-jenkins -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local "${options[@]}"
+    mvn -s $SETTINGS -DaltDeploymentRepository="koji-repo::default::file://$HOME/tmp/deploy-local" "${options[@]}"
 }
+
+
+
+# Note: .zshrc defines compdef completion for makemead to be make
+function makemead()
+{
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+
+    if [ -f "$MAKE_MEAD" ]
+    then
+        echo "Configure MAKE_MEAD shell variable"
+        return 1
+    fi
+
+    local -x BUILD_DIR=$PWD
+
+    # Any ctrl-c resets the directory.
+    trap "cd $NOCHPWD $BUILD_DIR && trap - 2 3 15" 2 3 15
+
+    # Hack : make files don't know how to include each other. Sigh.
+    cd $MAKE_MEAD
+
+    local -x WORKSPACE=/tmp/workspace
+    local -x REPO_GROUP=MEAD
+    local -x MVN_LOCAL_REPO=$HOME/.m2-mead-brms6
+    local -x MVN_DEP_REPO=$HOME/tmp/deploy-local
+
+    rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
+
+    # Hack just to allow completion and grab the correct parameter
+    [[ "$1" = "-f" ]] && shift 2 # Get rid of -f <xxx>
+    make "$@"
+
+    cd $BUILD_DIR
+}
+
 
 function ruby()
 {
@@ -599,6 +642,11 @@ function vman()
     else
         echo "MAKE_MEAD not set; not setting jssecacerts"
     fi
+    if [[ "$*" != *--version-suffix* ]] && [[ "$*" != *-s* ]]
+    then
+        echo "\033[49;32;1mWARNING: Recommend explicitly passing version-suffix on command line\033[0m"
+    fi
+
     # JAVA_OPTS allow dynamic configuration of the VM for e.g. debugging etc.
     java $JAVA_OPTS `echo $CERT` -jar $JAR "$@"
 
@@ -609,6 +657,8 @@ function vman()
         echo "\033[49;32;1m    less vman-workspace/reports/modified-dependencies.md\033[0m"
         echo "or if https://addons.mozilla.org/en-US/firefox/addon/markdown-viewer is installed:"
         echo "\033[49;32;1m    firefox -new-tab vman-workspace/reports/modified-dependencies.md\033[0m"
+        echo "\033[49;32;1m    firefox -new-tab vman-workspace/reports/mapped-dependencies.md\033[0m"
+        echo "\033[49;32;1m    firefox -new-tab vman-workspace/reports/unmapped-dependencies.md\033[0m"
     else
         echo "" ; echo "Errors running vman."
     fi
@@ -623,7 +673,14 @@ function mergePullRequest()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    local cmd="git fetch origin "
+    if [ "$1" = "-r" ]
+    then
+        shift
+        local cmd="git fetch $1 "
+        shift
+    else
+        local cmd="git fetch origin "
+    fi
     local branch=`git rev-parse --abbrev-ref HEAD`
 
     for var in "$@"

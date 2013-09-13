@@ -159,6 +159,15 @@ NO_XTRACE
 # Autoload all shell functions from all directories in $fpath
 autoload $^fpath/*(N.)
 
+# ZSH-Syntax-Highlighting
+if [ -d  $PREFIX/zsh-syntax-highlighting ]
+then
+    ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern )
+    source $PREFIX/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    ZSH_HIGHLIGHT_STYLES[path]=none
+    ZSH_HIGHLIGHT_STYLES[globbing]='fg=045'
+fi
+
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ]
 then
     # Using https://github.com/rnc/zsh-git-prompt / Fork branch
@@ -389,3 +398,5 @@ zstyle ':completion:newest-files:*' matcher-list 'b:=*' # important
 #
 # For makemead make completion
 compdef _make makemead
+# For rgit git completion
+compdef '_dispatch git git' rgit

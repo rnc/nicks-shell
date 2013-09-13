@@ -160,11 +160,14 @@ NO_XTRACE
 autoload $^fpath/*(N.)
 
 # ZSH-Syntax-Highlighting
-if [ -d  $PREFIX/zsh-syntax-highlighting ]
+if [ -d $PREFIX/zsh-syntax-highlighting ]
 then
-    ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern )
+    ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
     source $PREFIX/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    ZSH_HIGHLIGHT_STYLES[path]=none
+
+    ZSH_HIGHLIGHT_STYLES[path]='fg=251'
+    ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=251'
+    ZSH_HIGHLIGHT_STYLES[path_approx]='fg=251'
     ZSH_HIGHLIGHT_STYLES[globbing]='fg=045'
 fi
 

@@ -583,12 +583,19 @@ function mvn-mead-jenkins()
 }
 
 
-
+#
 # Note: .zshrc defines compdef completion for makemead to be make
+#
+# If this is run from a checked out directory e.g. RTGov then it will
+# assume a local build. If this is run from the make-mead directory it
+# will assume a *MEAD* build *and* only run a *SINGLE* build.
 function makemead()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
     [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+
+    # Any ctrl-c resets the directory.
+    trap "cd $NOCHPWD $BUILD_DIR && trap - 2 3 15" 2 3 15
 
     if [ -f "$MAKE_MEAD" ]
     then
@@ -596,26 +603,43 @@ function makemead()
         return 1
     fi
 
-    local -x BUILD_DIR=$PWD
+    if [ `basename $PWD` != "make-mead" ]
+    then
+        local -x BUILD_DIR=$PWD
 
-    # Any ctrl-c resets the directory.
-    trap "cd $NOCHPWD $BUILD_DIR && trap - 2 3 15" 2 3 15
+        # Hack : make files don't know how to include each other. Sigh.
+        cd $MAKE_MEAD
 
-    # Hack : make files don't know how to include each other. Sigh.
-    cd $MAKE_MEAD
+        local -x WORKSPACE=/tmp/workspace
+        local -x REPO_GROUP=MEAD
+        local -x MVN_LOCAL_REPO=$HOME/.m2-mead-brms6
+        local -x MVN_DEP_REPO=$HOME/tmp/deploy-local
 
-    local -x WORKSPACE=/tmp/workspace
-    local -x REPO_GROUP=MEAD
-    local -x MVN_LOCAL_REPO=$HOME/.m2-mead-brms6
-    local -x MVN_DEP_REPO=$HOME/tmp/deploy-local
-
-    rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
+        rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
+    fi
 
     # Hack just to allow completion and grab the correct parameter
-    [[ "$1" = "-f" ]] && shift 2 # Get rid of -f <xxx>
-    make "$@"
+    local options
+    options=()
+    while [ $1 ]
+    do
+        case "$1" in
+          -f)
+            shift
+            shift
+            ;;
+          *)
+            options+=("$1")
+            shift
+            ;;
+        esac
+    done
 
-    cd $BUILD_DIR
+    make "${options[@]}"
+
+    [[ `basename $PWD` != "make-mead" ]] && cd $BUILD_DIR
+
+    trap - 2 3 15
 }
 
 

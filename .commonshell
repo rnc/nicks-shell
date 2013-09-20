@@ -542,9 +542,14 @@ function searchJars()
 }
 
 # MAKE_MEAD - checkout of make_mead location.
+#
+# Params:
+#   -s [specify own maven settings file]
+#   -a [DO NOT use the alt deployment repository of $HOME/tmp/deploy-local]
 function mvn-mead-jenkins()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+    local deploy="-DaltDeploymentRepository=\"koji-repo::default::file://$HOME/tmp/deploy-local\""
     local options
     options=()
 
@@ -555,6 +560,10 @@ function mvn-mead-jenkins()
             shift
             local SETTINGS="$1"
             shift
+            ;;
+          -a)
+            shift
+            deploy=""
             ;;
           *)
             options+=("$1")
@@ -579,16 +588,21 @@ function mvn-mead-jenkins()
         echo "MAKE_MEAD not set; not setting jssecacerts"
     fi
 
-    mvn -s $SETTINGS -DaltDeploymentRepository="koji-repo::default::file://$HOME/tmp/deploy-local" "${options[@]}"
+    mvn -s $SETTINGS $deploy "${options[@]}"
 }
 
 
 #
+# Simplified wrapper for running make-mead makefiles.
+#
 # Note: .zshrc defines compdef completion for makemead to be make
 #
-# If this is run from a checked out directory e.g. RTGov then it will
-# assume a local build. If this is run from the make-mead directory it
-# will assume a *MEAD* build *and* only run a *SINGLE* build.
+# If this it run from a checkout then it will search builder.cfg for
+# the correct target to invoke.
+#
+# If this is run from the make-mead directory it will assume a *MEAD*
+# build *and* only run a *SINGLE* build.
+#
 function makemead()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
@@ -601,21 +615,6 @@ function makemead()
     then
         echo "Configure MAKE_MEAD shell variable"
         return 1
-    fi
-
-    if [ `basename $PWD` != "make-mead" ]
-    then
-        local -x BUILD_DIR=$PWD
-
-        # Hack : make files don't know how to include each other. Sigh.
-        cd $MAKE_MEAD
-
-        local -x WORKSPACE=/tmp/workspace
-        local -x REPO_GROUP=MEAD
-        local -x MVN_LOCAL_REPO=$HOME/.m2-mead-brms6
-        local -x MVN_DEP_REPO=$HOME/tmp/deploy-local
-
-        rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
     fi
 
     # Hack just to allow completion and grab the correct parameter
@@ -635,9 +634,38 @@ function makemead()
         esac
     done
 
-    make "${options[@]}"
+    local currentlocation=`basename $PWD`
 
-    [[ `basename $PWD` != "make-mead" ]] && cd $BUILD_DIR
+    if [ "$currentlocation" != "make-mead" ]
+    then
+        local -x BUILD_DIR=$PWD
+        local target=`grep --before-context=6 "/"$currentlocation".git" $MAKE_MEAD/builder.cfg | sed -ne 's/.*[[]\(.*\)[]]/\1/p'`
+        [[ -z "$target" ]] && echo "Unable to find a matching target" && return
+
+        echo "Building $target for $currentlocation in $BUILD_DIR"
+
+        # Hack : make files don't know how to include each other. Sigh.
+        cd $MAKE_MEAD
+
+        local -x WORKSPACE=/tmp/workspace
+        local -x REPO_GROUP=MEAD
+        if [ -f $HOME/Work/maven-mead-brms6.xml ]
+        then
+            local -x MVN_LOCAL_REPO=$HOME/`cat $HOME/Work/maven-mead-brms6.xml | sed -ne 's/.*\${user.home}\/\(.*\)<\/localRepository>/\1/p'`
+        else
+            echo "\033[49;32;1mWARNING: Unable to find $HOME/Work/maven-mead-brms6.xml to find a local repository; defaulting to $WORKSPACE/local-repository\033[0m"
+        fi
+
+        local -x MVN_DEP_REPO=$HOME/tmp/deploy-local
+
+        rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
+
+        make "${options[@]}" $target
+
+        cd $BUILD_DIR
+    else
+        make "${options[@]}"
+    fi
 
     trap - 2 3 15
 }

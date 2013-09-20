@@ -11,8 +11,6 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 ### Configuration file may contain
-# Useful if user name does not equal remote login name
-# REMOTEUSER=xxx
 #
 # Prefix where useful things are stored in the users file system
 # PREFIX=xxx

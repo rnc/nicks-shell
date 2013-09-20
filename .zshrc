@@ -7,8 +7,6 @@
 #
 
 ### Configuration file may contain
-# Useful if user name does not equal remote login name
-# REMOTEUSER=xxx
 #
 # Prefix where useful things are stored in the users file system
 # PREFIX=xxx
@@ -323,7 +321,6 @@ _git-tagcommit () { _git-rev-parse "$@" }
 #
 # Get common aliases and functions
 #
-[[ -z "$REMOTEUSER" ]] && REMOTEUSER=$USER
 source $HOME/.commonshell
 [[ -f $HOME/.corbashell ]] && source $HOME/.corbashell
 

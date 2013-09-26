@@ -644,9 +644,12 @@ function makemead()
 
         # Hack : make files don't know how to include each other. Sigh.
         cd $MAKE_MEAD
+        # Hack : make files have no clean target right now.
+        rm -f $MAKE_MEAD/$target
 
         local -x WORKSPACE=/tmp/workspace
-        local -x REPO_GROUP=MEAD
+        # If repo_group is not already set use mead.
+        [[ -z "$REPO_GROUP" ]] && local -x REPO_GROUP=MEAD || echo "Using REPO_GROUP: $REPO_GROUP"
         if [ -f $HOME/Work/maven-mead-brms6.xml ]
         then
             local -x MVN_LOCAL_REPO=$HOME/`cat $HOME/Work/maven-mead-brms6.xml | sed -ne 's/.*\${user.home}\/\(.*\)<\/localRepository>/\1/p'`
@@ -656,8 +659,9 @@ function makemead()
 
         local -x MVN_DEP_REPO=$HOME/tmp/deploy-local
 
-        rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
+        rm -rf $WORKSPACE ; mkdir -p $WORKSPACE ; echo "Using workspace: $WORKSPACE"
 
+        echo "Using REPO_GROUP : $REPO_GROUP ; MVN_LOCAL_REPO : $MVN_LOCAL_REPO"
         make "${options[@]}" $target
 
         cd $BUILD_DIR

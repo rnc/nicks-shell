@@ -8,7 +8,10 @@ Both bash and zsh initialisation utilise a common configuration file (```$HOME/.
 * VMAN_HOME - installation of VMAN
 * MAKE_MEAD - installation of MakeMEAD.
 
-For ZSH, it is recommended to install https://github.com/rnc/zsh-git-prompt and use the 'Fork' branch.
+For ZSH, it is recommended to install https://github.com/rnc/zsh-git-prompt in PREFIX location and use the 'Fork' branch.
+
+For even more colourful highlighting install https://github.com/zsh-users/zsh-syntax-highlighting in PREFIX location..
+
 
 Installation
 ------------

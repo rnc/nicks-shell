@@ -169,7 +169,7 @@ then
     ZSH_HIGHLIGHT_STYLES[globbing]='fg=045'
 fi
 
-if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ]
+if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen-256color" ]
 then
     # Using https://github.com/rnc/zsh-git-prompt / Fork branch
     if [ -d $PREFIX/zsh-git-prompt ]
@@ -253,7 +253,7 @@ precmd () {
 
 # From http://zshwiki.org/home/examples/hardstatus
 # Used by preexec to print '<pwd> : <cmd>'
-title () {
+function title () {
     # The hardcoded limit is because KDE konsole only appears to support 74
     # characters for a title. See
     # http://www.debian-administration.org/articles/548

@@ -614,7 +614,7 @@ function makemead()
     # Any ctrl-c resets the directory.
     trap "cd $NOCHPWD $BUILD_DIR && trap - 2 3 15" 2 3 15
 
-    if [ -f "$MAKE_MEAD" ]
+    if [ -z "$MAKE_MEAD" ]
     then
         echo "Configure MAKE_MEAD shell variable"
         return 1

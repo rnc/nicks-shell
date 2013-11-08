@@ -821,8 +821,13 @@ gitsvnclone()
 #    --save <dir> copy downloaded dirs to dir
 #    --install <repo> optionally install the artifact to the specified local repository.
 #                     This saves having to wait for repository regeneration.
+#    --release <value> increment release version on import. Passed directory to import-maven
 # Then takes e.g.
 # org.apache.derby:derby-project:pom:10.8.2.2 org.eclipse.jetty:jetty-util:jar:7.6.3 ....
+#
+# If you have a result from the check artifacts this sed script can help:
+# get-and-import <flags> `cat mead_check.log | grep MISSING | sed 's/MISSING: \(.*\) FROM:.*/\1/g' | tr '\n' ' '`
+#
 get-and-import()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
@@ -867,6 +872,11 @@ get-and-import()
             local NOIMPORT=true
             shift
             ;;
+          --release)
+            shift
+            local RELEASE="--release=$1"
+            shift
+            ;;
           *)
             break;
         esac
@@ -890,7 +900,7 @@ get-and-import()
         echo "Downloaded artifacts..."
         if [ "$NOIMPORT" != "true" ]
         then
-            import-maven --owner=$owner `echo $TAG` `/bin/ls -1 $ddir`
+            import-maven --owner=$owner $RELEASE `echo $TAG` `/bin/ls -1 $ddir`
             [[ "$?" != "0" ]] && echo "Error importing packages" && shift && cleanup && return 1
         fi
 

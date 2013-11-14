@@ -648,7 +648,7 @@ function makemead()
         echo "Building $target for $currentlocation in $BUILD_DIR"
 
         # Hack : make files don't know how to include each other. Sigh.
-        cd $MAKE_MEAD
+        cd $NOCHPWD $MAKE_MEAD
         # Hack : make files have no clean target right now.
         rm -f "$MAKE_MEAD/$target".lastBuild
 
@@ -678,7 +678,7 @@ function makemead()
             ./MEAD_check_artifact.sh $TAG $MVN_LOCAL_REPO > $BUILD_DIR/mead_check.log 2>&1
         fi
 
-        cd $BUILD_DIR
+        cd $NOCHPWD $BUILD_DIR
     else
         make "${options[@]}"
     fi
@@ -792,6 +792,7 @@ gitsvnclone()
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
     [[ -z "$1" ]] && echo "No source URL specified." && return 1
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
 
     TARGETDIR=`basename $1`
     [[ -n "$2" ]] && TARGETDIR=$2
@@ -801,7 +802,7 @@ gitsvnclone()
     git svn --stdlayout --branches="branches/*/*" --tags="tags/*/*" clone $1 $TARGETDIR
 
     echo "Resetting tags and branches"
-    cd $TARGETDIR
+    cd  $NOCHPWD $TARGETDIR
     git for-each-ref refs/remotes/tags | cut -d / -f 4- | grep -v @ | while read tagname; do echo "Processing $tagname"; git tag "$tagname" "tags/$tagname"; git branch -r -d "tags/$tagname"; done
     echo "Done tags; now branches..."
     git for-each-ref refs/remotes | cut -d / -f 3- | grep -v @ | while read branchname; do echo "Processing $tagname"; git branch "$branchname" "refs/remotes/$branchname"; git branch -r -d "$branchname"; done
@@ -826,7 +827,7 @@ gitsvnclone()
 # org.apache.derby:derby-project:pom:10.8.2.2 org.eclipse.jetty:jetty-util:jar:7.6.3 ....
 #
 # If you have a result from the check artifacts this sed script can help:
-# get-and-import <flags> `cat mead_check.log | grep MISSING | sed 's/MISSING: \(.*\) FROM:.*/\1/g' | tr '\n' ' '`
+# get-and-import <flags> `cat mead_check.log | grep MISSING | grep -v -- -redhat- | sed 's/MISSING: \(.*\) FROM:.*/\1/g' | tr '\n' ' '`
 #
 get-and-import()
 {
@@ -912,7 +913,7 @@ get-and-import()
         if [ -n "$INSTALL" ]
         then
             local pom=`find . -name "*.pom"`
-            local jar=`find . -name "*.jar" | sort | head -1`
+            local jar=`find . -name "*.[a-z]ar" | sort | head -1`
             local x=""
             local tp=""
 
@@ -949,15 +950,16 @@ get-and-import()
                 ')`
 
                 # Now install any other jar files (e.g. sources, javadoc)
-                for x in `find . -name \*.jar | grep -v $jar`
+                for x in `find . -name \*.[a-z]ar | grep -v $jar`
                 do
-                    local classifier=`echo $x | sed 's/.*-\(.*\).jar/\1/'`
+                    local classifier=`echo $x | sed 's/.*-\(.*\).[a-z]ar/\1/'`
+                    local packaging=`echo $x | sed 's/.*\.\([a-z]ar\)/\1/'`
                     [[ -z "$classifier" ]] && echo "Error obtaining classifier for $x : aborting..." && return 1
-                    echo "Running mvn -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file"
-                    mvn -q -Dpackaging=jar -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file
+                    echo "Running mvn -Dpackaging=$packaging -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file"
+                    mvn -q -Dpackaging=$packaging -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file
                 done
             fi
-            [[ "$NOIMPORT" = "true" ]] && echo "\033[49;33;1mCopying .noimport marker file to $TP\033[0m" && touch .noimport && cp .noimport $TP
+            [[ "$NOIMPORT" = "true" ]] && echo "\033[49;33;1mCopying .noimport marker file to $TP/.noimport\033[0m" && touch .noimport && /bin/cp .noimport $TP
         fi
         shift
         cleanup

@@ -823,6 +823,7 @@ gitsvnclone()
 #    --install <repo> optionally install the artifact to the specified local repository.
 #                     This saves having to wait for repository regeneration.
 #    --release <value> increment release version on import. Passed directory to import-maven
+#    --repo <value> specify an extra repository to search. Passed directory to get-maven-artifacts
 # Then takes e.g.
 # org.apache.derby:derby-project:pom:10.8.2.2 org.eclipse.jetty:jetty-util:jar:7.6.3 ....
 #
@@ -878,6 +879,11 @@ get-and-import()
             local RELEASE="--release=$1"
             shift
             ;;
+          --repo)
+            shift
+            local REPO="--repo=$1"
+            shift
+            ;;
           *)
             break;
         esac
@@ -896,7 +902,7 @@ get-and-import()
         echo "to dir $ddir\033[0m"
 
         cd $NOCHPWD $ddir
-        get-maven-artifacts $package
+        get-maven-artifacts $REPO $package
         [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && return 1
         echo "Downloaded artifacts..."
         if [ "$NOIMPORT" != "true" ]
@@ -919,7 +925,7 @@ get-and-import()
 
             if [ -z "$jar" ]
             then
-                echo "Running mvn -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$jar install:install-file"
+                echo "Running mvn -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$pom install:install-file"
                 # http://austinmatzko.com/2008/04/26/sed-multi-line-search-and-replace/
                 TP=`dirname $(mvn -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$pom install:install-file | sed -n '
                 # if the first line copy the pattern to the hold buffer

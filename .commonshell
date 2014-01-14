@@ -169,7 +169,7 @@ function git()
        $g "$@"
    elif [ "$NOCMDCONFIG" = "true" ]
    then
-       $g "$@"
+       GIT_PAGER="less -FrX" $g "$@"
    # Was using hardcoded width of 108 for columns - now dynamic.
    elif [ "$1" = "lg" ]
    then
@@ -240,7 +240,7 @@ function rgit()
 
         echo -e "\033[49;32;1m### -> $d\033[0m"
         git "$@"
-        [[ "$?" != "0" ]] && echo "Error running git command; aborting..." && break
+        [[ "$?" != "0" ]] && echo -e "\033[49;35;1mError running git command; ignoring...\033[0m"
 
         cd $NOCHPWD $cwd
     done
@@ -435,6 +435,13 @@ function maven-3.0.4()
 function maven-3.0.5()
 {
     M2_HOME=/usr/local/apache-maven-3.0.5
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function maven-3.1.1()
+{
+    M2_HOME=/usr/local/apache-maven-3.1.1
     PATH=$M2_HOME/bin:$PATH
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -651,7 +658,7 @@ function makemead()
         cd $NOCHPWD $MAKE_MEAD
         # Hack : make files have no clean target right now.
         rm -f "$MAKE_MEAD/$target".lastBuild
-
+        # Place simulator workspace artifacts in a temporary directory.
         local -x WORKSPACE=/tmp/workspace
         # If repo_group is not already set use mead.
         [[ -z "$REPO_GROUP" ]] && local -x REPO_GROUP=MEAD || echo "Using REPO_GROUP: $REPO_GROUP"
@@ -965,7 +972,7 @@ get-and-import()
                     mvn -q -Dpackaging=$packaging -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file
                 done
             fi
-            [[ "$NOIMPORT" = "true" ]] && echo "\033[49;33;1mCopying .noimport marker file to $TP/.noimport\033[0m" && touch .noimport && /bin/cp .noimport $TP
+            [[ "$NOIMPORT" = "true" ]] && echo "\033[49;33;1mCreating marker file in $TP/.noimport\033[0m" && touch $TP/.noimport
         fi
         shift
         cleanup

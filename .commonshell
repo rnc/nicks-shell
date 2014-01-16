@@ -823,6 +823,7 @@ gitsvnclone()
 #
 # Runs get-maven-artifacts and import-maven.
 # Optional parameters:
+#    --continue  Continue on erorr
 #    --tag <tag> to import into.
 #    --noimport - Don't do any importing
 #    --owner <name> owner name to user (normally defaults to $USER)
@@ -843,6 +844,7 @@ get-and-import()
 
     local owner=$USER
     local cwd=$PWD
+    local continue="return 1"
     [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
 
     cleanup()
@@ -857,6 +859,10 @@ get-and-import()
     while [ -n "$1" ]
     do
         case "$1" in
+          --continue)
+            local continue=" echo -e \"\033[49;35;1mContinuing...\033[0m\" && continue"
+            shift
+            ;;
           --tag)
             shift
             local TAG="--tag $1"
@@ -910,12 +916,12 @@ get-and-import()
 
         cd $NOCHPWD $ddir
         get-maven-artifacts $REPO $package
-        [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && return 1
+        [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && eval $continue
         echo "Downloaded artifacts..."
         if [ "$NOIMPORT" != "true" ]
         then
             import-maven --owner=$owner $RELEASE `echo $TAG` `/bin/ls -1 $ddir`
-            [[ "$?" != "0" ]] && echo "Error importing packages" && shift && cleanup && return 1
+            [[ "$?" != "0" ]] && echo "Error importing packages" && shift && cleanup && eval $continue
         fi
 
         if [ -n "$SAVE" ]

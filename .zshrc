@@ -197,15 +197,35 @@ fi
 # Remember - try doing ctrl-v [key we wish to get esc sequence e.g. ctrl-h]
 #
 
-#bindkey "" list-choices
-#bindkey "\C- " set-mark-command
-#bindkey "\C-w" kill-region
-#bindkey '^H'   delete-char
-#bindkey -e
 bindkey "^Z" undo
 bindkey '\xfd' backward-delete-word
-bindkey '\xff' history-beginning-search-backward
-bindkey '\xfe' history-beginning-search-forward
+
+# Plain up/down arrow moves between lines or searches history for substring.
+autoload up-line-or-beginning-search
+autoload down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey "^[[A" up-line-or-beginning-search
+bindkey "^[[B" down-line-or-beginning-search
+
+# Ctrl-up/down arrow will move through local history while up/down arrow
+# will move through shared history
+bindkey '^[[1;5A' up-line-or-local-history
+bindkey '^[[1;5B' down-line-or-local-history
+function up-line-or-local-history()
+{
+    NUMERIC=1 zle set-local-history
+    zle up-line-or-history
+    NUMERIC=0 zle set-local-history
+}
+function down-line-or-local-history()
+{
+    NUMERIC=1 zle set-local-history
+    zle down-line-or-history
+    NUMERIC=0 zle set-local-history
+}
+zle -N up-line-or-local-history
+zle -N down-line-or-local-history
 
 # Backward delete appears to be correct as ^H on all platforms
 
@@ -265,7 +285,7 @@ function title () {
     then
         print -nR $'\033]0;'$rhs`print -Pn "%74<..<${PWD/$HOME/~} : "``echo $*`$'\a'
     else
-        local cwd=`print -Pn "%74<..<${PWD/$HOME/~}"`
+        local cwd="`print -Pn \"%74<..<${PWD/$HOME/~}\"`"
         print -nR $'\033]0;'$rhs$cwd$'\a'
     fi
 }

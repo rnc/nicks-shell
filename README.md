@@ -12,6 +12,7 @@ For ZSH, it is recommended to install https://github.com/rnc/zsh-git-prompt in P
 
 For even more colourful highlighting install https://github.com/zsh-users/zsh-syntax-highlighting in PREFIX location..
 
+For even more completions install https://github.com/zsh-users/zsh-completions in PREFIX location.
 
 Installation
 ------------

@@ -554,7 +554,7 @@ function searchJars()
 function mvn-mead-jenkins()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
-    local deploy="-DaltDeploymentRepository=\"koji-repo::default::file://$HOME/tmp/deploy-local\""
+    local deploy="-DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local"
     local options
     options=()
 
@@ -644,11 +644,12 @@ function makemead()
         esac
     done
 
+    [[ -z "$CFG" ]] && local -x CFG=builder.cfg
+
     local currentlocation=`basename $PWD`
 
     if [ "$currentlocation" != "make-mead" ] && [ "$currentlocation" != "integration-platform-config" ]
     then
-        local -x CFG=builder.cfg
         local -x BUILD_DIR=$PWD
         local target=`grep --before-context=6 "/"$currentlocation".git" $MAKE_MEAD/builder.cfg | sed -ne 's/.*[[]\(.*\)[]]/\1/p'`
         [[ -z "$target" ]] && echo "Unable to find a matching target" && return

@@ -52,5 +52,8 @@
         # Show what changes there are in the tracking branch.
         changesupstream = "!f() { [[ -z \"$1\" ]] && o=origin || o=$1 ; GIT_CURRENT_BRANCH=$(git rev-parse --symbolic-full-name --abbrev-ref HEAD) ; if [ -n \"$(git ls-remote --heads $o $GIT_CURRENT_BRANCH)\" ]; then git remote update $o ; echo Changes... ; git llg `git symbolic-ref --short HEAD`..$o/`git symbolic-ref --short HEAD` ;else echo \"Branch does not exist in remote\" ;fi }; f"
 
+        # Restore a delete file
+        restore = "!f() { local rev=$(git rev-list -n 1 HEAD -- \"$1\") ; if [ -z \"$rev\" ]; then echo \"Unable to find reference to restore\" ; return 1 ; else git checkout $rev^ -- \"$1\" ; fi }; f"
+
         # Print out current aliases
         alias = !git config -l | grep alias

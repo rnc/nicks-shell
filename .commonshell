@@ -439,6 +439,13 @@ function maven-3.0.5()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.0.5-prod()
+{
+    M2_HOME=/usr/local/apache-maven-3.0.5-prod
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 function maven-3.1.1()
 {
     M2_HOME=/usr/local/apache-maven-3.1.1
@@ -602,7 +609,7 @@ function mvn-mead-jenkins()
 #
 # Note: .zshrc defines compdef completion for makemead to be make
 #
-# If this it run from a checkout then it will search builder.cfg for
+# If this it run from a checkout then it will search CFG(default: builder.cfg) for
 # the correct target to invoke.
 #
 # If this is run from the make-mead directory it will assume a *MEAD*
@@ -621,9 +628,9 @@ function makemead()
     # Any ctrl-c resets the directory.
     trap "cd $NOCHPWD $BUILD_DIR && trap - 2 3 15" 2 3 15
 
-    if [ -z "$MAKE_MEAD" ]
+    if [ -z "$IP_CONFIG" ]
     then
-        echo "Configure MAKE_MEAD shell variable"
+        echo "Configure IP_CONFIG shell variable"
         return 1
     fi
 
@@ -644,22 +651,27 @@ function makemead()
         esac
     done
 
-    [[ -z "$CFG" ]] && local -x CFG=builder.cfg
+    [[ -z "$CFG" ]] && local -x CFG="$IP_CONFIG/builder.cfg"
+    [[ -z "$DEPMGMTEXT" ]] && local -x DEPMGMTEXT=IPBOM
+    [[ -z "$VERSIONEXT" ]] && local -x VERSIONEXT=1
 
     local currentlocation=`basename $PWD`
+    local gitreponame=`git remote -v | sed -ne 's/\s*origin\s*.*\/\(.*\)\s*[(]fetch.*/\1/p'`
+    echo "Git repository is $gitreponame"
 
-    if [ "$currentlocation" != "make-mead" ] && [ "$currentlocation" != "integration-platform-config" ]
+    if [ "$gitreponame" != "make-mead" ] && [ "$gitreponame" != "integration-platform-config" ]
     then
         local -x BUILD_DIR=$PWD
-        local target=`grep --before-context=6 "/"$currentlocation".git" $MAKE_MEAD/builder.cfg | sed -ne 's/.*[[]\(.*\)[]]/\1/p'`
+        local target=`tac $CFG | awk -v gv=$gitreponame '$0 ~ gv { a=$0 } /[[].*[]]/ && a { sub("\\\\[","") ; sub("\\\\]","") ; print $0; exit }'`
+
         [[ -z "$target" ]] && echo "Unable to find a matching target" && return
 
-        echo "Building $target for $currentlocation in $BUILD_DIR"
+        echo "Building $target in $BUILD_DIR"
 
         # Hack : make files don't know how to include each other. Sigh.
-        cd $NOCHPWD $MAKE_MEAD
+        cd $NOCHPWD $IP_CONFIG
         # Hack : make files have no clean target right now.
-        rm -f "$MAKE_MEAD/$target".lastBuild
+        rm -f "$IP_CONFIG/$target".lastBuild
         # Place simulator workspace artifacts in a temporary directory.
         local -x WORKSPACE=/tmp/workspace
         # If repo_group is not already set use mead.

@@ -659,7 +659,7 @@ function makemead()
     local gitreponame=`git remote -v | sed -ne 's/\s*origin\s*.*\/\(.*\)\s*[(]fetch.*/\1/p'`
     echo "Git repository is $gitreponame"
 
-    if [ "$gitreponame" != "make-mead" ] && [ "$gitreponame" != "integration-platform-config" ]
+    if [ "$gitreponame" != "make-mead.git" ]
     then
         local -x BUILD_DIR=$PWD
         local target=`tac $CFG | awk -v gv=$gitreponame '$0 ~ gv { a=$0 } /[[].*[]]/ && a { sub("\\\\[","") ; sub("\\\\]","") ; print $0; exit }'`

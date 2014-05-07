@@ -652,8 +652,6 @@ function makemead()
     done
 
     [[ -z "$CFG" ]] && local -x CFG="$IP_CONFIG/builder.cfg"
-    [[ -z "$DEPMGMTEXT" ]] && local -x DEPMGMTEXT=IPBOM
-    [[ -z "$VERSIONEXT" ]] && local -x VERSIONEXT=1
 
     local currentlocation=`basename $PWD`
     local gitreponame=`git remote -v | sed -ne 's/\s*origin\s*.*\/\(.*\)\s*[(]fetch.*/\1/p'`
@@ -675,7 +673,7 @@ function makemead()
         # Place simulator workspace artifacts in a temporary directory.
         local -x WORKSPACE=/tmp/workspace
         # If repo_group is not already set use mead.
-        [[ -z "$REPO_GROUP" ]] && local -x REPO_GROUP=MEAD || echo "Using REPO_GROUP: $REPO_GROUP"
+        [[ -z "$REPO_GROUP" ]] && local -x REPO_GROUP=MEAD
         if [[ -z "$MVN_LOCAL_REPO" ]] && [[ -f $HOME/Work/maven-mead-ip6.xml ]]
         then
             local -x MVN_LOCAL_REPO=$HOME/`cat $HOME/Work/maven-mead-ip6.xml | sed -ne 's/.*\${user.home}\/\(.*\)<\/localRepository>/\1/p'`
@@ -687,9 +685,10 @@ function makemead()
 
         local -x MVN_DEP_REPO="local::default::file://$HOME/tmp/deploy-local"
 
-        rm -rf $WORKSPACE ; mkdir -p $WORKSPACE ; echo "Using workspace: $WORKSPACE"
+        rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
 
-        echo "Using REPO_GROUP : $REPO_GROUP ; MVN_LOCAL_REPO : $MVN_LOCAL_REPO ; MVN_DEP_REPO : $MVN_DEP_REPO"
+        echo "Using\n\tWorkspace :\t\t$WORKSPACE\n\tREPO_GROUP :\t\t$REPO_GROUP\n\tMVN_LOCAL_REPO :\t$MVN_LOCAL_REPO\n\tMVN_DEP_REPO :\t\t$MVN_DEP_REPO\n\tDEPMGMTEXT :\t\t$DEPMGMTEXT\n\tVERSIONEXT :\t\t$VERSIONEXT"
+
         make "${options[@]}" $target
 
         if [ "$CHECK_MEAD" = "1" ] && [[ -f $HOME/Work/maven-mead-ip6.xml ]]

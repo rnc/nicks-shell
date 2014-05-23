@@ -137,18 +137,8 @@ function eclipse()
         [[ "$KDE_FULL_SESSION" = "true" ]] && local -x GTK2_RC_FILES=$HOME/.gtkrc-2.0-eclipse:$GTK2_RC_FILES
 
         rm -f /tmp/eclipse.log
-        if [ -n "$1" ]
-        then
-            if [ -f $1 ]
-            then
-                $1 &> /tmp/eclipse.log
-            else
-                echo "Invalid eclipse to start"
-                exit 1
-            fi
-        else
-            /usr/bin/eclipse &> /tmp/eclipse.log
-        fi
+
+        /usr/bin/eclipse &> /tmp/eclipse.log
     )
 }
 
@@ -635,6 +625,7 @@ function makemead()
     fi
 
     # Hack just to allow completion and grab the correct parameter
+    local dryrun='cat'
     local options
     options=()
     while [ $1 ]
@@ -642,6 +633,11 @@ function makemead()
         case "$1" in
           -f)
             shift
+            shift
+            ;;
+          -n)
+            dryrun='sed "s/--execute //"'
+            options+=("$1")
             shift
             ;;
           *)
@@ -657,8 +653,9 @@ function makemead()
     local gitreponame=`git remote -v | sed -ne 's/\s*origin\s*.*\/\(.*\)\s*[(]fetch.*/\1/p'`
     echo "Git repository is $gitreponame"
 
-    if [ "$gitreponame" != "make-mead.git" ]
+    if [ "$gitreponame" != "integration-platform-config.git" ]
     then
+        local -x LOCAL=1
         local -x BUILD_DIR=$PWD
         local target=`tac $CFG | awk -v gv=$gitreponame '$0 ~ gv { a=$0 } /[[].*[]]/ && a { sub("\\\\[","") ; sub("\\\\]","") ; print $0; exit }'`
 
@@ -687,9 +684,9 @@ function makemead()
 
         rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
 
-        echo "Using\n\tWorkspace :\t\t$WORKSPACE\n\tREPO_GROUP :\t\t$REPO_GROUP\n\tMVN_LOCAL_REPO :\t$MVN_LOCAL_REPO\n\tMVN_DEP_REPO :\t\t$MVN_DEP_REPO\n\tDEPMGMTEXT :\t\t$DEPMGMTEXT\n\tVERSIONEXT :\t\t$VERSIONEXT"
+        echo "Using\n\tWorkspace :\t\t$WORKSPACE\n\tREPO_GROUP :\t\t$REPO_GROUP\n\tMVN_LOCAL_REPO :\t$MVN_LOCAL_REPO\n\tMVN_DEP_REPO :\t\t$MVN_DEP_REPO\n\tDEPMGMTEXT :\t\t$DEPMGMTEXT\n\tVERSIONEXT :\t\t$VERSIONEXT\n\tCFG :\t\t\t$CFG"
 
-        make "${options[@]}" $target
+        make "${options[@]}" $target | eval $dryrun
 
         if [ "$CHECK_MEAD" = "1" ] && [[ -f $HOME/Work/maven-mead-ip6.xml ]]
         then
@@ -700,7 +697,7 @@ function makemead()
 
         cd $NOCHPWD $BUILD_DIR
     else
-        make "${options[@]}"
+        make "${options[@]}" | eval $dryrun
     fi
 
     trap - 2 3 15

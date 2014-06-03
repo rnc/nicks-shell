@@ -657,7 +657,7 @@ function makemead()
     then
         local -x LOCAL=1
         local -x BUILD_DIR=$PWD
-        local target=`tac $CFG | awk -v gv=$gitreponame '$0 ~ gv { a=$0 } /[[].*[]]/ && a { sub("\\\\[","") ; sub("\\\\]","") ; print $0; exit }'`
+        local target=`tac $CFG | awk -v gv=$gitreponame '$0 ~ /^scmURL/ && $0 ~ gv { a=$0 } /[[].*[]]/ && a { sub("\\\\[","") ; sub("\\\\]","") ; print $0; exit }'`
 
         [[ -z "$target" ]] && echo "Unable to find a matching target" && return
 

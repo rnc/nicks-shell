@@ -602,7 +602,7 @@ function mvn-mead-jenkins()
 # If this it run from a checkout then it will search CFG(default: builder.cfg) for
 # the correct target to invoke.
 #
-# If this is run from the make-mead directory it will assume a *MEAD*
+# If this is run from the make-mead or integration-platform-config directory it will assume a *MEAD*
 # build *and* only run a *SINGLE* build.
 #
 # Options as local variables:
@@ -651,7 +651,7 @@ function makemead()
 
     local currentlocation=`basename $PWD`
     local gitreponame=`git remote -v | sed -ne 's/\s*origin\s*.*\/\(.*\)\s*[(]fetch.*/\1/p'`
-    echo "Git repository is $gitreponame"
+    echo "Git repository is \"$gitreponame\""
 
     if [ "$gitreponame" != "integration-platform-config.git" ]
     then
@@ -669,6 +669,7 @@ function makemead()
         rm -f "$IP_CONFIG/$target".lastBuild
         # Place simulator workspace artifacts in a temporary directory.
         local -x WORKSPACE=/tmp/workspace
+        rm -rf $WORKSPACE
         # If repo_group is not already set use mead.
         [[ -z "$REPO_GROUP" ]] && local -x REPO_GROUP=MEAD
         if [[ -z "$MVN_LOCAL_REPO" ]] && [[ -f $HOME/Work/maven-mead-ip6.xml ]]
@@ -697,6 +698,7 @@ function makemead()
 
         cd $NOCHPWD $BUILD_DIR
     else
+        local -x BREW=1
         make "${options[@]}" | eval $dryrun
     fi
 

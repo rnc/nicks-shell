@@ -443,6 +443,13 @@ function maven-3.1.1()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.1.1-prod()
+{
+    M2_HOME=/usr/local/apache-maven-3.1.1-prod
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 function unsignjar()
 {
     [[ -z "$@" ]] && echo "Usage: unsignjar <jar> <jar>...." && return

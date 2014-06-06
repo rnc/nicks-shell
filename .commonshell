@@ -44,6 +44,10 @@ then
     alias ifconfig="echo -e '\t\033[49;32;1mifconfig deprecated; using ip addr\033[0m' ; ip addr"
 fi
 
+# If the emacs process is running as a server this will open the file in it
+# else it will start a new process.
+alias e="emacsclient --alternate-editor=emacs -n"
+
 #################
 ### Functions ###
 #################

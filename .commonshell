@@ -651,6 +651,10 @@ function makemead()
             options+=("$1")
             shift
             ;;
+          -c)
+            local clean=true
+            shift
+            ;;
           *)
             options+=("$1")
             shift
@@ -673,6 +677,13 @@ function makemead()
         [[ -z "$target" ]] && echo "Unable to find a matching target" && return
 
         echo "Building $target in $BUILD_DIR"
+
+        if [ "$clean" = "true" ]
+        then
+            echo "Cleaning..."
+            mvn -Dmaven.repo.local="$MVN_LOCAL_REPO" clean
+            git reset --hard
+        fi
 
         # Hack : make files don't know how to include each other. Sigh.
         cd $NOCHPWD $IP_CONFIG
@@ -697,7 +708,6 @@ function makemead()
         rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
 
         echo "Using\n\tWorkspace :\t\t$WORKSPACE\n\tREPO_GROUP :\t\t$REPO_GROUP\n\tMVN_LOCAL_REPO :\t$MVN_LOCAL_REPO\n\tMVN_DEP_REPO :\t\t$MVN_DEP_REPO\n\tDEPMGMTEXT :\t\t$DEPMGMTEXT\n\tVERSIONEXT :\t\t$VERSIONEXT\n\tCFG :\t\t\t$CFG"
-
         make "${options[@]}" $target | eval $dryrun
 
         if [ "$CHECK_MEAD" = "1" ] && [[ -f $HOME/Work/maven-mead-ip6.xml ]]
@@ -1001,7 +1011,13 @@ get-and-import()
                     mvn -q -Dpackaging=$packaging -Dmaven.repo.local=$INSTALL -DpomFile=$pom -Dfile=$x -Dclassifier=$classifier install:install-file
                 done
             fi
-            [[ "$NOIMPORT" = "true" ]] && echo "\033[49;33;1mCreating marker file in $TP/.noimport\033[0m" && touch $TP/.noimport
+            if [ "$NOIMPORT" = "true" ]
+            then
+                echo "\033[49;33;1mCreating marker file in $TP/.noimport\033[0m"
+                touch $TP/.noimport
+            else
+                /bin/rm -f $TP/.noimport
+            fi
         fi
         shift
         cleanup

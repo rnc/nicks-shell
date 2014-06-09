@@ -617,7 +617,7 @@ function mvn-mead-jenkins()
 # build *and* only run a *SINGLE* build.
 #
 # Options as local variables:
-# MVN_LOCAL_REPO: defaults to parsing from $HOME/Work/maven-mead-ip6.xml. Override to local dir.
+# MVN_LOCAL_REPO: defaults to parsing from $HOME/Work/maven-mead-ip6.xml (unless SETTINGS is set). Override to local dir.
 # REPO_GROUP: defaults to MEAD. See mead options for others e.g. MEAD+JENKINS+JBOSS+CENTRAL
 # CHECK_MEAD: defaults to '0' i.e. off. Set to 1 to run MEAD_check_artifacts after.
 #
@@ -677,11 +677,12 @@ function makemead()
         [[ -z "$target" ]] && echo "Unable to find a matching target" && return
 
         echo "Building $target in $BUILD_DIR"
+        [[ -z "$SETTINGS" ]] && local SETTINGS=$HOME/Work/maven-mead-ip6.xml
 
         if [ "$clean" = "true" ]
         then
             echo "Cleaning..."
-            mvn -Dmaven.repo.local="$MVN_LOCAL_REPO" clean
+            mvn -Dmaven.repo.local="$MVN_LOCAL_REPO" -s $SETTINGS clean
             git reset --hard
         fi
 
@@ -694,13 +695,13 @@ function makemead()
         rm -rf $WORKSPACE
         # If repo_group is not already set use mead.
         [[ -z "$REPO_GROUP" ]] && local -x REPO_GROUP=MEAD
-        if [[ -z "$MVN_LOCAL_REPO" ]] && [[ -f $HOME/Work/maven-mead-ip6.xml ]]
+        if [[ -z "$MVN_LOCAL_REPO" ]] && [[ -f $SETTINGS ]]
         then
-            local -x MVN_LOCAL_REPO=$HOME/`cat $HOME/Work/maven-mead-ip6.xml | sed -ne 's/.*\${user.home}\/\(.*\)<\/localRepository>/\1/p'`
-            local TAG=`cat $HOME/Work/maven-mead-ip6.xml | sed -ne 's/.*repos\/\(.*\)\/latest.*/\1/p'`
+            local -x MVN_LOCAL_REPO=$HOME/`cat $SETTINGS | sed -ne 's/.*\${user.home}\/\(.*\)<\/localRepository>/\1/p'`
+            local TAG=`cat $SETTINGS | sed -ne 's/.*repos\/\(.*\)\/latest.*/\1/p'`
         elif [ -z "$MVN_LOCAL_REPO" ]
         then
-            echo "\033[49;32;1mWARNING: Unable to find $HOME/Work/maven-mead-ip6.xml to find a local repository; defaulting to $WORKSPACE/local-repository\033[0m"
+            echo "\033[49;32;1mWARNING: Unable to find $SETTINGS to find a local repository; defaulting to $WORKSPACE/local-repository\033[0m"
         fi
 
         local -x MVN_DEP_REPO="local::default::file://$HOME/tmp/deploy-local"
@@ -710,7 +711,7 @@ function makemead()
         echo "Using\n\tWorkspace :\t\t$WORKSPACE\n\tREPO_GROUP :\t\t$REPO_GROUP\n\tMVN_LOCAL_REPO :\t$MVN_LOCAL_REPO\n\tMVN_DEP_REPO :\t\t$MVN_DEP_REPO\n\tDEPMGMTEXT :\t\t$DEPMGMTEXT\n\tVERSIONEXT :\t\t$VERSIONEXT\n\tCFG :\t\t\t$CFG"
         make "${options[@]}" $target | eval $dryrun
 
-        if [ "$CHECK_MEAD" = "1" ] && [[ -f $HOME/Work/maven-mead-ip6.xml ]]
+        if [ "$CHECK_MEAD" = "1" ] && [[ -f $SETTINGS ]]
         then
             echo "Running MEAD_check_artifact.sh..."
             rm -f $BUILD_DIR/mead_check.log

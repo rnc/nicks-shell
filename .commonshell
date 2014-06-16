@@ -330,11 +330,12 @@ function _java_prompt_()
     local oraclejava5=/usr/local/jdk1.5.0
     local oraclejava6=/usr/local/jdk1.6.0
     local oraclejava7=/usr/local/jdk1.7.0
+    local oraclejava8=/usr/local/jdk1.8.0
     local ibmjava6=/usr/local/ibm-jdk1.6.0
     local ibmjava7=/usr/local/ibm-jdk1.7.0
     local i
 
-    for i in $oraclejava5 $oraclejava6 $oraclejava7 $ibmjava6 $ibmjava7
+    for i in $oraclejava5 $oraclejava6 $oraclejava7 $oraclejava8 $ibmjava6 $ibmjava7
     do
         local replace="$i/bin:"
         PATH=`echo ${PATH//$replace/}`
@@ -349,6 +350,9 @@ function _java_prompt_()
         ;;
       "oraclejava7")
         export JAVA_HOME=$oraclejava7
+        ;;
+      "oraclejava8")
+        export JAVA_HOME=$oraclejava8
         ;;
       "ibmjava6")
         export JAVA_HOME=$ibmjava6
@@ -380,6 +384,13 @@ function oraclejava7()
     _java_prompt_ oraclejava7
 
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE7)%{"$'\e[00m''%}'
+}
+
+function oraclejava8()
+{
+    _java_prompt_ oraclejava8
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE8)%{"$'\e[00m''%}'
 }
 
 function ibmjava6()
@@ -665,7 +676,7 @@ function makemead()
     [[ -z "$CFG" ]] && local -x CFG="$IP_CONFIG/builder.cfg"
 
     local currentlocation=`basename $PWD`
-    local gitreponame=`git remote -v | sed -ne 's/\s*origin\s*.*\/\(.*\)\s*[(]fetch.*/\1/p'`
+    local gitreponame=`git remote -v | sed -ne 's/\s*origin\s*.*com\/\(.*\)\s*[(]fetch.*/\1/p'`
     echo "Git repository is \"$gitreponame\""
 
     if [ "$gitreponame" != "integration-platform-config.git" ]

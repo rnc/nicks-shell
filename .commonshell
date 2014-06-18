@@ -677,7 +677,14 @@ function makemead()
     [[ -n "$RESUME" ]] && local -x RESUME=`echo $RESUME | tr -d ':'`
 
     local currentlocation=`basename $PWD`
-    local gitreponame=`git remote -v | sed -ne 's/\s*origin\s*.*com\/\(.*\)\s*[(]fetch.*/\1/p'`
+    local gitreponame=`git remote -v | sed -nre 's/\s*origin\s*.*(com\/|com:22\/)(.*)\s*[(]fetch.*/\2/p'`
+
+    if [ -z "$gitreponame" ]
+    then
+       echo -e "\033[49;35;1mUnable to determine git repository; aborting...\033[0m"
+       return
+    fi
+
     echo "Git repository is \"$gitreponame\""
 
     if [ "$gitreponame" != "integration-platform-config.git" ]

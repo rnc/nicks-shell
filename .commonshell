@@ -674,7 +674,6 @@ function makemead()
     done
 
     [[ -z "$CFG" ]] && local -x CFG="$IP_CONFIG/builder.cfg"
-    [[ -n "$RESUME" ]] && local -x RESUME=`echo $RESUME | tr -d ':'`
 
     local currentlocation=`basename $PWD`
     local gitreponame=`git remote -v | sed -nre 's/\s*origin\s*.*(com\/|com:22\/)(.*)\s*[(]fetch.*/\2/p'`
@@ -693,7 +692,7 @@ function makemead()
         local -x BUILD_DIR=$PWD
         local -x MVN_DEP_REPO="local::default::file://$HOME/tmp/deploy-local"
         # Place simulator workspace artifacts in a temporary directory.
-        local -x WORKSPACE=/tmp/workspace
+        local -x WORKSPACE=/tmp/workspace/`mktemp -u XXXXXX`
 
         local target=`tac $CFG | awk -v gv=$gitreponame '$0 ~ /^scmURL/ && $0 ~ gv { a=$0 } /[[].*[]]/ && a { sub("\\\\[","") ; sub("\\\\]","") ; print $0; exit }'`
         [[ -z "$target" ]] && echo "Unable to find a matching target" && return

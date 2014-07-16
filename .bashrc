@@ -74,6 +74,7 @@ then
 
     echo "Running .bashrc..."
 
-    export PS1='\[\e[1;32m\]\h:\W $\[\e[0m\] '
-    export PS1='\[\e[1;32m\]\h:\W $\[\e[0m\] '
+    unset $(compgen -v | grep ZSH_VCS_)
+    source $PREFIX/zsh-vcs-prompt/zshrc.sh
+    export PS1='\[\e[1;32m\]\h:$(vcs_super_info) $\[\e[0m\] '
 fi

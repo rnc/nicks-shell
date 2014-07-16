@@ -171,9 +171,75 @@ fi
 
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen-256color" ]
 then
-    # Using https://github.com/rnc/zsh-git-prompt / Fork branch
-    if [ -d $PREFIX/zsh-git-prompt ]
+    if [ -d $PREFIX/zsh-vcs-prompt ]
     then
+        autoload -U is-at-least
+        if ! is-at-least 5.0.5
+        then
+            echo "ZSH Version must be at least 5.0.5"
+        else
+            typeset -g update_prompt_fd
+            PROMPT='%m[waiting] $ '
+
+            source $PREFIX/zsh-vcs-prompt/zshrc.sh
+            ZSH_VCS_PROMPT_ENABLE_CACHING='true'
+            ZSH_VCS_PROMPT_UNSTAGED_SIGIL='✚'
+            ZSH_VCS_PROMPT_AHEAD_SIGIL='↑'
+            ZSH_VCS_PROMPT_BEHIND_SIGIL='↓'
+            ZSH_VCS_PROMPT_STAGED_SIGIL='●'
+            ZSH_VCS_PROMPT_CONFLICTS_SIGIL='✖'
+            ZSH_VCS_PROMPT_UNSTAGED_SIGIL='✚'
+            ZSH_VCS_PROMPT_UNTRACKED_SIGIL='…'
+            ZSH_VCS_PROMPT_STASHED_SIGIL='⚑'
+            ZSH_VCS_PROMPT_CLEAN_SIGIL='✔'
+            ZSH_VCS_PROMPT_MERGE_BRANCH=
+
+            # Remove hook to
+            add-zsh-hook -d precmd _zsh_vcs_prompt_precmd_hook_func
+            add-zsh-hook precmd vcs_precmd
+            add-zsh-hook chpwd vcs_chpwd
+
+            function internal_vcs_super_info()
+            {
+                _zsh_vcs_prompt_precmd_hook_func
+                vcs_super_info
+            }
+
+            function update_super_status ()
+            {
+                #PROMPT="%m$(read -rE -u$1) $ "  # double quotes, not promptsubst
+                PROMPT="%m$(read -rE -u$1)$PROMPT_JAVA $ "  # double quotes, not promptsubst
+                update_prompt_fd=0
+                zle -F $1
+                exec {1}>&-
+                zle reset-prompt
+            }
+            zle -N update_super_status
+
+            function vcs_chpwd ()
+            {
+                if zle -l update_super_status
+                then
+                    PROMPT='%m[waiting]$PROMPT_JAVA $ '
+                    #PROMPT='%m[waiting] $ '
+                fi
+            }
+
+            function vcs_precmd ()
+            {
+                setopt localoptions CLOBBER
+
+                if zle -l update_super_status
+                then
+                    (( update_prompt_fd )) && zle -F $update_prompt_fd >/dev/null
+                    exec {update_prompt_fd}<<( internal_vcs_super_info )
+                    zle -F -w $update_prompt_fd update_super_status
+                fi
+            }
+        fi
+    elif [ -d $PREFIX/zsh-git-prompt ]
+    then
+        # Using https://github.com/rnc/zsh-git-prompt / Fork branch
         export ZSH_THEME_GIT_PROMPT_STASHED_ACTIVE=1
         export __GIT_PROMPT_DIR=$PREFIX/zsh-git-prompt
         source $PREFIX/zsh-git-prompt/zshrc.sh

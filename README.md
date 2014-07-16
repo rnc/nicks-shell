@@ -9,11 +9,16 @@ Both bash and zsh initialisation utilise a common configuration file (```$HOME/.
 * IP_CONFIG - location of IP configuration
 * IP_TOOLING - location of IP_TOOLING
 
-For ZSH, it is recommended to install https://github.com/rnc/zsh-git-prompt in PREFIX location and use the 'Fork' branch.
-
 For even more colourful highlighting install https://github.com/zsh-users/zsh-syntax-highlighting in PREFIX location..
 
 For even more completions install https://github.com/zsh-users/zsh-completions in PREFIX location.
+
+### Prompt ###
+For ZSH, there are two options available.
+* Install https://github.com/rnc/zsh-git-prompt in PREFIX location and use the 'Fork' branch.
+* Install https://github.com/yonchu/zsh-vcs-prompt in PREFIX location and ensure you are using ZSH >= 5.0.5
+For Bash:
+* Install https://github.com/yonchu/zsh-vcs-prompt in PREFIX location.
 
 Installation
 ------------

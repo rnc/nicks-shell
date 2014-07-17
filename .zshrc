@@ -171,7 +171,11 @@ fi
 
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen-256color" ]
 then
-    if [ -d $PREFIX/zsh-vcs-prompt ]
+    # Disable ZSH_VCS with background updating. The background updating causes
+    # ZSH to consume 100% CPU.
+    # https://bugzilla.redhat.com/show_bug.cgi?id=1120424
+    # http://www.zsh.org/mla/workers/2014/msg00217.html
+    if [ ! true ] # -d $PREFIX/zsh-vcs-prompt ]
     then
         autoload -U is-at-least
         if ! is-at-least 5.0.5
@@ -194,8 +198,9 @@ then
             ZSH_VCS_PROMPT_CLEAN_SIGIL='✔'
             ZSH_VCS_PROMPT_MERGE_BRANCH=
 
-            # Remove hook to
+            # Remove hook to use delayed prompt init.
             add-zsh-hook -d precmd _zsh_vcs_prompt_precmd_hook_func
+
             add-zsh-hook precmd vcs_precmd
             add-zsh-hook chpwd vcs_chpwd
 
@@ -210,11 +215,10 @@ then
                 #PROMPT="%m$(read -rE -u$1) $ "  # double quotes, not promptsubst
                 PROMPT="%m$(read -rE -u$1)$PROMPT_JAVA $ "  # double quotes, not promptsubst
                 update_prompt_fd=0
-                zle -F $1
-                exec {1}>&-
+                zle -F $1           # Remove the handler
+                exec {1}>&-         # Close the descriptor
                 zle reset-prompt
             }
-            zle -N update_super_status
 
             function vcs_chpwd ()
             {
@@ -227,15 +231,19 @@ then
 
             function vcs_precmd ()
             {
-                setopt localoptions CLOBBER
+                emulate -L zsh
+#                setopt localoptions CLOBBER
 
                 if zle -l update_super_status
                 then
-                    (( update_prompt_fd )) && zle -F $update_prompt_fd >/dev/null
+                    #echo "### precmd  $update_prompt_fd"
+                    (( update_prompt_fd )) && zle -F $update_prompt_fd #>/dev/null
                     exec {update_prompt_fd}<<( internal_vcs_super_info )
                     zle -F -w $update_prompt_fd update_super_status
                 fi
             }
+
+            zle -N update_super_status
         fi
     elif [ -d $PREFIX/zsh-git-prompt ]
     then
@@ -331,9 +339,13 @@ SAVEHIST=10000
 ### Functions ###
 #################
 
+add-zsh-hook preexec title_preexec
+add-zsh-hook precmd title_precmd
+
 # Instead of using chpwd just use zsh built in which is executed
 # just before prompt is drawn. chpwd can clash with functions.
-precmd () {
+function title_precmd ()
+{
     title
 }
 
@@ -356,7 +368,8 @@ function title () {
     fi
 }
 
-preexec() {
+function title_preexec()
+{
   emulate -L zsh
 
   local -a cmd; cmd=(${(z)1})             # Re-parse the command line
@@ -389,7 +402,8 @@ preexec() {
 }
 
 # Show current status of ZSH options (from mailing list).
-showoptions() {
+function showoptions()
+{
   local k
   zmodload -i zsh/parameter
 

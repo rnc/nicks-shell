@@ -171,11 +171,11 @@ fi
 
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen-256color" ]
 then
-    # Disable ZSH_VCS with background updating. The background updating causes
+    # Note : without the following fixed the background updating can cause
     # ZSH to consume 100% CPU.
     # https://bugzilla.redhat.com/show_bug.cgi?id=1120424
     # http://www.zsh.org/mla/workers/2014/msg00217.html
-    if [ ! true ] # -d $PREFIX/zsh-vcs-prompt ]
+    if [ -d $PREFIX/zsh-vcs-prompt ]
     then
         autoload -U is-at-least
         if ! is-at-least 5.0.5
@@ -197,12 +197,7 @@ then
             ZSH_VCS_PROMPT_STASHED_SIGIL='⚑'
             ZSH_VCS_PROMPT_CLEAN_SIGIL='✔'
             ZSH_VCS_PROMPT_MERGE_BRANCH=
-
-            # Remove hook to use delayed prompt init.
-            add-zsh-hook -d precmd _zsh_vcs_prompt_precmd_hook_func
-
-            add-zsh-hook precmd vcs_precmd
-            add-zsh-hook chpwd vcs_chpwd
+            ZSH_VCS_PROMPT_USING_PYTHON='false'
 
             function internal_vcs_super_info()
             {
@@ -232,18 +227,22 @@ then
             function vcs_precmd ()
             {
                 emulate -L zsh
-#                setopt localoptions CLOBBER
 
                 if zle -l update_super_status
                 then
-                    #echo "### precmd  $update_prompt_fd"
-                    (( update_prompt_fd )) && zle -F $update_prompt_fd #>/dev/null
+                    (( update_prompt_fd )) && zle -F $update_prompt_fd >/dev/null
                     exec {update_prompt_fd}<<( internal_vcs_super_info )
                     zle -F -w $update_prompt_fd update_super_status
                 fi
             }
 
             zle -N update_super_status
+
+            # Remove hook to use delayed prompt init.
+            add-zsh-hook -d precmd _zsh_vcs_prompt_precmd_hook_func
+
+            add-zsh-hook precmd vcs_precmd
+            add-zsh-hook chpwd vcs_chpwd
         fi
     elif [ -d $PREFIX/zsh-git-prompt ]
     then

@@ -156,6 +156,7 @@ NO_XTRACE
 
 # Autoload all shell functions from all directories in $fpath
 autoload $^fpath/*(N.)
+autoload -U add-zsh-hook
 
 # ZSH-Syntax-Highlighting
 if [ -d $PREFIX/zsh-syntax-highlighting ]

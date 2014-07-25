@@ -184,7 +184,7 @@ then
             echo "ZSH Version must be at least 5.0.5"
         else
             typeset -g update_prompt_fd
-            PROMPT='%m[waiting] $ '
+            PROMPT='%m[waiting]$PROMPT_JAVA$PROMPT_EXTRA $ '
 
             source $PREFIX/zsh-vcs-prompt/zshrc.sh
             ZSH_VCS_PROMPT_ENABLE_CACHING='true'
@@ -209,7 +209,7 @@ then
             function update_super_status ()
             {
                 #PROMPT="%m$(read -rE -u$1) $ "  # double quotes, not promptsubst
-                PROMPT="%m$(read -rE -u$1)$PROMPT_JAVA $ "  # double quotes, not promptsubst
+                PROMPT="%m$(read -rE -u$1)$PROMPT_JAVA$PROMPT_EXTRA $ "  # double quotes, not promptsubst
                 update_prompt_fd=0
                 zle -F $1           # Remove the handler
                 exec {1}>&-         # Close the descriptor
@@ -220,7 +220,7 @@ then
             {
                 if zle -l update_super_status
                 then
-                    PROMPT='%m[waiting]$PROMPT_JAVA $ '
+                    PROMPT='%m[waiting]$PROMPT_JAVA$PROMPT_EXTRA $ '
                     #PROMPT='%m[waiting] $ '
                 fi
             }
@@ -253,11 +253,11 @@ then
         source $PREFIX/zsh-git-prompt/zshrc.sh
 
         # This prompt uses the above GIT system.
-        PROMPT='%m$(git_super_status)$PROMPT_JAVA $ '
+        PROMPT='%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA $ '
     else
         echo "$PREFIX/zsh-git-prompt does not exist."
 
-        PROMPT='%m$PROMPT_JAVA $ '
+        PROMPT='%m$PROMPT_JAVA$PROMPT_EXTRA $ '
     fi
 
     RPROMPT='%T'

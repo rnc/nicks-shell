@@ -724,7 +724,7 @@ function makemead()
         rm -f "$IP_CONFIG/$target".lastBuild
         rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
 
-        echo "Using\n\tWorkspace :\t\t$WORKSPACE\n\tREPO_GROUP :\t\t$REPO_GROUP\n\tMVN_LOCAL_REPO :\t$MVN_LOCAL_REPO\n\tMVN_DEP_REPO :\t\t$MVN_DEP_REPO\n\tDEPMGMTEXT :\t\t$DEPMGMTEXT\n\tVERSIONEXT :\t\t$VERSIONEXT\n\tCFG :\t\t\t$CFG\n\tRESUME :\t\t$RESUME"
+        echo "Using\n\tWorkspace :\t\t$WORKSPACE\n\tREPO_GROUP :\t\t$REPO_GROUP\n\tMVN_LOCAL_REPO :\t$MVN_LOCAL_REPO\n\tMVN_DEP_REPO :\t\t$MVN_DEP_REPO\n\tPOMMANIPEXT :\t\t$POMMANIPEXT\n\tCFG :\t\t\t$CFG\n\tRESUME :\t\t$RESUME"
         make "${options[@]}" $target | eval $dryrun
 
         if [ "$CHECK_MEAD" = "1" ] && [[ -f $SETTINGS ]]

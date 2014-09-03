@@ -200,6 +200,8 @@ then
             ZSH_VCS_PROMPT_MERGE_BRANCH=
             ZSH_VCS_PROMPT_USING_PYTHON='false'
 
+            # Code to update in background proposed by Bart Schaefer
+            # http://www.zsh.org/mla/users/2014/msg00448.html
             function internal_vcs_super_info()
             {
                 _zsh_vcs_prompt_precmd_hook_func

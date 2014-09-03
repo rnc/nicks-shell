@@ -177,41 +177,6 @@ function git()
 }
 
 
-# Show status of files
-function gistat()
-{
-   setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
-
-   local cpwd=$PWD REPO
-   [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
-
-   if [ -d $cpwd/.git ]
-   then
-      echo -e "\e[01;32m$cpwd\e[00m"
-      if [ `git status -s | wc -l` = 0 ]
-      then
-         echo "   No changes or untracked files"
-      else
-         git status -s
-      fi
-   else
-      # Lets recurse and look for one.
-      for REPO in `find . -type d -name .git | sed 's/\.\/\(.*\)\/.git/\1/'`
-      do
-         cd $NOCHPWD $REPO
-         echo -e "\e[01;32m$REPO\e[00m"
-         if [ `git status -s | wc -l ` = 0 ]
-         then
-            echo "   No changes or untracked files"
-         else
-            git status -s
-         fi
-         cd $NOCHPWD $cpwd
-      done
-      cd $NOCHPWD $cpwd
-   fi
-}
-
 # Recursive git implementation.
 function rgit()
 {

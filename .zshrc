@@ -317,6 +317,16 @@ fi
 # Complete in the middle of some text ignoring the suffix.
 bindkey '^i' expand-or-complete-prefix
 
+# Move to end/beginning of line.
+if [ -n "$TMUX" ]
+then
+    bindkey '^[[1~' beginning-of-line
+    bindkey '^[[4~' end-of-line
+else
+    bindkey '^[[H' beginning-of-line
+    bindkey '^[[F' end-of-line
+fi
+
 #########################################
 #### File system options ################
 #########################################

@@ -163,16 +163,16 @@ function git()
        $g "$@"
    elif [ "$NOCMDCONFIG" = "true" ]
    then
-       GIT_PAGER="less -FrX" $g "$@"
+       GIT_PAGER="less -FRX" $g "$@"
    # Was using hardcoded width of 108 for columns - now dynamic.
    elif [ "$1" = "lg" ]
    then
-      $g -c core.pager="fmt -w `expr $COLUMNS + 25` -t | sed 's/^   /        /' | less -FrX" "$@"
+      $g -c core.pager="fmt -w `expr $COLUMNS + 25` -t | sed 's/^   /        /' | less -FRX" "$@"
    elif [ "$1" = "llg" ] || [ "$1" = "llg5" ]
    then
-      $g -c core.pager="fmt -w `expr $COLUMNS + 22` -t | sed 's/^   /        /' | less -FrX"  "$@"
+      $g -c core.pager="fmt -w `expr $COLUMNS + 22` -t | sed 's/^   /        /' | less -FRX"  "$@"
    else
-      $g -c core.pager="less -Fr" "$@"
+      $g -c core.pager="less -FR" "$@"
    fi
 }
 
@@ -679,8 +679,9 @@ function makemead()
         if [ "$clean" = "true" ]
         then
             echo "Cleaning..."
-            mvn -q -Dmanipulation.disable=true -Dmaven.repo.local="$MVN_LOCAL_REPO" -s $SETTINGS clean
             git reset --hard
+            rm -rf `find . -name target -type d`
+            echo "Done cleaning..."
         fi
 
         # Hack : make files don't know how to include each other. Sigh.

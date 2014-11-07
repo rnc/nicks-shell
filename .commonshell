@@ -165,12 +165,12 @@ function git()
    then
        GIT_PAGER="less -FRX" $g "$@"
    # Was using hardcoded width of 108 for columns - now dynamic.
-   elif [ "$1" = "lg" ]
+   elif [ "$1" = "lg" ] || [ "$1" = "lg5" ]
    then
-      $g -c core.pager="fmt -w `expr $COLUMNS + 25` -t | sed 's/^   /        /' | less -FRX" "$@"
+      $g -c core.pager="fmt -w `expr $COLUMNS + 25` -t | sed 's/^   /        /' | less -FrX" "$@"
    elif [ "$1" = "llg" ] || [ "$1" = "llg5" ]
    then
-      $g -c core.pager="fmt -w `expr $COLUMNS + 22` -t | sed 's/^   /        /' | less -FRX"  "$@"
+      $g -c core.pager="fmt -w `expr $COLUMNS + 22` -t | sed 's/^   /        /' | less -FrX"  "$@"
    else
       $g -c core.pager="less -FR" "$@"
    fi

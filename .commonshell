@@ -172,7 +172,7 @@ function git()
    then
       $g -c core.pager="fmt -w `expr $COLUMNS + 22` -t | sed 's/^   /        /' | less -FrX"  "$@"
    else
-      $g -c core.pager="less -FR" "$@"
+      $g -c core.pager="less -FrJ" "$@"
    fi
 }
 
@@ -430,6 +430,13 @@ function maven-3.1.1-prod()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.2.5()
+{
+    M2_HOME=/usr/local/apache-maven-3.2.5
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 function unsignjar()
 {
     [[ -z "$@" ]] && echo "Usage: unsignjar <jar> <jar>...." && return
@@ -661,8 +668,8 @@ function makemead()
 
         local target=`tac $CFG | awk -v gv=$gitreponame '$0 ~ /^scmURL/ && $0 ~ gv { a=$0 } /[[].*[]]/ && a { sub("\\\\[","") ; sub("\\\\]","") ; print $0; exit }'`
         [[ -z "$target" ]] && echo "Unable to find a matching target" && return
-
         echo "Building $target in $BUILD_DIR"
+
         [[ -z "$SETTINGS" ]] && local SETTINGS=$HOME/Work/maven-mead-ip6.xml
 
         # If repo_group is not already set use mead.
@@ -690,8 +697,15 @@ function makemead()
         rm -f "$IP_CONFIG/$target".lastBuild
         rm -rf $WORKSPACE ; mkdir -p $WORKSPACE
 
+        # Check for chain build
+        if [ -n "`cat $CFG | grep buildrequires`" ]
+        then
+            target="-f `cat $CFG | grep makefile | sed 's/.*=//'` BUILDDEPS=\"\" ARTIFACT=$target"
+            echo "Chain build support : $target"
+        fi
+
         echo "Using\n\tWorkspace :\t\t$WORKSPACE\n\tREPO_GROUP :\t\t$REPO_GROUP\n\tMVN_LOCAL_REPO :\t$MVN_LOCAL_REPO\n\tMVN_DEP_REPO :\t\t$MVN_DEP_REPO\n\tPOMMANIPEXT :\t\t$POMMANIPEXT\n\tCFG :\t\t\t$CFG\n\tRESUME :\t\t$RESUME"
-        make "${options[@]}" $target | eval $dryrun
+        make "${options[@]}" `echo $target` | eval $dryrun
 
         if [ "$CHECK_MEAD" = "1" ] && [[ -f $SETTINGS ]]
         then

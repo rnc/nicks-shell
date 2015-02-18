@@ -21,14 +21,18 @@ fi
 [[ -f $HOME/.shell-configuration ]] && source $HOME/.shell-configuration
 
 # Defs
-set -o show-all-if-ambiguous on
-set -o expand-tilde on
-set -o command_oriented_history
-set -o glob_dot_filenames
+if [ -z "$BASH" ]
+then
+    set -o show-all-if-ambiguous on
+    set -o expand-tilde on
+    set -o command_oriented_history
+    set -o glob_dot_filenames
+    set -o autologout
+    set -o pushd_silent=true
+fi
+
 set -o notify
 set -o noclobber
-set -o autologout
-set -o pushd_silent=true
 
 cd()
 {

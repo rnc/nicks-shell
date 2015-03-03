@@ -444,6 +444,59 @@ function maven-3.2.5()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+#
+# Call <url>
+#
+function _update-maven-extensions()
+{
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+
+    if [ -z "$1" ]
+    then
+        echo "Invalid URL for new version"
+        return 1
+    else
+        local f1=/tmp/`echo $1 | sed 's/.*\///g'`
+        wget -O$f1 $1
+        if [ "$?" != 0 ]
+        then
+            echo "Unable to find $1"
+            return 1
+        fi
+    fi
+
+    if [ "$SHELL" = "/bin/bash" ] || [ "$SHELL" = "/usr/bin/bash" ]
+    then
+        local PRODMVN="`functions -F | grep -- -prod`"
+    else
+        # ZSH
+        local PRODMVN="`print -l ${(ok)functions}|grep -- -prod | tr '\n' ' '`"
+    fi
+
+    # Use a temporary file as we can't use sudo with a function
+    content="#!/bin/bash\n
+    file=\$1 ; shift
+    for m in `echo \\$*`
+    do
+        echo \"\033[49;32;1mProcessing \$m\033[0m\"
+        /bin/rm -fv /usr/local/apache-\$m/lib/ext/*.jar
+        /bin/cp -v \$file /usr/local/apache-\$m/lib/ext
+    done
+    "
+    local f2=`mktemp`
+    echo "Writing content to $f2"
+    echo -e "$content" >> "$f2"
+    chmod uog+x $f2
+
+    echo "Executing... sudo $f2 $f1 $PRODMVN"
+
+    sudo $f2 $f1 $PRODMVN
+
+    /bin/rm -f $f1 $f2
+
+}
+
 function unsignjar()
 {
     [[ -z "$@" ]] && echo "Usage: unsignjar <jar> <jar>...." && return

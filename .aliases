@@ -18,6 +18,7 @@ alias classpath='echo $CLASSPATH | tr ":" "\n"'
 alias cvsStat='cvs status 2>&1 | grep 'File:' | grep -v Up-to-date'
 alias emacs='emacs --no-site-file'
 alias pp='ps -u$USER -ww -o pid,etime,pcpu,rss,args'
+alias tree='tree -C'
 
 alias axel='axel --num-connections=25 --alternate'
 alias aria2c='aria2c --min-split-size=1M --max-connection-per-server=16 --split=25 --max-concurrent-downloads=25 --summary-interval=0 --truncate-console-readout=false --check-certificate=false'

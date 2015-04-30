@@ -10,9 +10,11 @@ ARCH=`uname -m`
 HOST=`hostname | sed 's/\..*//'`
 ARCHBIN="$HOME/bin/`echo $UARCH| sed 's/ /\//'`"
 
-[[ -z "$SVN_EDITOR" ]] && SVN_EDITOR="emacs -nw --no-init-file --no-site-file"
+[[ -z $EDITOR ]] && EDITOR="emacs -nw --no-init-file --no-site-file"
 
-export UARCH ARCH HOST ARCHBIN SVN_EDITOR
+SVN_EDITOR="$EDITOR"
+
+export UARCH ARCH HOST ARCHBIN EDITOR SVN_EDITOR
 
 #################
 ### Functions ###
@@ -749,11 +751,6 @@ function makemead()
     trap - 2 3 15
 }
 
-
-function ruby()
-{
-    [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"  # This loads RVM into a shell session.
-}
 
 # IP_TOOLING - checkout of make_mead location.
 # VMAN_HOME - location of VMAN. This may either be a path to a binary jar or a path to the checkout of built sources.

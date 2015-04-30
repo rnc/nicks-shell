@@ -434,6 +434,7 @@ _git-tagcommit () { _git-rev-parse "$@" }
 # Get common aliases and functions
 #
 source $HOME/.commonshell
+source $HOME/.aliases
 [[ -f $HOME/.corbashell ]] && source $HOME/.corbashell
 
 

@@ -14,40 +14,6 @@ ARCHBIN="$HOME/bin/`echo $UARCH| sed 's/ /\//'`"
 
 export UARCH ARCH HOST ARCHBIN SVN_EDITOR
 
-###############
-### Aliases ###
-###############
-
-alias cp='cp -i'
-alias mv='mv -i'
-alias rm='rm -i'
-alias l='ls -l -F --color'
-alias ls='ls -F --color'
-alias df='df -h'
-alias jobs='jobs -p'
-alias diff='colordiff'
-
-alias classpath='echo $CLASSPATH | tr ":" "\n"'
-alias cvsStat='cvs status 2>&1 | grep 'File:' | grep -v Up-to-date'
-alias emacs='emacs --no-site-file'
-alias pp='ps -u$USER -ww -o pid,etime,pcpu,rss,args'
-
-alias axel='axel --num-connections=25 --alternate'
-alias aria2c='aria2c --min-split-size=1M --max-connection-per-server=16 --split=25 --max-concurrent-downloads=25 --summary-interval=0 --truncate-console-readout=false --check-certificate=false'
-
-alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local -DskipTests=true "$@"'
-alias mvn-mead-ip6='mvn -s ~/Work/maven-mead-ip6.xml -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local -DskipTests=true "$@"'
-
-unalias ifconfig 2> /dev/null ; which ifconfig >& /dev/null
-if [ "$?" != 0 ]
-then
-    alias ifconfig="echo -e '\t\033[49;32;1mifconfig deprecated; using ip addr\033[0m' ; ip addr"
-fi
-
-# If the emacs process is running as a server this will open the file in it
-# else it will start a new process.
-alias e="emacsclient --alternate-editor=emacs -n"
-
 #################
 ### Functions ###
 #################

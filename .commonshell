@@ -10,7 +10,7 @@ ARCH=`uname -m`
 HOST=`hostname | sed 's/\..*//'`
 ARCHBIN="$HOME/bin/`echo $UARCH| sed 's/ /\//'`"
 
-SVN_EDITOR="emacs -nw --no-init-file --no-site-file"
+[[ -z "$SVN_EDITOR" ]] && SVN_EDITOR="emacs -nw --no-init-file --no-site-file"
 
 export UARCH ARCH HOST ARCHBIN SVN_EDITOR
 
@@ -847,6 +847,7 @@ function mergePullRequest()
         local cmd="git fetch origin "
     fi
     local branch=`git rev-parse --abbrev-ref HEAD`
+    local tmpbranch=`uuidgen`
 
     for var in "$@"
     do
@@ -860,20 +861,32 @@ function mergePullRequest()
 
     for var in "$@"
     do
-        echo "### Checking out pullRequest$var"
         git checkout pullRequest$var
         [[ "$?" != "0" ]] && echo "Error checking out branch; aborting..." && return 1
+        git lg -n 1
+        local original=`git log -1 --pretty="%H"`
+
+        git checkout -b $tmpbranch
         echo "### Rebasing to $branch"
         git rebase $branch
         [[ "$?" != "0" ]] && echo "Error rebasing $branch; aborting..." && return 1
-        echo "### Checking out $branch"
-        git checkout $branch
-        [[ "$?" != "0" ]] && echo "Error checking out $branch; aborting..." && return 1
-        echo "### Merging pullRequest$var"
-        git merge pullRequest$var
+        git lg -n 1
+        local new=`git log -1 --pretty="%H"`
+
+        if [ "$original" != "$new" ]
+        then
+            echo "\033[49;32;1mGIT SHA do not match ; unable to rebase ; switching to merge\033[0m"
+            git checkout $branch
+            git merge --no-edit -m "Merge pull request #$var" --no-ff pullRequest$var
+        else
+            git checkout $branch
+            [[ "$?" != "0" ]] && echo "Error checking out branch; aborting..." && return 1
+            echo "### Merging pullRequest$var"
+            git merge $tmpbranch
+            git lg -n 1
+        fi
         [[ "$?" != "0" ]] && echo "Error merging pull request; aborting..." && return 1
-        echo "### Deleting branch pullRequest$var"
-        git branch -D pullRequest$var
+        git branch -D pullRequest$var $tmpbranch
         [[ "$?" != "0" ]] && echo "Error deleting branch; aborting..." && return 1
     done
     echo -e "\033[49;32;1mFinished\033[0m"

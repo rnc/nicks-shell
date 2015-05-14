@@ -36,7 +36,9 @@ Bash
 Common
 ------
 .commonshell
-This contains various useful functions and aliases.
+.aliases
+
+These contains various useful functions and aliases.
 
 GitConfig
 ---------

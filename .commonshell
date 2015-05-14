@@ -412,6 +412,20 @@ function maven-3.2.5()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.2.5-prod()
+{
+    M2_HOME=/usr/local/apache-maven-3.2.5-prod
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function maven-3.3.3()
+{
+    M2_HOME=/usr/local/apache-maven-3.3.3
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 #
 # Call <url>
 #

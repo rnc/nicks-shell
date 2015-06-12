@@ -952,7 +952,7 @@ get-and-import()
             ;;
           --tag)
             shift
-            local TAG="--tag $1"
+            local TAG="--tag=$1"
             shift
             ;;
           --owner)

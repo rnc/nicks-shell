@@ -33,6 +33,9 @@ then
         :
     }
 fi
+git -c core.pager="less" >& /dev/null
+[[ "$?" == "129" ]] && local GIT_NOCMDCONFIG=true
+
 
 # If we are printing the environment (no arguments) print it sorted.
 function env()
@@ -45,6 +48,20 @@ function env()
     fi
 }
 
+
+# Coloured manpages. An alternative using lynx is 'man -Hlynx less'
+function man() {
+    env \
+        LESS_TERMCAP_mb=$'\E[01;31m' \
+        LESS_TERMCAP_md=$'\E[01;38;5;74m' \
+        LESS_TERMCAP_me=$'\E[0m' \
+        LESS_TERMCAP_se=$'\E[0m' \
+        LESS_TERMCAP_so=$'\E[38;5;246m' \
+        LESS_TERMCAP_ue=$'\E[0m' \
+        LESS_TERMCAP_us=$'\E[04;38;5;146m' \
+        GROFF_NO_SGR=yes \
+        man "$@"
+}
 
 # Note: while this does create a tunnel by default, it uses a different local port (18080)
 # to avoid clashing with any local processes.
@@ -118,8 +135,6 @@ function eclipse()
 function git()
 {
    [[ -f /usr/local/bin/git ]] && local g=/usr/local/bin/git || local g=/usr/bin/git
-   $g -c core.pager="less" >& /dev/null
-   [[ "$?" == "129" ]] && local NOCMDCONFIG=true
 
    if [ "$1" = "clone" ]
    then
@@ -129,9 +144,9 @@ function git()
    then
        echo -e "\033[49;32;1mUsage:\n\ny - stash this hunk\nn - do not stash this hunk\nq - quit; do not stash this hunk nor any of the remaining ones\na - stash this hunk and all later hunks in the file\nd - do not stash this hunk nor any of the later hunks in the file\ng - select a hunk to go to\n/ - search for a hunk matching the given regex\nj - leave this hunk undecided, see next undecided hunk\nJ - leave this hunk undecided, see next hunk\nk - leave this hunk undecided, see previous undecided hunk\nK - leave this hunk undecided, see previous hunk\ns - split the current hunk into smaller hunks\ne - manually edit the current hunk\n? - print help\033[0m"
        $g "$@"
-   elif [ "$NOCMDCONFIG" = "true" ]
+   elif [ "$GIT_NOCMDCONFIG" = "true" ]
    then
-       GIT_PAGER="less -FRX" $g "$@"
+       GIT_PAGER="less -FrX" $g "$@"
    # Was using hardcoded width of 108 for columns - now dynamic.
    elif [ "$1" = "lg" ] || [ "$1" = "lg5" ]
    then
@@ -447,7 +462,7 @@ function _update-maven-extensions()
         return 1
     else
         local f1=/tmp/`echo $1 | sed 's/.*\///g'`
-        wget -O$f1 $1
+        curl -o$f1 $1
         if [ "$?" != 0 ]
         then
             echo "Unable to find $1"
@@ -697,7 +712,7 @@ function makemead()
     [[ -z "$CFG" ]] && local -x CFG="$IP_CONFIG/builder.cfg"
 
     local currentlocation=`basename $PWD`
-    local gitreponame=`git remote -v | sed -nre 's/\s*origin\s*.*(com\/|com:22\/)(.*)\s*[(]fetch.*/\2/p'`
+    local gitreponame=`git remote -v | sed -nre 's/\s*origin\s*.*(\/)(.*)\s*[(]fetch.*/\2/p'`
 
     if [ -z "$gitreponame" ]
     then

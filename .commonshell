@@ -1093,3 +1093,84 @@ get-and-import()
     done
     echo -e "\033[49;32;1mFinished\033[0m"
 }
+
+
+
+#
+# Quick hack to take a POM file and print all of its GAVs out.
+#
+function printBOMGAs
+{
+    which mvn >& /dev/null
+    [[ "$?" != 0 ]] && echo "Configure Maven" && return 1
+
+    local WORKDIR=`mktemp -p /tmp -d XXXX --suffix=bomanalysis`
+    # Default for my purposes for now...
+    local POM="org.jboss.fuse.bom:jboss-fuse-parent:6.2.1.redhat-032"
+    # Could be a file reference e.g. file://`pwd`/cli/target/pom-manipulation-ext-1.8.jar
+    local PME="http://central.maven.org/maven2/org/commonjava/maven/ext/pom-manipulation-cli/1.8/pom-manipulation-cli-1.8.jar"
+
+    while [ -n "$1" ]
+    do
+        case "$1" in
+          --workdir)
+            shift
+            local WORKDIR=$1
+            shift
+            ;;
+          --pom)
+            shift
+            local POM=$1
+            shift
+            ;;
+          --pme)
+            shift
+            local PME=$1
+            shift
+            ;;
+          --help)
+            echo "Usage is $0 [--workdir <dir>] [--pom <e.g. org.jboss.fuse.bom:jboss-fuse-parent:6.2.1.redhat-032>] [--pme <PME location>]"
+            return 1
+            ;;
+          *)
+            break;
+        esac
+    done
+
+    cd $WORKDIR
+    echo "Using workdir `pwd`"
+
+    # No need to clone the repo ; just use the deployed version
+    # git clone --depth 1 --branch fuseenterprise-6.2.1.redhat-032 git@github.com:jboss-fuse/fuse.git
+    [[ -f pom.xml ]] && echo "warning : pom.xml already exists in this directory. Clean up first." && return 1
+    mvn -q org.apache.maven.plugins:maven-dependency-plugin:2.10:get \
+        -DremoteRepositories=https://origin-repository.jboss.org/nexus/content/groups/ea,http://maven.repository.redhat.com/nexus/content/groups/product-earlyaccess \
+        -Dartifact=$POM:pom \
+        -Ddest=pom.xml
+    [[ "$?" != 0 ]] && echo "Error downloading" && return 1
+    sed -i 's/<module.*//g' pom.xml
+    sed -i 's/<\/module.*//g' pom.xml
+    echo "Downloaded remote pom file; now running effective:pom"
+
+    mvn -q help:effective-pom -Doutput=effective.pom
+    [[ "$?" != 0 ]] && echo "Error creating effective pom" && return 1
+
+    /bin/mv -f pom.xml original-pom.xml
+    /bin/mv -f effective.pom pom.xml
+
+    echo "Renaming effective.pom -> pom.xml and running analysis..."
+    curl -s -o`echo $PME | sed 's/.*\///g'` $PME
+    /bin/rm -f allgavs.log allnonrhga.log
+    java -jar `echo $PME | sed 's/.*\///g'` -p | egrep -v '(Maven-Manipulation-Extension|Found the following dependencies)' > allgavs.log 2>&1
+
+
+    echo "GAV count is `cat allgavs.log | wc -l`"
+    echo "Non redhat GAV count is `cat allgavs.log | grep -v redhat | wc -l`"
+    cat allgavs.log | grep -v redhat | awk '{print $1}' | sed -E 's/(.*):[a-z]+:[0-9]+.*/\1/g' | sort | uniq > allnonrhga.log
+    echo "Non redhat GA count is `cat allnonrhga.log | wc -l`"
+
+    # java -jar /home/rnc/Work/PME/pom-manipulation-ext/cli/target/pom-manipulation-cli-1.8-SNAPSHOT.jar -p | egrep -v redhat | awk '{print $1}' | sed -E 's/(.*):[a-z]+:[0-9]+.*/\1/g' | sort | uniq > fabric8nonrhga.log
+    # awk 'NR==FNR{a[$0];next} !($0 in a)' /tmp/fusenonrhga.log fabricnonrhga
+    #cd ..
+    #rm -rf $WORKDIR
+}

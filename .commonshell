@@ -34,7 +34,7 @@ then
     }
 fi
 git -c core.pager="less" >& /dev/null
-[[ "$?" == "129" ]] && local GIT_NOCMDCONFIG=true
+[[ "$?" == "129" ]] && GIT_NOCMDCONFIG=true
 
 
 # If we are printing the environment (no arguments) print it sorted.

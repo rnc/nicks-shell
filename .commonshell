@@ -472,7 +472,7 @@ function _update-maven-extensions()
 
     if [ "$SHELL" = "/bin/bash" ] || [ "$SHELL" = "/usr/bin/bash" ]
     then
-        local PRODMVN="`functions -F | grep -- -prod`"
+        local PRODMVN="`functions -F | grep -- -prod | sed 's/declare -f //g' |  tr '\n' ' '`"
     else
         # ZSH
         local PRODMVN="`print -l ${(ok)functions}|grep -- -prod | tr '\n' ' '`"

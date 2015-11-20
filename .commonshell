@@ -712,7 +712,7 @@ function makemead()
     [[ -z "$CFG" ]] && local -x CFG="$IP_CONFIG/builder.cfg"
 
     local currentlocation=`basename $PWD`
-    local gitreponame=`git remote -v | sed -nre 's/\s*origin\s*.*(\/)(.*)\s*[(]fetch.*/\2/p'`
+    local gitreponame=`git remote -v | sed -nre 's/\s*origin\s*.*(\/)(.*)\s[(]fetch.*/\2/p'`
 
     if [ -z "$gitreponame" ]
     then

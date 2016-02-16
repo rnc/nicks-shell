@@ -9,6 +9,7 @@ UARCH=`uname -sm`
 ARCH=`uname -m`
 HOST=`hostname | sed 's/\..*//'`
 ARCHBIN="$HOME/bin/`echo $UARCH| sed 's/ /\//'`"
+PATH=$PATH:$HOME/bin
 
 [[ -z $EDITOR ]] && EDITOR="emacs -nw --no-init-file --no-site-file"
 
@@ -448,6 +449,13 @@ function maven-3.3.3-prod()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.3.9()
+{
+    M2_HOME=/usr/local/apache-maven-3.3.9
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 #
 # Call <url>
 #
@@ -582,6 +590,9 @@ function searchJars()
                 then
                     echo "`jar vtf $i | egrep $1 | sed 's/^/\t\t/g'`"
                 fi
+            elif [ "$VERBOSE" = "true" ]
+            then
+                echo "$INDENT""\033[49;35;1mDid not find pattern $pattern in $i\033[0m"
             fi
             if [ -n "`jar tf $i | egrep '(war|jar)'`" ]
             then

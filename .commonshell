@@ -17,6 +17,19 @@ SVN_EDITOR="$EDITOR"
 
 export UARCH ARCH HOST ARCHBIN EDITOR SVN_EDITOR
 
+if tput setaf 0 &>/dev/null
+then
+    # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+    OFF="$(tput sgr0)"
+    BOLD="$(tput bold)"
+    RED="$(tput setaf 1)"
+    GREEN="$(tput setaf 2)"
+    YELLOW="$(tput setaf 3)"
+    BLUE="$(tput setaf 4)"
+    WHITE="$(tput setaf 7)"
+    ERROR="${BOLD}${RED}%s${OFF}\n"
+fi
+
 #################
 ### Functions ###
 #################
@@ -233,7 +246,7 @@ function svnl()
         # print
         p
     }'`
-    [[ -z "$lastremoterev" ]] && echo "Not a svn repository" && return 1
+    [[ -z "$lastremoterev" ]] && printf "$ERROR" "Not a svn repository" && return 1
     local revcheck=`svnversion .`
 
     if [ -n "`echo $revcheck | grep :`" ]
@@ -274,7 +287,7 @@ function _java_prompt_()
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
     [[ -z "$1" && "$1" != "oraclejava5" && "$1" != "oraclejava6" && "$1" != "oraclejava7" \
-        && "$1" != "ibmjava6"  && "$1" != "ibmjava7" ]] && echo "Private java setup function" && return
+        && "$1" != "ibmjava6"  && "$1" != "ibmjava7" ]] && printf "$ERROR" "Private java setup function" && return
 
     local oraclejava5=/usr/local/jdk1.5.0
     local oraclejava6=/usr/local/jdk1.6.0
@@ -466,14 +479,14 @@ function _update-maven-extensions()
 
     if [ -z "$1" ]
     then
-        echo "Invalid URL for new version"
+        printf "$ERROR" "Invalid URL for new version"
         return 1
     else
         local f1=/tmp/`echo $1 | sed 's/.*\///g'`
         curl -o$f1 $1
         if [ "$?" != 0 ]
         then
-            echo "Unable to find $1"
+            printf "$ERROR" "Unable to find $1"
             return 1
         fi
     fi
@@ -689,7 +702,7 @@ function makemead()
 
     if [ -z "$IP_CONFIG" ]
     then
-        echo "Configure IP_CONFIG shell variable"
+        printf "$ERROR" "Configure IP_CONFIG shell variable"
         return 1
     fi
 
@@ -727,7 +740,7 @@ function makemead()
 
     if [ -z "$gitreponame" ]
     then
-       echo -e "\033[49;35;1mUnable to determine git repository; aborting...\033[0m"
+       printf "$ERROR" "Unable to determine git repository; aborting..."
        return
     fi
 
@@ -742,7 +755,7 @@ function makemead()
         local -x WORKSPACE=/tmp/workspace/`mktemp -u XXXXXX`
 
         local target=`tac $CFG | awk -v gv=$gitreponame '$0 ~ /^scmURL/ && $0 ~ gv { a=$0 } /[[].*[]]/ && a { sub("\\\\[","") ; sub("\\\\]","") ; print $0; exit }'`
-        [[ -z "$target" ]] && echo "Unable to find a matching target" && return
+        [[ -z "$target" ]] && printf "$ERROR" "Unable to find a matching target" && return
         echo "Building $target in $BUILD_DIR"
 
         [[ -z "$SETTINGS" ]] && local SETTINGS=$HOME/Work/maven-mead-ip6.xml
@@ -805,7 +818,7 @@ function vman()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    [[ -z "$VMAN_HOME" ]] && echo "Set VMAN_HOME" && return 1
+    [[ -z "$VMAN_HOME" ]] && printf "$ERROR" "Set VMAN_HOME" && return 1
     [[ -f "$VMAN_HOME" ]] && local JAR=$VMAN_HOME || local JAR=$VMAN_HOME/target/vman.jar
 
     [[ "$1" = "-clean" ]] && echo "Cleaning for vman..." && rm -rf `find . -type d -name target` && rm -rf `find . -name vman-workspace` && rgit reset --hard && shift
@@ -872,14 +885,14 @@ function mergePullRequest()
     for var in "$@"
     do
         git checkout pullRequest$var
-        [[ "$?" != "0" ]] && echo "Error checking out branch; aborting..." && return 1
+        [[ "$?" != "0" ]] && printf "$ERROR" "Error checking out branch; aborting..." && return 1
         git lg -n 1
         local original=`git log -1 --pretty="%H"`
 
         git checkout -b $tmpbranch
         echo "### Rebasing to $branch"
         git rebase $branch
-        [[ "$?" != "0" ]] && echo "Error rebasing $branch; aborting..." && return 1
+        [[ "$?" != "0" ]] && printf "$ERROR" "Error rebasing $branch; aborting..." && return 1
         git lg -n 1
         local new=`git log -1 --pretty="%H"`
 
@@ -890,14 +903,14 @@ function mergePullRequest()
             git merge --no-edit -m "Merge pull request #$var" --no-ff pullRequest$var
         else
             git checkout $branch
-            [[ "$?" != "0" ]] && echo "Error checking out branch; aborting..." && return 1
+            [[ "$?" != "0" ]] && printf "$ERROR" "Error checking out branch; aborting..." && return 1
             echo "### Merging pullRequest$var"
             git merge $tmpbranch
             git lg -n 1
         fi
-        [[ "$?" != "0" ]] && echo "Error merging pull request; aborting..." && return 1
+        [[ "$?" != "0" ]] && printf "$ERROR" "Error merging pull request; aborting..." && return 1
         git branch -D pullRequest$var $tmpbranch
-        [[ "$?" != "0" ]] && echo "Error deleting branch; aborting..." && return 1
+        [[ "$?" != "0" ]] && printf "$ERROR" "Error deleting branch; aborting..." && return 1
     done
     echo -e "\033[49;32;1mFinished\033[0m"
 }
@@ -911,13 +924,13 @@ gitsvnclone()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    [[ -z "$1" ]] && echo "No source URL specified." && return 1
+    [[ -z "$1" ]] && printf "$ERROR" "No source URL specified." && return 1
     [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
 
     TARGETDIR=`basename $1`
     [[ -n "$2" ]] && TARGETDIR=$2
 
-    [[ -d $TARGETDIR ]] && echo "Target directory already exists" && return 1
+    [[ -d $TARGETDIR ]] && printf "$ERROR" "Target directory already exists" && return 1
 
     git svn --stdlayout --branches="branches/*/*" --tags="tags/*/*" clone $1 $TARGETDIR
 
@@ -967,7 +980,9 @@ get-and-import()
     }
 
     which get-maven-artifacts >& /dev/null
-    [[ "$?" != 0 ]] && echo "Mike Bonnet's get-maven-artifacts and import-maven must be in the path. Aborting." && return 1
+    [[ "$?" != 0 ]] && printf "$ERROR" "Mike Bonnet's get-maven-artifacts and import-maven must be in the path. Aborting." && return 1
+    which mvn >& /dev/null
+    [[ "$?" != "0" ]] && printf "$ERROR" "Error : Maven not configured." && return 1
 
     while [ -n "$1" ]
     do
@@ -1029,7 +1044,7 @@ get-and-import()
 
         cd $NOCHPWD $ddir
         get-maven-artifacts $REPO $package
-        [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && eval $continue
+        [[ "$?" != "0" ]] && echoecho "Error obtaining packages" && shift && cleanup && eval $continue
         echo "Downloaded artifacts..."
         if [ "$NOIMPORT" != "true" ]
         then
@@ -1113,7 +1128,7 @@ get-and-import()
 function printBOMGAs
 {
     which mvn >& /dev/null
-    [[ "$?" != 0 ]] && echo "Configure Maven" && return 1
+    [[ "$?" != 0 ]] && printf "$ERROR" "Configure Maven" && return 1
 
     local WORKDIR=`mktemp -p /tmp -d XXXX --suffix=bomanalysis`
     # Default for my purposes for now...
@@ -1158,13 +1173,13 @@ function printBOMGAs
         -DremoteRepositories=https://origin-repository.jboss.org/nexus/content/groups/ea,http://maven.repository.redhat.com/nexus/content/groups/product-earlyaccess \
         -Dartifact=$POM:pom \
         -Ddest=pom.xml
-    [[ "$?" != 0 ]] && echo "Error downloading" && return 1
+    [[ "$?" != 0 ]] && printf "$ERROR" "Error downloading" && return 1
     sed -i 's/<module.*//g' pom.xml
     sed -i 's/<\/module.*//g' pom.xml
     echo "Downloaded remote pom file; now running effective:pom"
 
     mvn -q help:effective-pom -Doutput=effective.pom
-    [[ "$?" != 0 ]] && echo "Error creating effective pom" && return 1
+    [[ "$?" != 0 ]] && printf "$ERROR" "Error creating effective pom" && return 1
 
     /bin/mv -f pom.xml original-pom.xml
     /bin/mv -f effective.pom pom.xml

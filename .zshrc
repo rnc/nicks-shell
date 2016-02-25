@@ -158,20 +158,20 @@ NO_XTRACE
 autoload $^fpath/*(N.)
 autoload -U add-zsh-hook
 
-# ZSH-Syntax-Highlighting
-if [ -d $PREFIX/zsh-syntax-highlighting ]
-then
-    ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
-    source $PREFIX/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-    ZSH_HIGHLIGHT_STYLES[path]='fg=251'
-    ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=251'
-    ZSH_HIGHLIGHT_STYLES[path_approx]='fg=251'
-    ZSH_HIGHLIGHT_STYLES[globbing]='fg=045'
-fi
-
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen-256color" ]
 then
+    # ZSH-Syntax-Highlighting
+    if [ -d $PREFIX/zsh-syntax-highlighting ]
+    then
+        ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
+        source $PREFIX/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+        ZSH_HIGHLIGHT_STYLES[path]='fg=251'
+        ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=251'
+        ZSH_HIGHLIGHT_STYLES[path_approx]='fg=251'
+        ZSH_HIGHLIGHT_STYLES[globbing]='fg=045'
+    fi
+
     # Note : without the following fixed the background updating can cause
     # ZSH to consume 100% CPU.
     # https://bugzilla.redhat.com/show_bug.cgi?id=1120424
@@ -263,6 +263,12 @@ then
     fi
 
     RPROMPT='%T'
+elif [ "$TERM" = "dumb" ]
+then
+    # Dumb terminal might be e.g. emacs.
+    # https://github.com/syl20bnr/spacemacs/issues/3035
+    export EDITOR=emacsclient
+    unset zle_bracketed_paste
 fi
 
 ########################################

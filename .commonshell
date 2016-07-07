@@ -469,6 +469,12 @@ function maven-3.3.9()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function gradle-2.13()
+{
+    PATH=/usr/local/gradle-2.13/bin:$PATH
+    echo "Gradle executable is `which gradle`"
+}
+
 #
 # Call <url>
 #
@@ -1046,17 +1052,6 @@ get-and-import()
         get-maven-artifacts $REPO $package
         [[ "$?" != "0" ]] && echoecho "Error obtaining packages" && shift && cleanup && eval $continue
         echo "Downloaded artifacts..."
-        if [ "$NOIMPORT" != "true" ]
-        then
-            import-maven --owner=$owner $RELEASE `echo $TAG` `/bin/ls -1 $ddir`
-            [[ "$?" != "0" ]] && echo "Error importing packages" && shift && cleanup && eval $continue
-        fi
-
-        if [ -n "$SAVE" ]
-        then
-            /bin/cp -f $ddir/* $SAVE
-        fi
-
         if [ -n "$INSTALL" ]
         then
             local pom=`find . -name "*.pom"`
@@ -1114,6 +1109,17 @@ get-and-import()
                 /bin/rm -f $TP/.noimport
             fi
         fi
+        if [ "$NOIMPORT" != "true" ]
+        then
+            import-maven --owner=$owner $RELEASE `echo $TAG` `/bin/ls -1 $ddir`
+            [[ "$?" != "0" ]] && echo "Error importing packages" && shift && cleanup && eval $continue
+        fi
+
+        if [ -n "$SAVE" ]
+        then
+            /bin/cp -f $ddir/* $SAVE
+        fi
+
         shift
         cleanup
     done
@@ -1199,4 +1205,11 @@ function printBOMGAs
     # awk 'NR==FNR{a[$0];next} !($0 in a)' /tmp/fusenonrhga.log fabricnonrhga
     #cd ..
     #rm -rf $WORKDIR
+}
+
+
+# Same as list-tag-inheritance but trim off excess depth.
+function blt()
+{
+    brew list-tag-inheritance $1 | sed -e 's/  │          .*/  │       [...tag continues...]/g' -e 's/              .*/              [...tag continues...]/g' | uniq | egrep '...tag continues...|$'
 }

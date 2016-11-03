@@ -1050,7 +1050,7 @@ get-and-import()
 
         cd $NOCHPWD $ddir
         get-maven-artifacts $REPO $package
-        [[ "$?" != "0" ]] && echoecho "Error obtaining packages" && shift && cleanup && eval $continue
+        [[ "$?" != "0" ]] && echo "Error obtaining packages" && shift && cleanup && eval $continue
         echo "Downloaded artifacts..."
         if [ -n "$INSTALL" ]
         then

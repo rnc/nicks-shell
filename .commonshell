@@ -11,6 +11,10 @@ HOST=`hostname | sed 's/\..*//'`
 ARCHBIN="$HOME/bin/`echo $UARCH| sed 's/ /\//'`"
 PATH=$PATH:$HOME/bin
 
+# https://unix.stackexchange.com/questions/258679/why-is-ls-suddenly-wrapping-items-with-spaces-in-single-quotes
+# Rather than setting every ls alias just force it with:
+QUOTING_STYLE=literal
+
 [[ -z $EDITOR ]] && EDITOR="emacs -nw --no-init-file --no-site-file"
 
 SVN_EDITOR="$EDITOR"
@@ -123,26 +127,6 @@ function lt()
     [[ ! -d "$TARGET" ]] && echo "Usage: lt <directory>" && return
 
     ls $ARGS -lr $TARGET 2>&1 | tail -10
-}
-
-function eclipse()
-{
-    (
-        oraclejava7
-
-        if [ "-h" == "$1" ]
-        then
-            echo "Usage: [eclipse-binary-to-start] (else default eclipse is started)"
-            return 1
-        fi
-
-        # Override GTK settings for running in KDE - fixes a tooltip issue.
-        [[ "$KDE_FULL_SESSION" = "true" ]] && local -x GTK2_RC_FILES=$HOME/.gtkrc-2.0-eclipse:$GTK2_RC_FILES
-
-        rm -f /tmp/eclipse.log
-
-        /usr/bin/eclipse &> /tmp/eclipse.log
-    )
 }
 
 # Override for git to handle wrapping. I only want to use fmt for the log command.
@@ -613,7 +597,7 @@ function searchJars()
             then
                 echo "$INDENT""\033[49;35;1mDid not find pattern $pattern in $i\033[0m"
             fi
-            if [ -n "`jar tf $i | egrep '(war|jar)'`" ]
+            if [ -n "`jar tf $i | egrep '\.(war|jar)'`" ]
             then
                 # Jar/war containing jar/war
                 echo "$INDENT""Searching inside $i ..."

@@ -81,7 +81,7 @@ HIST_EXPIRE_DUPS_FIRST \
 HIST_FIND_NO_DUPS \
 HIST_IGNORE_ALL_DUPS \
 HIST_IGNORE_DUPS \
-NO_HIST_IGNORE_SPACE \
+HIST_IGNORE_SPACE \
 NO_HIST_NO_FUNCTIONS \
 NO_HIST_NO_STORE \
 HIST_REDUCE_BLANKS \
@@ -453,6 +453,11 @@ autoload -U zmv
 alias cpz='noglob zmv -W -C'
 alias mvz='noglob zmv -W'
 
+if [ -f /etc/bash_completion.d/rhpkg.bash ]
+then
+    autoload -U +X bashcompinit && bashcompinit
+    source /etc/bash_completion.d/rhpkg.bash
+fi
 
 ##############
 ### Styles ###

@@ -6,10 +6,11 @@
 #################
 
 UARCH=`uname -sm`
-ARCH=`uname -m`
 HOST=`hostname | sed 's/\..*//'`
 ARCHBIN="$HOME/bin/`echo $UARCH| sed 's/ /\//'`"
 PATH=$PATH:$HOME/bin
+# Force location for Kerberos cache. Useful to workaround problems with puddle generation.
+KRB5CCNAME="/tmp/ncross_ccache"
 
 # https://unix.stackexchange.com/questions/258679/why-is-ls-suddenly-wrapping-items-with-spaces-in-single-quotes
 # Rather than setting every ls alias just force it with:
@@ -19,7 +20,7 @@ QUOTING_STYLE=literal
 
 SVN_EDITOR="$EDITOR"
 
-export UARCH ARCH HOST ARCHBIN EDITOR SVN_EDITOR
+export UARCH HOST ARCHBIN EDITOR SVN_EDITOR KRB5CCNAME
 
 if tput setaf 0 &>/dev/null
 then
@@ -54,6 +55,11 @@ fi
 git -c core.pager="less" >& /dev/null
 [[ "$?" == "129" ]] && GIT_NOCMDCONFIG=true
 
+
+getip()
+{
+    ip route get 1 | head -1 | awk '{print $7}'
+}
 
 # If we are printing the environment (no arguments) print it sorted.
 function env()
@@ -851,6 +857,11 @@ function mergePullRequest()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
+    if [ "$1" = "-m" ]
+    then
+        local preferMerge="true"
+        shift
+    fi
     if [ "$1" = "-r" ]
     then
         shift
@@ -879,12 +890,15 @@ function mergePullRequest()
         git lg -n 1
         local original=`git log -1 --pretty="%H"`
 
-        git checkout -b $tmpbranch
-        echo "### Rebasing to $branch"
-        git rebase $branch
-        [[ "$?" != "0" ]] && printf "$ERROR" "Error rebasing $branch; aborting..." && return 1
-        git lg -n 1
-        local new=`git log -1 --pretty="%H"`
+        if [ "$preferMerge" != "true" ]
+        then
+            git checkout -b $tmpbranch
+            echo "### Rebasing to $branch"
+            git rebase $branch
+            [[ "$?" != "0" ]] && printf "$ERROR" "Error rebasing $branch; aborting..." && return 1
+            git lg -n 1
+            local new=`git log -1 --pretty="%H"`
+        fi
 
         if [ "$original" != "$new" ]
         then
@@ -899,8 +913,13 @@ function mergePullRequest()
             git lg -n 1
         fi
         [[ "$?" != "0" ]] && printf "$ERROR" "Error merging pull request; aborting..." && return 1
-        git branch -D pullRequest$var $tmpbranch
+        git branch -D pullRequest$var
         [[ "$?" != "0" ]] && printf "$ERROR" "Error deleting branch; aborting..." && return 1
+        if [ "$preferMerge" != "true" ]
+        then
+            git branch -D $tmpbranch
+            [[ "$?" != "0" ]] && printf "$ERROR" "Error deleting branch; aborting..." && return 1
+        fi
     done
     echo -e "\033[49;32;1mFinished\033[0m"
 }

@@ -453,7 +453,7 @@ autoload -U zmv
 alias cpz='noglob zmv -W -C'
 alias mvz='noglob zmv -W'
 
-if [ -f /etc/bash_completion.d/rhpkg.bash ]
+if [ `bc <<< "$(rpm -q --queryformat '%{VERSION}\n' rhpkg)>=1.31"` ]
 then
     autoload -U +X bashcompinit && bashcompinit
     source /etc/bash_completion.d/rhpkg.bash

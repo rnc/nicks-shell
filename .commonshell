@@ -459,6 +459,13 @@ function maven-3.3.9()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.5.0()
+{
+    M2_HOME=/usr/local/apache-maven-3.5.0
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 function gradle-2.13()
 {
     PATH=/usr/local/gradle-2.13/bin:$PATH

@@ -9,8 +9,13 @@ UARCH=`uname -sm`
 HOST=`hostname | sed 's/\..*//'`
 ARCHBIN="$HOME/bin/`echo $UARCH| sed 's/ /\//'`"
 PATH=$PATH:$HOME/bin
-# Force location for Kerberos cache. Useful to workaround problems with puddle generation.
-KRB5CCNAME="/tmp/ncross_ccache"
+
+# Note: this may need changing for F26 : https://fedoraproject.org/wiki/Changes/KerberosKCMCache
+if ! grep -q "default_ccache_name" /etc/krb5.conf
+then
+    # Force location on machines without persistent cache for Kerberos cache. Useful to workaround problems with puddle generation.
+    KRB5CCNAME=/tmp/"$USER"_ccache
+fi
 
 # https://unix.stackexchange.com/questions/258679/why-is-ls-suddenly-wrapping-items-with-spaces-in-single-quotes
 # Rather than setting every ls alias just force it with:

@@ -17,6 +17,9 @@ then
     KRB5CCNAME=/tmp/"$USER"_ccache
 fi
 
+# https://github.com/keybase/keybase-issues/issues/2798 ; https://issues.apache.org/jira/browse/MGPG-59
+GPG_TTY=$(tty)
+
 # https://unix.stackexchange.com/questions/258679/why-is-ls-suddenly-wrapping-items-with-spaces-in-single-quotes
 # Rather than setting every ls alias just force it with:
 QUOTING_STYLE=literal
@@ -25,7 +28,7 @@ QUOTING_STYLE=literal
 
 SVN_EDITOR="$EDITOR"
 
-export UARCH HOST ARCHBIN EDITOR SVN_EDITOR KRB5CCNAME
+export UARCH HOST ARCHBIN EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY
 
 if tput setaf 0 &>/dev/null
 then
@@ -457,6 +460,20 @@ function maven-3.3.3-prod()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.3.9-prod()
+{
+    M2_HOME=/usr/local/apache-maven-3.3.9-prod
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function maven-3.5.0-prod()
+{
+    M2_HOME=/usr/local/apache-maven-3.5.0-prod
+    PATH=$M2_HOME/bin:$PATH
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 function maven-3.3.9()
 {
     M2_HOME=/usr/local/apache-maven-3.3.9
@@ -568,7 +585,7 @@ function checkSigning()
 
     for i in `echo $JARS`
     do
-        if [ -n "`jar tf $i | grep $1`" ]
+        if [ -n "`jar tf $i | grep '$1'`" ]
         then
             echo $i
 

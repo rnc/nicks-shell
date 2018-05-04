@@ -31,6 +31,12 @@ QUOTING_STYLE=literal
 
 SVN_EDITOR="$EDITOR"
 
+# https://github.com/trapd00r/LS_COLORS
+if [ -d $HOME/Work/Miscellaneous/LS_COLORS ]
+then
+    eval $( dircolors -b $HOME/Work/Miscellaneous/LS_COLORS/LS_COLORS )
+fi
+
 export UARCH HOST ARCHBIN EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY
 
 if tput setaf 0 &>/dev/null
@@ -205,8 +211,14 @@ function lt()
     [[ -z "$TARGET" ]] && TARGET="."
     [[ ! -d "$TARGET" ]] && echo "Usage: lt <directory>" && return
 
-    # https://lintut.com/colorize-log-files-on-linux-using-ccze-tool/
-    ls $ARGS -hlr $TARGET 2>&1 | tail -10 | ccze -A
+    # Was using https://lintut.com/colorize-log-files-on-linux-using-ccze-tool but
+    # more comprehensive LS_COLORS is better.
+    #
+    # Final grep is to color the sizes :
+    # https://unix.stackexchange.com/questions/77173/bash-colorize-second-column-of-output
+    /bin/ls -F --color $ARGS -hlr $TARGET 2>&1 | tail -10 | grep --color -P "^(\S+\s+){4}\K\S+"
+
+
 }
 
 # Override for git to handle wrapping. I only want to use fmt for the log command.

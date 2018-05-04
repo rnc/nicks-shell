@@ -1,5 +1,8 @@
 # -*- sh -*-
 #
+#
+# Shell independent (bash/zsh) set of common variables/functions.
+#
 
 #################
 ### Variables ###
@@ -64,7 +67,42 @@ git -c core.pager="less" >& /dev/null
 [[ "$?" == "129" ]] && GIT_NOCMDCONFIG=true
 
 
-getpasswd()
+# Displays a syntax highlighted file in the terminal
+function f()
+{
+    which highlight >& /dev/null
+    [[ "$?" != 0 ]] && printf "$ERROR" "Install highlight" && return 1
+    [[ $# = 0 ]] && echo "Pass in file" && return 1
+
+    local EXTRA=""
+    while [[ $# -ne 1 ]]
+    do
+        EXTRA=$1
+        shift
+    done
+
+    [[ ! -f "$1" ]] && echo "No such file \"$1\"" && return 1
+
+    # Handle unknown file extensions.
+    if [[ ${1: -4} == ".pom" ]]
+    then
+        local SYNTAX="--syntax=xml"
+    elif [[ ${1: -11} == ".properties" ]]
+    then
+        local SYNTAX="--syntax=ini"
+    elif [[ ${1: -4} == ".log" ]]
+    then
+        local SYNTAX="--syntax=txt"
+    elif [[ "`head -n 1 $1`" = "# -*- sh -*-" ]]
+    then
+        local SYNTAX="--syntax=sh"
+    fi
+
+    highlight --line-numbers --validate-input --style=zenburn --plug-in=java_library $EXTRA $SYNTAX -O xterm256 $1 | less -R
+}
+
+# Generates a complex password and inserts it into the clipboard
+function getpasswd()
 {
     which passwd >& /dev/null
     [[ "$?" != 0 ]] && printf "$ERROR" "Install passwd" && return 1
@@ -91,7 +129,7 @@ getpasswd()
     pwgen -sycn 32 1 | xclip -selection $SELECTION
 }
 
-getip()
+function getip()
 {
     ip route get 1 | head -1 | awk '{print $7}'
 }
@@ -167,7 +205,8 @@ function lt()
     [[ -z "$TARGET" ]] && TARGET="."
     [[ ! -d "$TARGET" ]] && echo "Usage: lt <directory>" && return
 
-    ls $ARGS -lr $TARGET 2>&1 | tail -10
+    # https://lintut.com/colorize-log-files-on-linux-using-ccze-tool/
+    ls $ARGS -hlr $TARGET 2>&1 | tail -10 | ccze -A
 }
 
 # Override for git to handle wrapping. I only want to use fmt for the log command.
@@ -318,6 +357,7 @@ function _java_prompt_()
     local oraclejava6=/usr/local/jdk1.6.0
     local oraclejava7=/usr/local/jdk1.7.0
     local oraclejava8=/usr/local/jdk1.8.0
+    local oraclejava9=/usr/local/jdk-9
     local ibmjava6=/usr/local/ibm-jdk1.6.0
     local ibmjava7=/usr/local/ibm-jdk1.7.0
     local i
@@ -340,6 +380,9 @@ function _java_prompt_()
         ;;
       "oraclejava8")
         export JAVA_HOME=$oraclejava8
+        ;;
+      "oraclejava9")
+        export JAVA_HOME=$oraclejava9
         ;;
       "ibmjava6")
         export JAVA_HOME=$ibmjava6
@@ -380,6 +423,13 @@ function oraclejava8()
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE8)%{"$'\e[00m''%}'
 }
 
+function oraclejava9()
+{
+    _java_prompt_ oraclejava9
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE9)%{"$'\e[00m''%}'
+}
+
 function ibmjava6()
 {
     _java_prompt_ ibmjava6
@@ -413,105 +463,105 @@ function ant18()
 function maven-3.0.3()
 {
     M2_HOME=/usr/local/apache-maven-3.0.3
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.0.4()
 {
     M2_HOME=/usr/local/apache-maven-3.0.4
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.0.5()
 {
     M2_HOME=/usr/local/apache-maven-3.0.5
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.0.5-prod()
 {
     M2_HOME=/usr/local/apache-maven-3.0.5-prod
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.1.1()
 {
     M2_HOME=/usr/local/apache-maven-3.1.1
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.1.1-prod()
 {
     M2_HOME=/usr/local/apache-maven-3.1.1-prod
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.2.3-prod()
 {
     M2_HOME=/usr/local/apache-maven-3.2.3-prod
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.2.5()
 {
     M2_HOME=/usr/local/apache-maven-3.2.5
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.2.5-prod()
 {
     M2_HOME=/usr/local/apache-maven-3.2.5-prod
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.3.3()
 {
     M2_HOME=/usr/local/apache-maven-3.3.3
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.3.3-prod()
 {
     M2_HOME=/usr/local/apache-maven-3.3.3-prod
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.3.9-prod()
 {
     M2_HOME=/usr/local/apache-maven-3.3.9-prod
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.5.0-prod()
 {
     M2_HOME=/usr/local/apache-maven-3.5.0-prod
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.3.9()
 {
     M2_HOME=/usr/local/apache-maven-3.3.9
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.5.0()
 {
     M2_HOME=/usr/local/apache-maven-3.5.0
-    PATH=$M2_HOME/bin:$PATH
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 

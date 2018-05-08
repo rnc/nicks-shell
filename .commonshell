@@ -96,12 +96,14 @@ function f()
     elif [[ ${1: -11} == ".properties" ]]
     then
         local SYNTAX="--syntax=ini"
-    elif [[ ${1: -4} == ".log" ]]
-    then
-        local SYNTAX="--syntax=txt"
+    # If there is a emacs mode marker use that.
     elif [[ "`head -n 1 $1`" = "# -*- sh -*-" ]]
     then
         local SYNTAX="--syntax=sh"
+    # If its a log file or no extension fall back to plain text.
+    elif [[ ${1: -4} == ".log" ]] || ! [[ $1 =~ ".+\..*$" ]]
+    then
+        local SYNTAX="--syntax=txt"
     fi
 
     highlight --line-numbers --validate-input --style=zenburn --plug-in=java_library $EXTRA $SYNTAX -O xterm256 $1 | less -R

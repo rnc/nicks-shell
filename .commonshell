@@ -93,11 +93,20 @@ function f()
     if [[ ${1: -4} == ".pom" ]]
     then
         local SYNTAX="--syntax=xml"
+    elif [[ ${1: -4} == ".cfg" ]]
+    then
+        local SYNTAX="--syntax=conf"
     elif [[ ${1: -11} == ".properties" ]]
     then
         local SYNTAX="--syntax=ini"
+    elif [[ ${1: -7} == ".gradle" ]]
+    then
+        local SYNTAX="--syntax=java"
     # If there is a emacs mode marker use that.
     elif [[ "`head -n 1 $1`" = "# -*- sh -*-" ]]
+    then
+        local SYNTAX="--syntax=sh"
+    elif [[ "`head -n 1 $1`" = "# -*- zsh -*-" ]]
     then
         local SYNTAX="--syntax=sh"
     # If its a log file or no extension fall back to plain text.
@@ -118,15 +127,20 @@ function getpasswd()
     [[ "$?" != 0 ]] && printf "$ERROR" "Install xclip" && return 1
 
     local SELECTION=p
+    local SYMBOLS=y
     while [ -n "$1" ]
     do
         case "$1" in
           -c)
             shift
-            local SELECTION=c
+            SELECTION=c
+            ;;
+          -s)
+            shift
+            SYMBOLS=
             ;;
           -h)
-            echo "Usage is $0 [-h || -c : Use X selection XA_CLIPBOARD as opposed to XA_PRIMARY.\n\tFormer allows Ctrl-V paste, latter allows middle mouse button paste. ]"
+            echo "Usage is $0 [ -s : Don't include symbols in the password || -h || -c : Use X selection XA_CLIPBOARD as opposed to XA_PRIMARY.\n\tFormer allows Ctrl-V paste, latter allows middle mouse button paste. ]"
             return 1
             ;;
           *)
@@ -134,7 +148,7 @@ function getpasswd()
         esac
     done
 
-    pwgen -sycn 32 1 | xclip -selection $SELECTION
+    pwgen -scn"$SYMBOLS" 32 1 | xclip -selection $SELECTION
 }
 
 function getip()
@@ -612,7 +626,7 @@ function _update-maven-extensions()
         local PRODMVN="`functions -F | grep -- -prod | sed 's/declare -f //g' |  tr '\n' ' '`"
     else
         # ZSH
-        local PRODMVN="`print -l ${(ok)functions}|grep -- -prod | tr '\n' ' '`"
+        local PRODMVN="`print -l ${(ok)functions} | grep -- -prod | grep -v 3.0.5 | tr '\n' ' '`"
     fi
 
     # Use a temporary file as we can't use sudo with a function

@@ -1,3 +1,4 @@
+# -*- zsh -*-
 #
 # $Id: .zshrc,v 1.20 2010/04/22 07:02:58 rnc Exp $
 #
@@ -160,7 +161,11 @@ autoload -U add-zsh-hook
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen-256color" ]
 then
     # ZSH-Syntax-Highlighting
-    if [ -d $PREFIX/zsh-syntax-highlighting ]
+    if [ -d $PREFIX/fast-syntax-highlighting ]
+    then
+        fpath=($PREFIX/fast-syntax-highlighting $fpath)
+        source $PREFIX/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+    elif [ -d $PREFIX/zsh-syntax-highlighting ]
     then
         ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
         source $PREFIX/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

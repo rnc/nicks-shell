@@ -1,0 +1,242 @@
+---
+
+- name: run the playbook tasks on the localhost
+  hosts: 127.0.0.1
+  connection: local
+  become: yes
+  vars_files:
+    - vars.yml
+
+#  vars_prompt:
+#   - name: vpn
+#     prompt: "Enter VPN password"
+#     when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages'
+
+  tasks:
+
+  - name: Remove software
+    dnf:
+      name:
+        - akregator
+        - calligra*
+        - dragon
+        - falkon
+        - juk
+        - kaddressbooklibs
+        - kamil
+        - kget
+        - kleopatra
+        - kmag
+        - kmines
+        - kmouth
+        - kolourpaint
+        - korganizer
+        - kpat
+        - krdc
+        - kruler
+        - krusader
+        - ktnef
+        - ktorrent
+        - libkmahjongg
+      state: absent
+
+  - name: Install all package upgrades
+    dnf: name=* state=latest
+
+  - name: Gather package facts
+    package_facts:
+      manager: auto
+    no_log: True
+
+  - name: Repository - Google Chrome
+    yum_repository:
+      name: google-chrome
+      description: Google Chrome
+      baseurl: http://dl.google.com/linux/chrome/rpm/stable/x86_64
+      gpgcheck: yes
+      enabled: yes
+      gpgkey: https://dl.google.com/linux/linux_signing_key.pub
+
+  - name : Repository - SourceClear
+    yum_repository:
+      name: sourceclear
+      description: SourceClear YUM Repository
+      baseurl: https://download.sourceclear.com/redhat/noarch/
+      gpgcheck: yes
+      enabled: yes
+      gpgkey: https://download.sourceclear.com/redhat/SRCCLR-GPG-KEY
+
+  - name : Repository - Dropbox
+    yum_repository:
+      name: dropbox
+      description: Dropbox YUM Repository
+      baseurl: http://linux.dropbox.com/fedora/$releasever/
+      gpgcheck: yes
+      enabled: yes
+      gpgkey: http://linux.dropbox.com/fedora/rpm-public-key.asc
+
+  - name : Repository - RCM
+    yum_repository:
+      name: rcm-tools-fedora
+      description: RCM Tools for Fedora $releasever (RPMs)
+      baseurl: http://{{ rcm_repo }}/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-$releasever/compose/Everything/$basearch/os/
+      gpgcheck: no
+      enabled: yes
+
+  - name : Repository - CSB
+    yum_repository:
+      name: rhel7-csb-stage-reop
+      description: RHEL7 CSB packages
+      baseurl: http://{{ csb_repo }}/rhel7-csb-stage
+      gpgcheck: yes
+      enabled: yes
+      priority: 2
+      includepkgs: redhat*,slack,bluejeans
+      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
+
+  - name: Install RPMFusion Free
+    dnf:
+      name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts.lsb.major_release}}.noarch.rpm"
+      state: present
+    when:  '"rpmfusion-free-release" not in ansible_facts.packages'
+
+  - name: Install RPMFusion NonFree
+    dnf:
+      name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-nonfree-release-{{ ansible_facts.lsb.major_release}}.noarch.rpm"
+      state: present
+    when:  '"rpmfusion-nonfree-release" not in ansible_facts.packages'
+
+  - block:
+    - name: Install bootstrap VPN
+      unarchive:
+        src: files/bootstrapvpn.tar
+        dest: /
+    - name: Activate network for bootstrap VPN
+      command: nmcli connection reload
+    when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages'
+
+#  - name: Connect to VPN
+#    expect:
+#      command: nmcli -a connection up AMS2-Bootstrap
+#      responses:
+#        (?i)password: "{{ vpn }}"
+#    when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome2" not in ansible_facts.packages'
+
+  # This will cause the play to fail if the VPN block is not activated.
+  - block:
+      - debug:
+          msg="Verifying VPN connection exists...( if not activate vpn connection by running nmcli -a connection up AMS2-Bootstrap )"
+      - name: Check bootstrap VPN exists
+        command: ip link show tun0 up
+
+  # - name: Check bootstrap vpn exists
+  #   stat:
+  #     path: /etc/NetworkManager/system-connections/AMS2-bootstrap.ovpn
+  #   register: stat_vpn_result
+  #   no_log: True
+
+  # - block:
+  #   - name: "End play if VPN not installed for manual connection"
+  #     debug:
+  #       msg: "Now activate vpn connection by running nmcli -a connection up AMS2-Bootstrap"
+  #   - meta: end_play
+  #   tags:
+  #     - vpn
+  #   when: stat_vpn_result.stat.exists
+
+  - name: Check GPG Key exists
+    stat:
+      path: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
+    register: stat_gpg_result
+    no_log: True
+
+  - name: Download GPG Key
+    get_url:
+      url: http://{{ csb_repo }}/rhel7-csb-stage/RPM-GPG-KEY-helpdesk
+      dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
+    when: stat_gpg_result.stat.exists
+
+  - block:
+    - name: Download SpiderOAK
+      get_url:
+        url: https://spideroak.com/release/spideroak/rpm_x64
+        dest: /tmp/spider.rpm
+    - name: Install SpiderOAK
+      dnf:
+        name: /tmp/spider.rpm
+        state: present
+    when: '"SpiderOak" not in ansible_facts.packages'
+
+  - name: Install required software
+    dnf:
+      name:
+        - CPUFreqUtility
+        - ansible
+        - brewkoji
+        - cherrytree
+        - curl
+        - digikam
+        - dolphin
+        - dropbox
+        - emacs
+        - emacs-auctex
+        - emacs-color-theme
+        - emacs-common
+        - emacs-goodies
+        - firefox
+        - git
+        - gnupg2
+        - google-chrome-stable
+        - gwenview
+        - highlight
+        - hplip
+        - kde-connect
+        - keepassxc
+        - kgpg
+        - krb5-workstation
+        - ksysguard
+        - kwalletmanager
+        - libreoffice-calc
+        - libreoffice-draw
+        - libreoffice-impress
+        - libreoffice-langpack-en
+        - libreoffice-writer
+        - okular
+        - openssh-clients
+        - openvpn
+        - pwgen
+        - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
+        - redhat-internal-cert-install
+        - rh-osbs
+        - rhpkg
+        - slack
+        - srcclr
+        - subversion
+        - thunderbird
+        - wireshark-qt
+        - yarock
+        - zoom
+        - zsh
+        - xclip
+      state: present
+
+  - name: Install secondary software (development)
+    dnf:
+      name:
+        - cmake
+        - make
+        - mock
+        - dmidecode
+        - lm_sensors
+        - rpmdiff
+        - texlive-bibtex
+        - texlive-latex
+      state: present
+
+  - block:
+    - name: Clean artifact path
+      file:
+        state: absent
+        path: "/etc/NetworkManager/system-connections/AMS2-bootstrap.ovpn"
+    - name: Reload network
+      command: nmcli connection reload

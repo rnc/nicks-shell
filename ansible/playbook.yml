@@ -23,7 +23,7 @@
         - falkon
         - juk
         - kaddressbooklibs
-        - kamil
+        - kmail
         - kget
         - kleopatra
         - kmag
@@ -193,6 +193,7 @@
         - kde-connect
         - keepassxc
         - kgpg
+        - konversation
         - krb5-workstation
         - ksysguard
         - kwalletmanager
@@ -215,7 +216,6 @@
         - thunderbird
         - wireshark-qt
         - yarock
-        - zoom
         - zsh
         - xclip
       state: present

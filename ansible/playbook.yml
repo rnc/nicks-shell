@@ -6,6 +6,8 @@
   become: yes
   vars_files:
     - vars.yml
+  vars:
+    - vpn_bootstrap: false
 
 #  vars_prompt:
 #   - name: vpn
@@ -113,6 +115,10 @@
         dest: /
     - name: Activate network for bootstrap VPN
       command: nmcli connection reload
+
+    - name: Note this action.
+      set_fact:
+        vpn_bootstrap: True
     when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages'
 
 #  - name: Connect to VPN
@@ -234,9 +240,11 @@
       state: present
 
   - block:
-    - name: Clean artifact path
+    - name: Clean bootstrap VPN
       file:
         state: absent
         path: "/etc/NetworkManager/system-connections/AMS2-bootstrap.ovpn"
+    # Network will be reloaded on system reboot anyway
     - name: Reload network
       command: nmcli connection reload
+    when: vpn_bootstrap == True

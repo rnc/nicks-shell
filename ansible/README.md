@@ -22,6 +22,7 @@ sudo ansible-playbook --ask-vault-pass -v playbook.yml
 
 Switch to using a hosts file? And a ansible.cfg file ( https://sudo-science.com/setting-up-fedora-28-using-ansible/ )
 Is there any way of automatically connecting to the VPN apart from manually exiting
+Add devel packages
 
 
 # Devel Packages

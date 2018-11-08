@@ -19,27 +19,32 @@
   - name: Remove software
     dnf:
       name:
+        - akonadi
         - akregator
         - calligra*
         - dragon
         - falkon
         - juk
+        - k3b
         - kaddressbooklibs
-        - kmail
+        - kdepim*
         - kget
         - kleopatra
         - kmag
+        - kmail
         - kmines
         - kmouth
         - kolourpaint
         - korganizer
         - kpat
         - krdc
+        - krfb
         - kruler
         - krusader
         - ktnef
         - ktorrent
         - libkmahjongg
+        - qt5-qdbusviewer
       state: absent
 
   - name: Install all package upgrades
@@ -135,21 +140,6 @@
       - name: Check bootstrap VPN exists
         command: ip link show tun0 up
 
-  # - name: Check bootstrap vpn exists
-  #   stat:
-  #     path: /etc/NetworkManager/system-connections/AMS2-bootstrap.ovpn
-  #   register: stat_vpn_result
-  #   no_log: True
-
-  # - block:
-  #   - name: "End play if VPN not installed for manual connection"
-  #     debug:
-  #       msg: "Now activate vpn connection by running nmcli -a connection up AMS2-Bootstrap"
-  #   - meta: end_play
-  #   tags:
-  #     - vpn
-  #   when: stat_vpn_result.stat.exists
-
   - name: Check GPG Key exists
     stat:
       path: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
@@ -221,9 +211,9 @@
         - subversion
         - thunderbird
         - wireshark-qt
+        - xclip
         - yarock
         - zsh
-        - xclip
       state: present
 
   - name: Install secondary software (development)
@@ -234,6 +224,7 @@
         - mock
         - dmidecode
         - lm_sensors
+        - podman
         - rpmdiff
         - texlive-bibtex
         - texlive-latex

@@ -4,7 +4,7 @@
 ## Bootstrap
 
 ```
-wget https://github.com/rnc/nicks-shell/blob/master/ansible/bootstrap.sh
+wget https://raw.githubusercontent.com/rnc/nicks-shell/master/ansible/bootstrap.sh
 ./bootstrap.sh
 
 ```

@@ -109,6 +109,22 @@
     when:  '"rpmfusion-nonfree-release" not in ansible_facts.packages'
 
   - block:
+    - name: Download SpiderOAK
+      get_url:
+        url: https://spideroak.com/release/spideroak/rpm_x64
+        dest: /tmp/spider.rpm
+    - name: Install SpiderOAK
+      dnf:
+        name: /tmp/spider.rpm
+        state: present
+    when: '"SpiderOak" not in ansible_facts.packages'
+
+  - file:
+      src: "/etc/gitconfig"
+      dest: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
+      state: link
+
+  - block:
     - name: Install bootstrap VPN
       unarchive:
         src: files/bootstrapvpn.tar
@@ -146,17 +162,6 @@
       url: http://{{ csb_repo }}/rhel7-csb-stage/RPM-GPG-KEY-helpdesk
       dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
     when: stat_gpg_result.stat.exists
-
-  - block:
-    - name: Download SpiderOAK
-      get_url:
-        url: https://spideroak.com/release/spideroak/rpm_x64
-        dest: /tmp/spider.rpm
-    - name: Install SpiderOAK
-      dnf:
-        name: /tmp/spider.rpm
-        state: present
-    when: '"SpiderOak" not in ansible_facts.packages'
 
   - name: Install required software
     dnf:
@@ -226,11 +231,6 @@
         - texlive-bibtex
         - texlive-latex
       state: present
-
-  - file:
-      src: "/etc/gitconfig"
-      dest: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
-      state: link
 
   - block:
     - name: Clean bootstrap VPN

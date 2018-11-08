@@ -120,8 +120,8 @@
     when: '"SpiderOak" not in ansible_facts.packages'
 
   - file:
-      src: "/etc/gitconfig"
-      dest: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
+      path: "/etc/gitconfig"
+      src: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
       state: link
 
   - block:
@@ -241,3 +241,11 @@
     - name: Reload network
       command: nmcli connection reload
     when: vpn_bootstrap == True
+
+  - name: Patch VPN
+    lineinfile:
+      path: "{{ item }}"
+      insertafter: "service-type=org.freedesktop.NetworkManager.openvpn"
+      line: "username={{ vpn_username }}"
+    with_fileglob:
+      - "/etc/NetworkManager/system-connections/*.ovpn"

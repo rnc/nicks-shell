@@ -212,6 +212,7 @@
         - subversion
         - thunderbird
         - wireshark-qt
+        - vlc
         - xclip
         - yarock
         - zsh

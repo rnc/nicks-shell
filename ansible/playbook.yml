@@ -103,13 +103,13 @@
 
   - name: Install RPMFusion Free
     dnf:
-      name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts.lsb.major_release}}.noarch.rpm"
+      name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"
       state: present
     when:  '"rpmfusion-free-release" not in ansible_facts.packages'
 
   - name: Install RPMFusion NonFree
     dnf:
-      name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-nonfree-release-{{ ansible_facts.lsb.major_release}}.noarch.rpm"
+      name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-nonfree-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"
       state: present
     when:  '"rpmfusion-nonfree-release" not in ansible_facts.packages'
 
@@ -204,6 +204,7 @@
         - pwgen
         - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
         - redhat-internal-cert-install
+        - redhat-lsb-core
         - rh-osbs
         - rhpkg
         - slack

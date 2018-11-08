@@ -109,7 +109,7 @@
 
   - name: Install RPMFusion NonFree
     dnf:
-      name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-nonfree-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"
+      name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"
       state: present
     when:  '"rpmfusion-nonfree-release" not in ansible_facts.packages'
 

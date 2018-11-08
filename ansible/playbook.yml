@@ -9,13 +9,8 @@
   vars:
     - vpn_bootstrap: false
 
-#  vars_prompt:
-#   - name: vpn
-#     prompt: "Enter VPN password"
-#     when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages'
 
   tasks:
-
   - name: Remove software
     dnf:
       name:
@@ -231,6 +226,11 @@
         - texlive-bibtex
         - texlive-latex
       state: present
+
+  - file:
+      src: "/etc/gitconfig"
+      dest: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
+      state: link
 
   - block:
     - name: Clean bootstrap VPN

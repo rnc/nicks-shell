@@ -14,18 +14,21 @@ wget https://raw.githubusercontent.com/rnc/nicks-shell/master/ansible/bootstrap.
 Run using
 
 ```
+ansible-playbook --ask-vault-pass -v playbook.yml --ask-become-pass
+```
+or
+```
 sudo ansible-playbook --ask-vault-pass -v playbook.yml
 ```
 
 
 # TODO
 
-Switch to using a hosts file? And a ansible.cfg file ( https://sudo-science.com/setting-up-fedora-28-using-ansible/ )
 Is there any way of automatically connecting to the VPN apart from manually exiting
 Add devel packages
 
 
-# Devel Packages
+## TODO: Devel Packages
 
 ```
 dbus-devel

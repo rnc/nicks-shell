@@ -1,9 +1,7 @@
 ---
 
 - name: run the playbook tasks on the localhost
-  hosts: 127.0.0.1
-  connection: local
-  become: yes
+  hosts: localhost
   vars_files:
     - vars.yml
   vars:
@@ -87,7 +85,7 @@
 
   - name : Repository - CSB
     yum_repository:
-      name: rhel7-csb-stage-reop
+      name: rhel7-csb-stage
       description: RHEL7 CSB packages
       baseurl: http://{{ csb_repo }}/rhel7-csb-stage
       gpgcheck: yes
@@ -131,7 +129,6 @@
         dest: /
     - name: Activate network for bootstrap VPN
       command: nmcli connection reload
-
     - name: Note this action.
       set_fact:
         vpn_bootstrap: True
@@ -187,12 +184,14 @@
         - highlight
         - hplip
         - kde-connect
+        - kdesu
         - keepassxc
         - kgpg
         - konversation
         - krb5-workstation
         - ksysguard
         - kwalletmanager
+        - libnotify
         - libreoffice-calc
         - libreoffice-draw
         - libreoffice-impress
@@ -215,6 +214,7 @@
         - vlc
         - xclip
         - yarock
+        - xorg-x11-server-utils
         - zsh
       state: present
 
@@ -222,6 +222,8 @@
     dnf:
       name:
         - cmake
+        - cpio
+        - kf5-kpackage
         - make
         - mock
         - dmidecode

@@ -9,6 +9,10 @@
 
 
   tasks:
+  - name: Set hostname
+    hostname:
+      name: atlantis
+
   - name: Remove software
     dnf:
       name:
@@ -229,6 +233,7 @@
         - dmidecode
         - lm_sensors
         - podman
+        - python3-jenkins-job-builder
         - rpmdiff
         - texlive-bibtex
         - texlive-latex

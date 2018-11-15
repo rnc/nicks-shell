@@ -121,11 +121,6 @@
         state: present
     when: '"SpiderOak" not in ansible_facts.packages'
 
-  - file:
-      path: "/etc/gitconfig"
-      src: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
-      state: link
-
   - block:
     - name: Install bootstrap VPN
       unarchive:
@@ -238,6 +233,12 @@
         - texlive-bibtex
         - texlive-latex
       state: present
+
+  - file:
+      path: "/etc/gitconfig"
+      src: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
+      state: link
+      force: yes
 
   - block:
     - name: Clean bootstrap VPN

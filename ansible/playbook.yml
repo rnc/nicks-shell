@@ -44,7 +44,8 @@
         - qt5-qdbusviewer
       state: absent
 
-  - name: Install Prerequisite software
+  # This is prerequisite for ansible to work on the host.
+  - name: Install prerequisite software
     dnf:
       name:
         - python2-libselinux
@@ -163,7 +164,7 @@
     get_url:
       url: http://{{ csb_repo }}/rhel7-csb-stage/RPM-GPG-KEY-helpdesk
       dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
-    when: stat_gpg_result.stat.exists
+    when: not stat_gpg_result.stat.exists
 
   - name: Install required software
     dnf:

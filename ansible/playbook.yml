@@ -45,10 +45,10 @@
       state: absent
 
   - name: Install Prerequisite software
-      dnf:
-        name:
-          - python2-libselinux
-        state: present
+    dnf:
+      name:
+        - python2-libselinux
+      state: present
 
   - name: Install all package upgrades
     dnf: name=* state=latest

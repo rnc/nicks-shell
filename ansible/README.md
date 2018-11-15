@@ -24,8 +24,8 @@ sudo ansible-playbook --ask-vault-pass -v playbook.yml
 
 # TODO
 
-Is there any way of automatically connecting to the VPN apart from manually exiting
-Add devel packages
+* Is there any way of automatically connecting to the VPN apart from manually exiting
+* Add devel packages
 
 
 ## TODO: Devel Packages

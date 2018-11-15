@@ -270,7 +270,7 @@
   - name: Patch VPN
     lineinfile:
       path: "{{ item }}"
-      insertafter: "service-type=org.freedesktop.NetworkManager.openvpn"
+      insertafter: "tunnel-mtu=1360"
       line: "username={{ vpn_username }}"
     with_fileglob:
       - "/etc/NetworkManager/system-connections/*.ovpn"

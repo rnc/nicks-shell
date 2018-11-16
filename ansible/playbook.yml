@@ -243,12 +243,6 @@
         - texlive-latex
       state: present
 
-  - file:
-      path: "/etc/gitconfig"
-      src: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
-      state: link
-      force: yes
-
   - block:
     - name: Clean bootstrap VPN
       file:
@@ -274,3 +268,11 @@
       line: "username={{ vpn_username }}"
     with_fileglob:
       - "/etc/NetworkManager/system-connections/*.ovpn"
+
+  - name: Patch krb5.conf
+    template:
+      src: krb5.conf.j2
+      dest: /etc/krb5.conf
+
+- name: Now include KDE playbook ( more specific system settings )
+  include: kde.yml

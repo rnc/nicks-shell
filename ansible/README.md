@@ -1,5 +1,5 @@
 
-# Setup my Fedora KDE Spin Workstation.
+# Setup my Fedora 29 KDE Spin Workstation.
 
 ## Bootstrap
 
@@ -20,6 +20,26 @@ or
 ```
 sudo ansible-playbook --ask-vault-pass -v playbook.yml
 ```
+
+
+# Variables
+
+The vars file needs to contain
+
+  * rcm_repo: "..."
+  * csb_repo: "..."
+  * vpn_username: "..."
+  * kerberos_kdc1: "..."
+  * kerberos_kdc2: "..."
+  * kerberos_kdc3: "..."
+  * kerberos_domain1: "..."
+  * kerberos_domain2: "..."
+  * kerberos_server: "..."
+
+The files/bootstrapvpn.tar needs to be a tar file containing:
+
+  * etc/NetworkManager/system-connections/vpnconfig.ovpn
+  * etc/pki/tls/certs/certificate.pem
 
 
 # TODO

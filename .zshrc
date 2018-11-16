@@ -434,7 +434,6 @@ function showoptions()
   done
 }
 
-
 # This is used in conjunction with the git alias tagcommit in gitconfig file.
 # This allows the tagcommit alias to use rev-parse completion.
 _git-tagcommit () { _git-rev-parse "$@" }
@@ -458,13 +457,16 @@ autoload -U zmv
 alias cpz='noglob zmv -W -C'
 alias mvz='noglob zmv -W'
 
-bc <<< "$(rpm -q --queryformat '%{VERSION}\n' rhpkg)>=1.31" > /dev/null
-if [ "$?" = "1" ]
+rpm -q rhpkg > /dev/null
+if [ "$?" = 0 ]
 then
-    autoload -U +X bashcompinit && bashcompinit
-    source /etc/bash_completion.d/rhpkg.bash
+    bc <<< "$(rpm -q --queryformat '%{VERSION}\n' rhpkg)>=1.31" > /dev/null
+    if [ "$?" = "1" ]
+    then
+        autoload -U +X bashcompinit && bashcompinit
+        source /etc/bash_completion.d/rhpkg.bash
+    fi
 fi
-
 ##############
 ### Styles ###
 ##############

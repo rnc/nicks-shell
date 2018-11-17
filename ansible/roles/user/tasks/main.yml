@@ -1,0 +1,15 @@
+---
+
+  - block:
+    - debug:
+        msg="Cloning backintime to /root/backtime for backup restoration..."
+    - name: Clone backintime
+      git:
+        repo: https://github.com/bit-team/backintime.git
+        dest: /root/backintime
+
+  - file:
+      path: "/etc/gitconfig"
+      src: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
+      state: link
+      force: yes

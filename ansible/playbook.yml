@@ -6,13 +6,12 @@
     - vars.yml
   vars:
     - vpn_bootstrap: false
-
+  vars_prompt:
+  - name: "vpn_password"
+    prompt: "Enter VPN password"
+    private: yes
 
   tasks:
-  - name: Set hostname
-    hostname:
-      name: atlantis
-
   - name: Remove software
     dnf:
       name:
@@ -44,89 +43,18 @@
         - qt5-qdbusviewer
       state: absent
 
-  # This is prerequisite for ansible to work on the host.
-  - name: Install prerequisite software
-    dnf:
-      name:
-        - python2-libselinux
-      state: present
-
-  - name: Install all package upgrades
-    dnf: name=* state=latest
-
   - name: Gather package facts
     package_facts:
       manager: auto
     no_log: True
 
-  - name: Repository - Google Chrome
-    yum_repository:
-      name: google-chrome
-      description: Google Chrome
-      baseurl: http://dl.google.com/linux/chrome/rpm/stable/x86_64
-      gpgcheck: yes
-      enabled: yes
-      gpgkey: https://dl.google.com/linux/linux_signing_key.pub
-
-  - name : Repository - SourceClear
-    yum_repository:
-      name: sourceclear
-      description: SourceClear YUM Repository
-      baseurl: https://download.sourceclear.com/redhat/noarch/
-      gpgcheck: yes
-      enabled: yes
-      gpgkey: https://download.sourceclear.com/redhat/SRCCLR-GPG-KEY
-
-  - name : Repository - Dropbox
-    yum_repository:
-      name: dropbox
-      description: Dropbox YUM Repository
-      baseurl: http://linux.dropbox.com/fedora/$releasever/
-      gpgcheck: yes
-      enabled: yes
-      gpgkey: http://linux.dropbox.com/fedora/rpm-public-key.asc
-
-  - name : Repository - RCM
-    yum_repository:
-      name: rcm-tools-fedora
-      description: RCM Tools for Fedora $releasever (RPMs)
-      baseurl: http://{{ rcm_repo }}/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-$releasever/compose/Everything/$basearch/os/
-      gpgcheck: no
-      enabled: yes
-
-  - name : Repository - CSB
-    yum_repository:
-      name: rhel7-csb-stage
-      description: RHEL7 CSB packages
-      baseurl: http://{{ csb_repo }}/rhel7-csb-stage
-      gpgcheck: yes
-      enabled: yes
-      priority: 2
-      includepkgs: redhat*,slack,bluejeans
-      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
-
-  - name: Install RPMFusion Free
+  # This is prerequisite for ansible to work on the host.
+  - name: Install prerequisite software
     dnf:
-      name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"
+      name:
+        - python3-libselinux
+        - python3-pexpect.noarch
       state: present
-    when:  '"rpmfusion-free-release" not in ansible_facts.packages'
-
-  - name: Install RPMFusion NonFree
-    dnf:
-      name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"
-      state: present
-    when:  '"rpmfusion-nonfree-release" not in ansible_facts.packages'
-
-  - block:
-    - name: Download SpiderOAK
-      get_url:
-        url: https://spideroak.com/release/spideroak/rpm_x64
-        dest: /tmp/spider.rpm
-    - name: Install SpiderOAK
-      dnf:
-        name: /tmp/spider.rpm
-        state: present
-    when: '"SpiderOak" not in ansible_facts.packages'
 
   - block:
     - name: Install bootstrap VPN
@@ -140,19 +68,31 @@
         vpn_bootstrap: True
     when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages'
 
-#  - name: Connect to VPN
-#    expect:
-#      command: nmcli -a connection up AMS2-Bootstrap
-#      responses:
-#        (?i)password: "{{ vpn }}"
-#    when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome2" not in ansible_facts.packages'
-
-  # This will cause the play to fail if the VPN block is not activated.
   - block:
-      - debug:
-          msg="Verifying VPN connection exists...( if not activate vpn connection by running nmcli -a connection up AMS2-Bootstrap )"
-      - name: Check bootstrap VPN exists
-        command: ip link show tun0 up
+    - name: Connect to VPN
+      expect:
+        command: nmcli -a connection up Amsterdam\ \(AMS2\)
+        echo: yes
+        responses:
+          vpn.secrets.password: "{{ vpn_password }}"
+      register: command_result
+      failed_when: '"is already active" not in command_result.stdout'
+    # This will cause the play to fail if the VPN block is not activated.
+    - debug:
+        msg="Verifying VPN connection exists...( if not activate vpn connection by running nmcli -a connection up Amsterdam\ \(AMS2\) )"
+    - name: Check bootstrap VPN exists
+      command: ip link show tun0 up
+
+  - name: Install all package upgrades
+    dnf: name=* state=latest
+
+  - name: Add repositories
+    include_role:
+      name: repositories
+
+  - name: Set hostname
+    hostname:
+      name: atlantis
 
   - name: Check GPG Key exists
     stat:
@@ -166,12 +106,23 @@
       dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
     when: not stat_gpg_result.stat.exists
 
+  - block:
+    - name: Download SpiderOAK
+      get_url:
+        url: https://spideroak.com/release/spideroak/rpm_x64
+        dest: /tmp/spider.rpm
+    - name: Install SpiderOAK
+      dnf:
+        name: /tmp/spider.rpm
+        state: present
+    when: '"SpiderOak" not in ansible_facts.packages'
+
   - name: Install required software
     dnf:
       name:
         - CPUFreqUtility
         - ansible
-        - brewkoji
+#        - brewkoji
         - cherrytree
         - curl
         - digikam
@@ -212,13 +163,13 @@
         - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
         - redhat-internal-cert-install
         - redhat-lsb-core
-        - rh-osbs
-        - rhpkg
+#        - rh-osbs
+#        - rhpkg
         - slack
         - srcclr
         - subversion
         - thunderbird
-        - wireshark-qt
+        - wireshark
         - vlc
         - xclip
         - yarock
@@ -231,6 +182,7 @@
       name:
         - cmake
         - cpio
+#        - kernel-tools
         - kf5-kpackage
         - make
         - mock
@@ -238,7 +190,7 @@
         - lm_sensors
         - podman
         - python3-jenkins-job-builder
-        - rpmdiff
+#        - rpmdiff
         - texlive-bibtex
         - texlive-latex
       state: present
@@ -253,14 +205,6 @@
       command: nmcli connection reload
     when: vpn_bootstrap == True
 
-  - block:
-      - debug:
-          msg="Cloning backintime to /root/backtime for back restoration..."
-      - name: Clone backintime
-        git:
-          repo: https://github.com/bit-team/backintime.git
-          dest: /root/backintime
-
   - name: Patch VPN
     lineinfile:
       path: "{{ item }}"
@@ -269,10 +213,21 @@
     with_fileglob:
       - "/etc/NetworkManager/system-connections/*.ovpn"
 
+  - name: Allow port ranges for KDEConnect
+    firewalld:
+      immediate: yes
+      permanent: true
+      state: enabled
+      port: '{{ item }}'
+    with_items:
+      - "1714-1764/udp"
+      - "1714-1764/tcp"
+
   - name: Patch krb5.conf
     template:
       src: krb5.conf.j2
       dest: /etc/krb5.conf
 
-- name: Now include KDE playbook ( more specific system settings )
-  include: kde.yml
+  - name: User account configuration
+    include_role:
+      name: user

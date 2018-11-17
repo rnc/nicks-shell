@@ -44,11 +44,10 @@ The files/bootstrapvpn.tar needs to be a tar file containing:
 
 # TODO
 
-* Is there any way of automatically connecting to the VPN apart from manually exiting
 * Add devel packages
 
 
-## TODO: Devel Packages
+## Devel Packages
 
 ```
 dbus-devel

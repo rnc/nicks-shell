@@ -35,10 +35,12 @@ The vars file needs to contain
   * kerberos_domain1: "..."
   * kerberos_domain2: "..."
   * kerberos_server: "..."
+  * hostname: "..."
 
 The files/bootstrapvpn.tar needs to be a tar file containing:
 
   * etc/NetworkManager/system-connections/vpnconfig.ovpn
+  ** Connection must be named ```Amsterdam\ \(AMS2\)```
   * etc/pki/tls/certs/certificate.pem
 
 

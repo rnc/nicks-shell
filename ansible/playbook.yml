@@ -53,7 +53,7 @@
     dnf:
       name:
         - python3-libselinux
-        - python3-pexpect.noarch
+        - python3-pexpect
       state: present
 
   - block:
@@ -76,6 +76,7 @@
         responses:
           vpn.secrets.password: "{{ vpn_password }}"
       register: command_result
+      # Handle double connection
       failed_when: '"is already active" not in command_result.stdout'
     # This will cause the play to fail if the VPN block is not activated.
     - debug:
@@ -92,7 +93,7 @@
 
   - name: Set hostname
     hostname:
-      name: atlantis
+      name: {{ hostname }}
 
   - name: Check GPG Key exists
     stat:

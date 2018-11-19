@@ -63,6 +63,9 @@
         dest: /
     - name: Activate network for bootstrap VPN
       command: nmcli connection reload
+    - name: Establish temporary vpn filename
+      shell: basename $(tar tf files/bootstrapvpn.tar */system-connections/* )
+      register: vpn_filename
     - name: Note this action.
       set_fact:
         vpn_bootstrap: True
@@ -71,7 +74,7 @@
   - block:
     - name: Connect to VPN
       expect:
-        command: nmcli -a connection up Amsterdam\ \(AMS2\)
+        command: nmcli -a connection up '{{ vpn_connection }}'
         echo: yes
         responses:
           vpn.secrets.password: "{{ vpn_password }}"
@@ -80,7 +83,7 @@
       failed_when: '"is already active" not in command_result.stdout'
     # This will cause the play to fail if the VPN block is not activated.
     - debug:
-        msg="Verifying VPN connection exists...( if not activate vpn connection by running nmcli -a connection up Amsterdam\ \(AMS2\) )"
+        msg="Verifying VPN connection exists...( if not activate vpn connection by running nmcli -a connection up {{ vpn_connection }} )"
     - name: Check bootstrap VPN exists
       command: ip link show tun0 up
 
@@ -93,7 +96,7 @@
 
   - name: Set hostname
     hostname:
-      name: {{ hostname }}
+      name: "{{ hostname }}"
 
   - name: Check GPG Key exists
     stat:
@@ -200,7 +203,7 @@
     - name: Clean bootstrap VPN
       file:
         state: absent
-        path: "/etc/NetworkManager/system-connections/AMS2-bootstrap.ovpn"
+        path: "/etc/NetworkManager/system-connections/{{ vpn_filename }}"
     # Network will be reloaded on system reboot anyway
     - name: Reload network
       command: nmcli connection reload

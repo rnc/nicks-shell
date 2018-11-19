@@ -1,6 +1,8 @@
 
 # Setup my Fedora 29 KDE Spin Workstation.
 
+Relies on python3 being available and uses local connection to setup the machine.
+
 ## Bootstrap
 
 ```
@@ -29,6 +31,7 @@ The vars file needs to contain
   * rcm_repo: "..."
   * csb_repo: "..."
   * vpn_username: "..."
+  * vpn_connection: "..." # Name of the VPN connection
   * kerberos_kdc1: "..."
   * kerberos_kdc2: "..."
   * kerberos_kdc3: "..."
@@ -40,7 +43,6 @@ The vars file needs to contain
 The files/bootstrapvpn.tar needs to be a tar file containing:
 
   * etc/NetworkManager/system-connections/vpnconfig.ovpn
-  ** Connection must be named ```Amsterdam\ \(AMS2\)```
   * etc/pki/tls/certs/certificate.pem
 
 

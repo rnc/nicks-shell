@@ -186,6 +186,8 @@
       name:
         - cmake
         - cpio
+        # Explicitly install Java 8 (later Fedora use Java 10)
+        - java-1.8.0-openjdk-devel
 #        - kernel-tools
         - kf5-kpackage
         - make
@@ -198,6 +200,12 @@
         - texlive-bibtex
         - texlive-latex
       state: present
+
+  tasks:
+  - name: Remove software
+    dnf:
+      name:
+        - java-openjdk-headless # Old Java 10 installation
 
   - block:
     - name: Clean bootstrap VPN

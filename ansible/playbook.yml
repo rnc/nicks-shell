@@ -16,14 +16,36 @@
     dnf:
       name:
         - akonadi
+        - akonadi-import-wizard
         - akregator
         - calligra-core
         - dragon
         - falkon
+        - initial-setup
         - juk
         - k3b
         - kaddressbooklibs
+        - kdepim-apps-libs
         - kdepim-runtime
+        - kf5-akonadi-mime
+        - kf5-akonadi-notes
+        - kf5-grantleetheme
+        - kf5-kalarmcal
+        - kf5-kdav
+        - kf5-kimap
+        - kf5-kitinerary
+        - kf5-kldap
+        - kf5-kmbox
+        - kf5-kontactinterface
+        - kf5-kpimtextedit
+        - kf5-kpimtextedit
+        - kf5-kpkpass
+        - kf5-ksmtp
+        - kf5-libkdepim
+        - kf5-libkleo
+        - kf5-mailimporter
+        - kf5-pimcommon
+        - kf5-pimcommon-akonadi
         - kget
         - kleopatra
         - kmag
@@ -81,11 +103,12 @@
       register: command_result
       # Handle double connection
       failed_when: '"is already active" not in command_result.stdout'
-    # This will cause the play to fail if the VPN block is not activated.
+      changed_when: False
     - debug:
         msg="Verifying VPN connection exists...( if not activate vpn connection by running nmcli -a connection up {{ vpn_connection }} )"
     - name: Check bootstrap VPN exists
       command: ip link show tun0 up
+      changed_when: False
 
   - name: Install all package upgrades
     dnf: name=* state=latest
@@ -144,6 +167,7 @@
         - gwenview
         - highlight
         - hplip
+        - jq
         - kde-connect
         - kdesu
         - keepassxc
@@ -158,6 +182,7 @@
         - libreoffice-impress
         - libreoffice-langpack-en
         - libreoffice-writer
+        - lynx
         - okular
         - openssh-clients
         - openvpn
@@ -196,12 +221,12 @@
         - lm_sensors
         - podman
         - python3-jenkins-job-builder
+#        - qt-virt-manager
 #        - rpmdiff
         - texlive-bibtex
         - texlive-latex
       state: present
 
-  tasks:
   - name: Remove software
     dnf:
       name:

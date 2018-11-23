@@ -1,0 +1,75 @@
+---
+
+  - name: Find user directories
+    find:
+      excludes: "lost+found"
+      paths: "/home"
+      file_type: "directory"
+    register: list_of_users
+
+  - name: Get latest version of driver
+    shell: curl --silent "https://api.github.com/repos/dhiltgen/docker-machine-kvm/releases/latest" | jq -r .tag_name
+    args:
+      warn: false
+    register: kvm_driver_version
+    changed_when: False
+
+  - name: Check driver exists
+    stat:
+      path: /opt/docker-machine-driver-kvm-{{ kvm_driver_version.stdout }}
+    register: kvm_driver_exists
+    no_log: True
+
+  - block:
+    - name: Get Driver
+      get_url:
+        url: https://github.com/dhiltgen/docker-machine-kvm/releases/download/{{ kvm_driver_version.stdout }}/docker-machine-driver-kvm-centos7
+        dest: /opt/docker-machine-driver-kvm-{{ kvm_driver_version.stdout }}
+        mode: 0755
+    - file:
+        path: "/usr/local/bin/docker-machine-driver-kvm"
+        src: "/opt/docker-machine-driver-kvm-{{ kvm_driver_version.stdout }}"
+        state: link
+        force: yes
+    when: not kvm_driver_exists.stat.exists
+
+
+  - name: Get latest version of minishift
+    shell: curl --silent "https://api.github.com/repos/minishift/minishift/releases/latest" | jq -r '.tag_name | ltrimstr("v")'
+    args:
+      warn: false
+    register: minishift_version
+    changed_when: False
+
+  - name: Check minishift exists
+    stat:
+      path: /opt/minishift-{{ kvm_driver_version.stdout }}-linux-amd64
+    register: minishift_exists
+    no_log: True
+
+  - block:
+    - name: Get Minishift
+      unarchive:
+        src: https://github.com/minishift/minishift/releases/download/v{{ minishift_version.stdout }}/minishift-{{ minishift_version.stdout }}-linux-amd64.tgz
+        dest: /opt
+        remote_src: yes
+    - file:
+        path: "/usr/local/bin/minishift"
+        src: "/opt/minishift-{{ minishift_version.stdout }}-linux-amd64/minishift"
+        state: link
+        force: yes
+    when: not minishift_exists.stat.exists
+
+
+  - name: Start and enable libvirtd
+    service:
+      name: libvirtd
+      state: started
+      enabled: yes
+
+  - name: "Add users ({{ list_of_users }}) to the libvirt group"
+    user:
+      name: "{{ item.pw_name }}"
+      groups: libvirt
+      append: yes
+    loop: "{{ list_of_users.files }}"

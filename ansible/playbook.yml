@@ -65,11 +65,6 @@
         - qt5-qdbusviewer
       state: absent
 
-  - name: Gather package facts
-    package_facts:
-      manager: auto
-    no_log: True
-
   # This is prerequisite for ansible to work on the host.
   - name: Install prerequisite software
     dnf:
@@ -77,6 +72,11 @@
         - python3-libselinux
         - python3-pexpect
       state: present
+
+  - name: Gather package facts
+    package_facts:
+      manager: auto
+    no_log: True
 
   - block:
     - name: Install bootstrap VPN
@@ -210,21 +210,23 @@
     dnf:
       name:
         - cmake
+        - code # Visual Studio Code
         - cpio
-        # Explicitly install Java 8 (later Fedora use Java 10)
-        - java-1.8.0-openjdk-devel
-#        - kernel-tools
+        - dmidecode
+        - java-1.8.0-openjdk-devel # Explicitly install Java 8 (later Fedora use Java 10)
         - kf5-kpackage
+        - libvirt
+        - lm_sensors
         - make
         - mock
-        - dmidecode
-        - lm_sensors
         - podman
         - python3-jenkins-job-builder
-#        - qt-virt-manager
-#        - rpmdiff
+        - qemu-kvm
         - texlive-bibtex
         - texlive-latex
+#        - kernel-tools
+#        - qt-virt-manager
+#        - rpmdiff
       state: present
 
   - name: Remove software
@@ -264,6 +266,10 @@
     template:
       src: krb5.conf.j2
       dest: /etc/krb5.conf
+
+  - name: Install minishift
+    include_role:
+      name: minishift
 
   - name: User account configuration
     include_role:

@@ -57,3 +57,12 @@
       name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"
       state: present
     when:  '"rpmfusion-nonfree-release" not in ansible_facts.packages'
+
+  - name : Repository - Visual Studio Code
+    yum_repository:
+      name: vscode.repo
+      description: Visual Studio Code
+      baseurl: https://packages.microsoft.com/yumrepos/vscode
+      gpgcheck: yes
+      enabled: yes
+      gpgkey: https://packages.microsoft.com/keys/microsoft.asc

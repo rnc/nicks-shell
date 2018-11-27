@@ -3,7 +3,7 @@
 - name: run the playbook tasks on the localhost
   hosts: localhost
   vars_files:
-    - vars.yml
+    - vars/private.yml
   vars:
     - vpn_bootstrap: false
   vars_prompt:
@@ -12,57 +12,12 @@
     private: yes
 
   tasks:
+#  - name: get variables
+#    debug: var=hostvars[inventory_hostname]
+
   - name: Remove software
     dnf:
-      name:
-        - akonadi
-        - akonadi-import-wizard
-        - akregator
-        - calligra-core
-        - dragon
-        - falkon
-        - initial-setup
-        - juk
-        - k3b
-        - kaddressbooklibs
-        - kdepim-apps-libs
-        - kdepim-runtime
-        - kf5-akonadi-mime
-        - kf5-akonadi-notes
-        - kf5-grantleetheme
-        - kf5-kalarmcal
-        - kf5-kdav
-        - kf5-kimap
-        - kf5-kitinerary
-        - kf5-kldap
-        - kf5-kmbox
-        - kf5-kontactinterface
-        - kf5-kpimtextedit
-        - kf5-kpimtextedit
-        - kf5-kpkpass
-        - kf5-ksmtp
-        - kf5-libkdepim
-        - kf5-libkleo
-        - kf5-mailimporter
-        - kf5-pimcommon
-        - kf5-pimcommon-akonadi
-        - kget
-        - kleopatra
-        - kmag
-        - kmail
-        - kmines
-        - kmouth
-        - kolourpaint
-        - korganizer
-        - kpat
-        - krdc
-        - krfb
-        - kruler
-        - krusader
-        - ktnef
-        - ktorrent
-        - libkmahjongg
-        - qt5-qdbusviewer
+      name: "{{ packages_to_remove }}"
       state: absent
 
   # This is prerequisite for ansible to work on the host.
@@ -146,64 +101,7 @@
 
   - name: Install required software
     dnf:
-      name:
-        - CPUFreqUtility
-        - ansible
-#        - brewkoji
-        - cherrytree
-        - curl
-        - digikam
-        - dolphin
-        - dropbox
-        - emacs
-        - emacs-auctex
-        - emacs-color-theme
-        - emacs-common
-        - emacs-goodies
-        - firefox
-        - git
-        - gnupg2
-        - google-chrome-stable
-        - gwenview
-        - highlight
-        - hplip
-        - jq
-        - kde-connect
-        - kdesu
-        - keepassxc
-        - kgpg
-        - konversation
-        - krb5-workstation
-        - ksysguard
-        - kwalletmanager
-        - libnotify
-        - libreoffice-calc
-        - libreoffice-draw
-        - libreoffice-impress
-        - libreoffice-langpack-en
-        - libreoffice-writer
-        - lynx
-        - okular
-        - openssh-clients
-        - openvpn
-        - python3-keyring
-        - python3-qt5
-        - pwgen
-        - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
-        - redhat-internal-cert-install
-        - redhat-lsb-core
-#        - rh-osbs
-#        - rhpkg
-        - slack
-        - srcclr
-        - subversion
-        - thunderbird
-        - wireshark
-        - vlc
-        - xclip
-        - yarock
-        - xorg-x11-server-utils
-        - zsh
+      name: "{{ packages_to_install }}"
       state: present
 
   - name: Install secondary software (development)
@@ -211,22 +109,24 @@
       name:
         - cmake
         - code # Visual Studio Code
-        - cpio
+        - cpio # RPM
         - dmidecode
         - java-1.8.0-openjdk-devel # Explicitly install Java 8 (later Fedora use Java 10)
-        - kf5-kpackage
-        - libvirt
+        - libvirt # Virtualisation
         - lm_sensors
         - make
         - mock
         - podman
         - python3-jenkins-job-builder
-        - qemu-kvm
+        - qemu-kvm # Virtualisation
         - texlive-bibtex
         - texlive-latex
 #        - kernel-tools
 #        - qt-virt-manager
 #        - rpmdiff
+#        - brewkoji
+#        - rh-osbs
+#        - rhpkg
       state: present
 
   - name: Remove software

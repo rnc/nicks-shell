@@ -50,7 +50,6 @@ The files/bootstrapvpn.tar needs to be a tar file containing:
 
 * Add devel packages
 
-
 ## Devel Packages
 
 ```

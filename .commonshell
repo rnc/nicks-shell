@@ -27,6 +27,10 @@ GPG_TTY=$(tty)
 # Rather than setting every ls alias just force it with:
 QUOTING_STYLE=literal
 
+# https://forum.manjaro.org/t/kde-plasma-related-error-messages-in-journal/21790
+QT_LOGGING_RULES='*=false'
+export QT_LOGGING_RULES
+
 [[ -z $EDITOR ]] && EDITOR="emacs -nw --no-init-file --no-site-file"
 
 SVN_EDITOR="$EDITOR"
@@ -589,6 +593,13 @@ function maven-3.3.9()
 function maven-3.5.0()
 {
     M2_HOME=/usr/local/apache-maven-3.5.0
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function maven-3.6.0()
+{
+    M2_HOME=/usr/local/apache-maven-3.6.0
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }

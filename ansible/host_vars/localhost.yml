@@ -55,6 +55,7 @@ packages_to_install:
   - ansible
   - bolt # For connection to Thunderbolt dock
   - cherrytree
+  - colordiff
   - curl
   - digikam
   - dolphin
@@ -64,6 +65,7 @@ packages_to_install:
   - emacs-color-theme
   - emacs-common
   - emacs-goodies
+  - emacs-yaml-mode
   - firefox
   - git
   - gnupg2

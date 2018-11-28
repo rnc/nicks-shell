@@ -26,7 +26,7 @@ sudo ansible-playbook --ask-vault-pass -v playbook.yml
 
 # Variables
 
-The vars file needs to contain
+The vars/private.yml file needs to contain
 
   * rcm_repo: "..."
   * csb_repo: "..."
@@ -52,6 +52,12 @@ Initially connecting a Lenovo T480s to the new Thunderbolt dock does *not* work.
 * https://www.youtube.com/watch?v=0XhRBILQIsE&feature=youtu.be&t=350
 * https://funnelfiasco.com/blog/2018/06/29/thinkpad-thunderbolt-dock-fedora/
 
+It is recommended to have the following BIOS setup:
+* Assist : Enabled
+* Wake : Disabled
+* Security : User level
+* Pre-Boot : ACL Boot
+
 Then follow these instructions,:
 
 * Ensure bolt is installed (the playbook will install it).
@@ -59,6 +65,7 @@ Then follow these instructions,:
 * `boltctl list`
 * `boltctl enroll <uuid from above>`
 
+After its recognised, for KDE Plasma : Audio, you may need to enter `System Settings/Multimedia/Audio and Video` and configure each audio device to prefer the dock.
 
 # TODO
 

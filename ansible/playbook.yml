@@ -12,9 +12,6 @@
     private: yes
 
   tasks:
-#  - name: get variables
-#    debug: var=hostvars[inventory_hostname]
-
   - name: Remove software
     dnf:
       name: "{{ packages_to_remove }}"
@@ -111,11 +108,13 @@
         - code # Visual Studio Code
         - cpio # RPM
         - dmidecode
+        - gcc-c++ # C++ Compiler
         - java-1.8.0-openjdk-devel # Explicitly install Java 8 (later Fedora use Java 10)
         - libvirt # Virtualisation
         - lm_sensors
         - make
         - mock
+        - plasma-sdk # For plasmoidviewer
         - podman
         - python3-jenkins-job-builder
         - qemu-kvm # Virtualisation

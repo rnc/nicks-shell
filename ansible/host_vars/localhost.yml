@@ -53,6 +53,7 @@ packages_to_remove:
 packages_to_install:
   - CPUFreqUtility
   - ansible
+  - bolt # For connection to Thunderbolt dock
   - cherrytree
   - curl
   - digikam

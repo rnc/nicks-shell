@@ -45,6 +45,20 @@ The files/bootstrapvpn.tar needs to be a tar file containing:
   * etc/NetworkManager/system-connections/vpnconfig.ovpn
   * etc/pki/tls/certs/certificate.pem
 
+# Thunderbolt Connection Information
+
+Initially connecting a Lenovo T480s to the new Thunderbolt dock does *not* work. In order to get it working these background sites helped:
+
+* https://www.youtube.com/watch?v=0XhRBILQIsE&feature=youtu.be&t=350
+* https://funnelfiasco.com/blog/2018/06/29/thinkpad-thunderbolt-dock-fedora/
+
+Then follow these instructions,:
+
+* Ensure bolt is installed (the playbook will install it).
+* The cable is connected into the correct socket (*not* the left-most one)
+* `boltctl list`
+* `boltctl enroll <uuid from above>`
+
 
 # TODO
 

@@ -15,13 +15,15 @@ wget https://raw.githubusercontent.com/rnc/nicks-shell/master/ansible/bootstrap.
 
 Run using
 
-```
-ansible-playbook --ask-vault-pass -v playbook.yml --ask-become-pass
-```
+    ansible-playbook --ask-vault-pass -v playbook.yml --ask-become-pass
+
 or
-```
-sudo ansible-playbook --ask-vault-pass -v playbook.yml
-```
+
+    sudo ansible-playbook --ask-vault-pass -v playbook.yml
+
+Alternatively, if using KDEWalletManager then as per https://ercpe.de/blog/use-kde-wallet-to-unlock-your-ansible-vault it is possible to utilise the wallet to store the vault password. If the wallet stores a ansible-vault key / password combination then it will retrieve the vault password automatically e.g. `ansible-playbook -v playbook.yml` ; and if the sudo password is also stored then it could also be retrieved and passed through with:
+
+    ansible-playbook -v playbook.yml -e "ansible_become_pass=$(kwallet-query -l kdewallet -f ksshaskpass -v -r '')"
 
 
 # Variables
@@ -51,6 +53,7 @@ Initially connecting a Lenovo T480s to the new Thunderbolt dock does *not* work.
 
 * https://www.youtube.com/watch?v=0XhRBILQIsE&feature=youtu.be&t=350
 * https://funnelfiasco.com/blog/2018/06/29/thinkpad-thunderbolt-dock-fedora/
+* https://christian.kellner.me/2017/12/14/introducing-bolt-thunderbolt-3-security-levels-for-gnulinux/
 
 It is recommended to have the following BIOS setup:
 * Assist : Enabled
@@ -64,6 +67,8 @@ Then follow these instructions,:
 * The cable is connected into the correct socket (*not* the left-most one)
 * `boltctl list`
 * `boltctl enroll <uuid from above>`
+
+Note: KDE only requires the boltctl commands due to https://bugs.kde.org/show_bug.cgi?id=395304
 
 After its recognised, for KDE Plasma : Audio, you may need to enter `System Settings/Multimedia/Audio and Video` and configure each audio device to prefer the dock.
 

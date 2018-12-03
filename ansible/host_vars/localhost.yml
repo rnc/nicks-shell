@@ -52,6 +52,7 @@ packages_to_remove:
 
 packages_to_install:
   - CPUFreqUtility
+  - android-tools # ADB Bridge
   - ansible
   - bolt # For connection to Thunderbolt dock
   - cherrytree
@@ -68,11 +69,13 @@ packages_to_install:
   - emacs-yaml-mode
   - firefox
   - git
+  - gnome-themes-extra # Installs GTK3 Adwaita-dark theme.
   - gnupg2
   - google-chrome-stable
   - gwenview
   - highlight
   - hplip
+  - htop # process viewer
   - jq
   - kde-connect
   - kdesu

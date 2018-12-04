@@ -103,32 +103,11 @@
 
   - name: Install secondary software (development)
     dnf:
-      name:
-        - cmake
-        - code # Visual Studio Code
-        - cpio # RPM
-        - dmidecode
-        - gcc-c++ # C++ Compiler
-        - java-1.8.0-openjdk-devel # Explicitly install Java 8 (later Fedora use Java 10)
-        - libvirt # Virtualisation
-        - lm_sensors
-        - make
-        - mock
-        - plasma-sdk # For plasmoidviewer
-        - podman
-        - python3-jenkins-job-builder
-        - qemu-kvm # Virtualisation
-        - texlive-bibtex
-        - texlive-latex
-#        - kernel-tools
-#        - qt-virt-manager
-#        - rpmdiff
-#        - brewkoji
-#        - rh-osbs
-#        - rhpkg
+      name: "{{ packages_for_development }}"
       state: present
 
-  - name: Remove software
+  # If development packages affect original install list.
+  - name: Final software cleanup
     dnf:
       name:
         - java-openjdk-headless # Old Java 10 installation

@@ -49,12 +49,13 @@ packages_to_remove:
   - ktorrent
   - libkmahjongg
   - qt5-qdbusviewer
+  - speech-dispatcher
 
 packages_to_install:
   - CPUFreqUtility
   - android-tools # ADB Bridge
   - ansible
-  - bolt # For connection to Thunderbolt dock
+  - bolt # Connection to Thunderbolt dock
   - cherrytree
   - colordiff
   - curl
@@ -69,13 +70,13 @@ packages_to_install:
   - emacs-yaml-mode
   - firefox
   - git
-  - gnome-themes-extra # Installs GTK3 Adwaita-dark theme.
+  - gnome-themes-extra # Installs GTK3 Adwaita[-dark] themes
   - gnupg2
   - google-chrome-stable
   - gwenview
   - highlight
   - hplip
-  - htop # process viewer
+  - htop # Process viewer
   - jq
   - kde-connect
   - kdesu
@@ -93,9 +94,12 @@ packages_to_install:
   - libreoffice-writer
   - lynx
   - okular
+  - openldap-clients # ldapsearch
   - openssh-clients
   - openvpn
   - pwgen
+  - python2-brewkoji # Brew and Koji libraries
+  - python2-urlgrabber # Used by mead-load-build-dependencies
   - python3-keyring
   - python3-qt5
   - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
@@ -111,3 +115,26 @@ packages_to_install:
   - xorg-x11-server-utils
   - yarock
   - zsh
+
+packages_for_development:
+  #        - kernel-tools
+  #        - qt-virt-manager
+  - brewkoji
+  - cmake
+  - code # Visual Studio Code
+  - cpio # RPM
+  - dmidecode
+  - gcc-c++ # C++ Compiler
+  - java-1.8.0-openjdk-devel # Explicitly install Java 8 (later Fedora use Java 10)
+  - libvirt # Virtualisation
+  - lm_sensors
+  - make
+  - mock
+  - plasma-sdk # For plasmoidviewer
+  - podman
+  - python3-jenkins-job-builder
+  - qemu-kvm # Virtualisation
+  - rhpkg
+  - rpmdiff
+  - texlive-bibtex
+  - texlive-latex

@@ -5,9 +5,11 @@ packages_to_remove:
   - akonadi-import-wizard
   - akregator
   - calligra-core
+  - cdrskin # No CD drive in current laptop.
   - dragon
   - falkon
   - initial-setup
+  - jemalloc
   - juk
   - k3b
   - kaddressbooklibs
@@ -15,6 +17,7 @@ packages_to_remove:
   - kdepim-runtime
   - kf5-akonadi-mime
   - kf5-akonadi-notes
+  - kf5-akonadi-server-mysql
   - kf5-grantleetheme
   - kf5-kalarmcal
   - kf5-kdav
@@ -47,7 +50,23 @@ packages_to_remove:
   - krusader
   - ktnef
   - ktorrent
+  - libburn # No CD drive in current laptop.
   - libkmahjongg
+  - mariadb
+  - mariadb-backup
+  - mariadb-common
+  - mariadb-cracklib-password-check
+  - mariadb-embedded
+  - mariadb-errmsg
+  - mariadb-gssapi-server
+  - mariadb-rocksdb-engine
+  - mariadb-server
+  - mariadb-server-utils
+  - mariadb-tokudb-engine
+  - perl-DBD-MySQL
+  - perl-DBI
+  - perl-Math-BigInt
+  - perl-Math-Complex
   - qt5-qdbusviewer
   - speech-dispatcher
 
@@ -125,6 +144,8 @@ packages_for_development:
   - cpio # RPM
   - dmidecode
   - gcc-c++ # C++ Compiler
+  - golang # Go language
+  - golang-bin
   - java-1.8.0-openjdk-devel # Explicitly install Java 8 (later Fedora use Java 10)
   - libvirt # Virtualisation
   - lm_sensors

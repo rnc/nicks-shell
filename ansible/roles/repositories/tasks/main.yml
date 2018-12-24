@@ -18,14 +18,17 @@
       enabled: yes
       gpgkey: https://download.sourceclear.com/redhat/SRCCLR-GPG-KEY
 
-  - name : Repository - Dropbox
-    yum_repository:
-      name: dropbox
-      description: Dropbox YUM Repository
-      baseurl: http://linux.dropbox.com/fedora/$releasever/
-      gpgcheck: yes
-      enabled: yes
-      gpgkey: http://linux.dropbox.com/fedora/rpm-public-key.asc
+
+  # RPMFusion ships dropbox so this is unnecessary. Further the RPMFusion
+  # version is improved as it has minimal dependencies.
+  # - name : Repository - Dropbox
+  #   yum_repository:
+  #     name: dropbox
+  #     description: Dropbox YUM Repository
+  #     baseurl: http://linux.dropbox.com/fedora/$releasever/
+  #     gpgcheck: yes
+  #     enabled: yes
+  #     gpgkey: http://linux.dropbox.com/fedora/rpm-public-key.asc
 
   - name : Repository - RCM
     yum_repository:

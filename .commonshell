@@ -610,6 +610,12 @@ function gradle-2.13()
     echo "Gradle executable is `which gradle`"
 }
 
+function groovy-2.5.4()
+{
+    PATH=/usr/local/groovy-2.5.4/bin:$PATH
+    echo "Groovy executable is `which groovy`"
+}
+
 #
 # Call <url>
 #

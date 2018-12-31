@@ -1,0 +1,7 @@
+---
+
+# Fedora based system
+
+prerequisite:
+  - python3-libselinux
+  - python3-pexpect

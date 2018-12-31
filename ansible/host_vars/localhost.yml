@@ -8,6 +8,8 @@ packages_to_remove:
   - cdrskin # No CD drive in current laptop.
   - dragon
   - falkon
+  - florence # SparkyLinux keyboard
+  - hexchat # SparkyLinux chat
   - initial-setup
   - jemalloc
   - juk
@@ -67,8 +69,10 @@ packages_to_remove:
   - perl-DBI
   - perl-Math-BigInt
   - perl-Math-Complex
+  - qlipper # SparkyLinux clipboard
   - qt5-qdbusviewer
   - speech-dispatcher
+  - uget # SparkyLinux
 
 packages_to_install:
   - CPUFreqUtility

@@ -74,53 +74,56 @@ packages_to_remove:
   - speech-dispatcher
   - uget # SparkyLinux
 
-packages_to_install:
+base_packages_to_install:
+  - ansible
+  - curl
+  - dropbox
+  - emacs
+  - firefox
+  - git
+  - highlight
+  - htop # Process viewer
+  - jq
+  - keepassxc
+  - pwgen
+  - libreoffice-calc
+  - libreoffice-draw
+  - libreoffice-impress
+  - libreoffice-writer
+  - lynx
+  - zsh
+
+standard_packages_to_install:
   - CPUFreqUtility
   - android-tools # ADB Bridge
-  - ansible
   - bolt # Connection to Thunderbolt dock
   - cherrytree
   - colordiff
-  - curl
-  - digikam
-  - dolphin
-  - dropbox
-  - emacs
   - emacs-auctex
   - emacs-color-theme
   - emacs-common
   - emacs-goodies
   - emacs-yaml-mode
-  - firefox
-  - git
+  - digikam
+  - dolphin
   - gnome-themes-extra # Installs GTK3 Adwaita[-dark] themes
   - gnupg2
   - google-chrome-stable
   - gwenview
-  - highlight
   - hplip
-  - htop # Process viewer
-  - jq
   - kde-connect
   - kdesu
-  - keepassxc
   - kgpg
   - konversation
   - krb5-workstation
   - ksysguard
   - kwalletmanager
   - libnotify
-  - libreoffice-calc
-  - libreoffice-draw
-  - libreoffice-impress
   - libreoffice-langpack-en
-  - libreoffice-writer
-  - lynx
   - okular
   - openldap-clients # ldapsearch
   - openssh-clients
   - openvpn
-  - pwgen
   - python2-brewkoji # Brew and Koji libraries
   - python2-urlgrabber # Used by mead-load-build-dependencies
   - python3-keyring
@@ -137,9 +140,8 @@ packages_to_install:
   - xclip
   - xorg-x11-server-utils
   - yarock
-  - zsh
 
-packages_for_development:
+development_packages_to_install:
   #        - kernel-tools
   #        - qt-virt-manager
   - brewkoji

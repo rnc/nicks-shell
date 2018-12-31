@@ -46,7 +46,7 @@
     - name: Note this action.
       set_fact:
         vpn_bootstrap: True
-    when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages'
+    when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages and ansible_distribution == "Fedora"'
 
   - block:
     - name: Connect to VPN
@@ -64,9 +64,10 @@
     - name: Check bootstrap VPN exists
       command: ip link show tun0 up
       changed_when: False
+    when: ansible_distribution == "Fedora"
 
   - name: Install all package upgrades
-    dnf: name=* state=latest
+    package: name=* state=latest
 
   - name: Add repositories
     include_role:

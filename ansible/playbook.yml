@@ -102,23 +102,36 @@
         state: present
     when: '"SpiderOak" not in ansible_facts.packages and ansible_distribution == "Fedora"'
 
-  - name: Install required software
-    dnf:
-      name: "{{ packages_to_install }}"
+  - name: Install base required software
+    package:
+      name: "{{ base_packages_to_install }}"
+      state: present
+
+  - name: Install base non fedora required software
+    package:
+      name:
+        - libreoffice-l10n-en-gb
+      state: present
+    when: ansible_distribution != "Fedora"
+
+  - name: Install standard required software
+    package:
+      name: "{{ standard_packages_to_install }}"
       state: present
     when: ansible_distribution == "Fedora"
 
-  - name: Install secondary software (development)
-    dnf:
-      name: "{{ packages_for_development }}"
+  - name: Install development software
+    package:
+      name: "{{ development_packages_to_install }}"
       state: present
     when: ansible_distribution == "Fedora"
 
   # If development packages affect original install list.
   - name: Final software cleanup
-    dnf:
+    package:
       name:
         - java-openjdk-headless # Old Java 10 installation
+    when: ansible_distribution == "Fedora"
 
   - block:
     - name: Clean bootstrap VPN
@@ -128,7 +141,7 @@
     # Network will be reloaded on system reboot anyway
     - name: Reload network
       command: nmcli connection reload
-    when: vpn_bootstrap == True
+    when: vpn_bootstrap == True and ansible_distribution == "Fedora"
 
   - name: Patch VPN
     lineinfile:
@@ -137,6 +150,7 @@
       line: "username={{ vpn_username }}"
     with_fileglob:
       - "/etc/NetworkManager/system-connections/*.ovpn"
+    when: ansible_distribution == "Fedora"
 
   - name: Allow port ranges for KDEConnect
     firewalld:
@@ -147,15 +161,18 @@
     with_items:
       - "1714-1764/udp"
       - "1714-1764/tcp"
+    when: ansible_distribution == "Fedora"
 
   - name: Patch krb5.conf
     template:
       src: krb5.conf.j2
       dest: /etc/krb5.conf
+    when: ansible_distribution == "Fedora"
 
   - name: Install minishift
     include_role:
       name: minishift
+    when: ansible_distribution == "Fedora"
 
   - name: User account configuration
     include_role:

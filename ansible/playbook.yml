@@ -71,10 +71,12 @@
   - name: Add repositories
     include_role:
       name: repositories
+    when: ansible_distribution == "Fedora"
 
   - name: Set hostname
     hostname:
       name: "{{ hostname }}"
+    when: ansible_distribution == "Fedora"
 
   - name: Check GPG Key exists
     stat:
@@ -86,7 +88,7 @@
     get_url:
       url: http://{{ csb_repo }}/rhel7-csb-stage/RPM-GPG-KEY-helpdesk
       dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
-    when: not stat_gpg_result.stat.exists
+    when: not stat_gpg_result.stat.exists and ansible_distribution == "Fedora"
 
   - block:
     - name: Download SpiderOAK
@@ -97,17 +99,19 @@
       dnf:
         name: /tmp/spider.rpm
         state: present
-    when: '"SpiderOak" not in ansible_facts.packages'
+    when: '"SpiderOak" not in ansible_facts.packages and ansible_distribution == "Fedora"'
 
   - name: Install required software
     dnf:
       name: "{{ packages_to_install }}"
       state: present
+    when: ansible_distribution == "Fedora"
 
   - name: Install secondary software (development)
     dnf:
       name: "{{ packages_for_development }}"
       state: present
+    when: ansible_distribution == "Fedora"
 
   # If development packages affect original install list.
   - name: Final software cleanup

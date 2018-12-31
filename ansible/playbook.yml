@@ -111,6 +111,8 @@
     package:
       name:
         - libreoffice-l10n-en-gb
+        - python-gpg
+        - spideroakone
       state: present
     when: ansible_distribution != "Fedora"
 

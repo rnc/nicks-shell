@@ -1,2 +1,7 @@
 #!/bin/bash
-kwallet-query -r ansible-vault kdewallet
+if [ "$( grep '^ID=fedora' /etc/os-release )" ]
+then
+    kwallet-query -r ansible-vault kdewallet
+else
+    read -p "Enter password: "
+fi

@@ -12,17 +12,20 @@
     private: yes
 
   tasks:
+  - include_vars: fedora.yml
+    when: ansible_distribution == 'Fedora'
+  - include_vars: debian.yml
+    when: ansible_distribution != 'Fedora'
+
   - name: Remove software
-    dnf:
+    package:
       name: "{{ packages_to_remove }}"
       state: absent
 
   # This is prerequisite for ansible to work on the host.
   - name: Install prerequisite software
-    dnf:
-      name:
-        - python3-libselinux
-        - python3-pexpect
+    package:
+      name: "{{ prerequisite }}"
       state: present
 
   - name: Gather package facts

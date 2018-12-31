@@ -1,9 +1,20 @@
 #!/bin/bash
 
-if [ "$( rpm -q ansible git)" == "0" ]
+if [ "$( grep '^ID=fedora' /etc/os-release )" ]
+then
+    PKGQ="rpm -q"
+    PKGI="dnf"
+    EXTRA="ansible_become_pass=$(kwallet-query -l kdewallet -f ksshaskpass -v -r '')"
+else
+    PKGQ="dpkg-query -W"
+    PKGI="apt-get"
+    EXTRA=" "
+fi
+
+if [ "$( $PKGQ ansible git)" == "0" ]
 then
     echo -e "\033[49;32;1mBootstraps to /tmp/nicks-shell...\033[0m"
-    dnf install -y ansible git
+    $PKGI install -y ansible git
     git clone https://github.com/rnc/nicks-shell.git /tmp/nicks-shell
 else
     echo -e "\033[49;32;1mBootstrap already performed ; executing ansible using vault method...\033[0m"
@@ -13,5 +24,5 @@ else
         exit 1
     fi
 
-    ansible-playbook -v playbook.yml -e "ansible_become_pass=$(kwallet-query -l kdewallet -f ksshaskpass -v -r '')"
+    ansible-playbook -v playbook.yml -e "$EXTRA"
 fi

@@ -85,6 +85,7 @@ base_packages_to_install:
   - emacs
   - firefox
   - git
+  - google-chrome-stable
   - highlight
   - htop # Process viewer
   - jq
@@ -112,9 +113,9 @@ standard_packages_to_install:
   - dolphin
   - gnome-themes-extra # Installs GTK3 Adwaita[-dark] themes
   - gnupg2
-  - google-chrome-stable
   - gwenview
   - hplip
+  - httpie
   - kde-connect
   - kdesu
   - kgpg

@@ -63,7 +63,7 @@
 
   - name : Repository - Visual Studio Code
     yum_repository:
-      name: vscode.repo
+      name: vscode
       description: Visual Studio Code
       baseurl: https://packages.microsoft.com/yumrepos/vscode
       gpgcheck: yes

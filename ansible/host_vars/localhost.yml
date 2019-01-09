@@ -72,6 +72,9 @@ packages_to_remove:
   - perl-Math-Complex
   - pidgin # SparkyLinux
   - qlipper # SparkyLinux clipboard
+  - qt # QT 4.x libraries
+  - qt-common # QT 4.x libraries
+  - qt-x11 # QT 4.x libraries
   - qt5-qdbusviewer
   - radiotray # SparkyLinux radio
   - speech-dispatcher

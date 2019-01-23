@@ -107,13 +107,16 @@ standard_packages_to_install:
   - bolt # Connection to Thunderbolt dock
   - cherrytree
   - colordiff
+  - digikam
+  - dolphin
   - emacs-auctex
   - emacs-color-theme
   - emacs-common
   - emacs-goodies
+  - emacs-json-mode
+  - emacs-json-reformat
+  - emacs-json-snatcher
   - emacs-yaml-mode
-  - digikam
-  - dolphin
   - gnome-themes-extra # Installs GTK3 Adwaita[-dark] themes
   - gnupg2
   - gwenview
@@ -167,6 +170,8 @@ development_packages_to_install:
   - mock
   - plasma-sdk # For plasmoidviewer
   - podman
+  - python2-pytz # For IP_TOOLING.
+  - python2-virtualenv
   - python3-jenkins-job-builder
   - qemu-kvm # Virtualisation
   - rhpkg

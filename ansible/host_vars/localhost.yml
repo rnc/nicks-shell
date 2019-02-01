@@ -104,6 +104,7 @@ base_packages_to_install:
 standard_packages_to_install:
   - CPUFreqUtility
   - android-tools # ADB Bridge
+  - aria2 # Download accelerator
   - bolt # Connection to Thunderbolt dock
   - cherrytree
   - colordiff
@@ -172,7 +173,16 @@ development_packages_to_install:
   - podman
   - python2-pytz # For IP_TOOLING.
   - python2-virtualenv
+  - python3-virtualenv
   - python3-jenkins-job-builder
+  - python3-colorlog # cekit
+  - python3-tox # cekit
+  - python3-jinja2 # cekit
+  # pykwalify currently 1.5.0 in Fedora 29. Need >= 1.6.0
+  # - python3-pykwalify # cekit
+  - python3-pyyaml # cekit
+  - python3-pytest # cekit
+  - python3-mock # cekit
   - qemu-kvm # Virtualisation
   - rhpkg
   - rpmdiff

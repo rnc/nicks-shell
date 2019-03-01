@@ -214,8 +214,8 @@ then
 
             function update_super_status ()
             {
-                #PROMPT="%m$(read -rE -u$1) $ "  # double quotes, not promptsubst
                 PROMPT="%m$(read -rE -u$1)$PROMPT_JAVA$PROMPT_EXTRA $ "  # double quotes, not promptsubst
+                RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
                 update_prompt_fd=0
                 zle -F $1           # Remove the handler
                 exec {1}>&-         # Close the descriptor
@@ -227,7 +227,6 @@ then
                 if zle -l update_super_status
                 then
                     PROMPT='%m[waiting]$PROMPT_JAVA$PROMPT_EXTRA $ '
-                    #PROMPT='%m[waiting] $ '
                 fi
             }
 
@@ -265,8 +264,7 @@ then
 
         PROMPT='%m$PROMPT_JAVA$PROMPT_EXTRA $ '
     fi
-
-    RPROMPT='%T'
+    RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
 elif [ "$TERM" = "dumb" ]
 then
     # Dumb terminal might be e.g. emacs.
@@ -446,6 +444,7 @@ source $HOME/.commonshell
 source $HOME/.aliases
 [[ -f $HOME/.corbashell ]] && source $HOME/.corbashell
 
+[[ -d $PREFIX/zsh-autoswitch-virtualenv ]] && source $PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
 
 #################
 ### Autoloads ###

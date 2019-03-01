@@ -20,7 +20,6 @@ alias emacs='emacs --no-site-file'
 alias pp='ps -u$USER -ww -o pid,etime,pcpu,rss,args'
 alias tree='tree -C'
 
-alias axel='axel --insecure --num-connections=25 --alternate'
 alias aria2c='aria2c --min-split-size=1M --max-connection-per-server=16 --split=25 --max-concurrent-downloads=25 --summary-interval=0 --truncate-console-readout=false --check-certificate=false'
 
 alias mvn-mead-brms5='mvn -s ~/Work/maven-mead-brms5.xml -Dmaven.repo.local=$HOME/.m2-mead-brms5 -DaltDeploymentRepository=koji-repo::default::file://$HOME/tmp/deploy-local -DskipTests=true "$@"'

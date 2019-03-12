@@ -381,7 +381,10 @@ function title () {
     [[ -n "$SSH_CONNECTION" ]] && local rhs="$HOST:"
     if (( $# > 0 ))
     then
-        print -nR $'\033]0;'$rhs`print -Pn "%74<..<${PWD/$HOME/~} : "``echo $*`$'\a'
+        # If we have a command (with args) then take it and truncate it
+        # as konsole tabs explode otherwise
+        local arg=$(echo $*)
+        print -nR $'\033]0;'$rhs${arg[1,54]}...$'\a'
     else
         local cwd="`print -Pn \"%74<..<${PWD/$HOME/~}\"`"
         print -nR $'\033]0;'$rhs$cwd$'\a'

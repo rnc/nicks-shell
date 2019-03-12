@@ -465,7 +465,10 @@ then
     if [ `bc<<<"$(rpm -q --queryformat '%{VERSION}\n' rhpkg)>=1.31"` = "1" ]
     then
         autoload -U +X bashcompinit && bashcompinit
-        source /etc/bash_completion.d/rhpkg.bash
+        tmprhpg=$(mktemp -q)
+        cat /etc/bash_completion.d/rhpkg.bash | sed 's/path=/tmppath=/g;s/\$path/\$tmppath/g' >! $tmprhpg
+        source $tmprhpg
+        rm -f $tmprhpg
     fi
 fi
 ##############

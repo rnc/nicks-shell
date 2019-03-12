@@ -165,6 +165,7 @@ development_packages_to_install:
   - docker
   - fedpkg # Working with Fedora packages (implicitly pulls in python3-click which is needed by cekit)
   - gcc-c++ # C++ Compiler
+  - glide # Go dependency manager
   - golang # Go language
   - golang-bin
   - java-1.8.0-openjdk-devel # Explicitly install Java 8 (later Fedora use Java 10)
@@ -175,6 +176,7 @@ development_packages_to_install:
   - odcs-client # cekit
   - plasma-sdk # For plasmoidviewer
   - podman
+  - pylint # Check python code
   - python2-pytest # Fedpkg building python rpms
   - python2-pytz # For IP_TOOLING.
   - python2-virtualenv

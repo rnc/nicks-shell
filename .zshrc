@@ -462,8 +462,7 @@ alias mvz='noglob zmv -W'
 rpm -q rhpkg > /dev/null
 if [ "$?" = 0 ]
 then
-    bc <<< "$(rpm -q --queryformat '%{VERSION}\n' rhpkg)>=1.31" > /dev/null
-    if [ "$?" = "1" ]
+    if [ `bc<<<"$(rpm -q --queryformat '%{VERSION}\n' rhpkg)>=1.31"` = "1" ]
     then
         autoload -U +X bashcompinit && bashcompinit
         source /etc/bash_completion.d/rhpkg.bash

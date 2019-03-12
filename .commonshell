@@ -93,31 +93,38 @@ function f()
 
     [[ ! -f "$1" ]] && echo "No such file \"$1\"" && return 1
 
-    # Handle unknown file extensions.
-    if [[ ${1: -4} == ".pom" ]]
-    then
-        local SYNTAX="--syntax=xml"
-    elif [[ ${1: -4} == ".cfg" ]]
-    then
-        local SYNTAX="--syntax=conf"
-    elif [[ ${1: -11} == ".properties" ]]
-    then
-        local SYNTAX="--syntax=ini"
-    elif [[ ${1: -7} == ".gradle" ]]
-    then
-        local SYNTAX="--syntax=java"
-    # If there is a emacs mode marker use that.
-    elif [[ "`head -n 1 $1`" = "# -*- sh -*-" ]]
-    then
-        local SYNTAX="--syntax=sh"
-    elif [[ "`head -n 1 $1`" = "# -*- zsh -*-" ]]
-    then
-        local SYNTAX="--syntax=sh"
-    # If its a log file or no extension fall back to plain text.
-    elif [[ ${1: -4} == ".log" ]] || ! [[ $1 =~ ".+\..*$" ]]
-    then
-        local SYNTAX="--syntax=txt"
-    fi
+    local extension=$(echo $(basename $1) | awk -F . '{print $NF}')
+    local SYNTAX
+
+    case $extension in
+      "pom")
+        SYNTAX="--syntax=xml"
+        ;;
+      "cfg")
+        SYNTAX="--syntax=conf"
+        ;;
+      ".properties")
+        SYNTAX="--syntax=ini"
+        ;;
+      ".gradle")
+        SYNTAX="--syntax=java"
+        ;;
+      ".log")
+        SYNTAX="--syntax=txt"
+        ;;
+      *)
+        if [[ "`head -n 1 $1`" = "# -*- sh -*-" ]]
+        then
+            SYNTAX="--syntax=sh"
+        elif [[ "`head -n 1 $1`" = "# -*- zsh -*-" ]]
+        then
+            SYNTAX="--syntax=sh"
+        elif [[ ! $extension =~ ^($(highlight --list-scripts=langs | egrep -v /usr/share | tr -d '()'| egrep '.*[a-zA-Z]+.*:.*[a-zA-Z]+.*' | cut -f2 -d':' | tr -s [:space:] '|'))$ ]]
+        then
+            # Complete fallback to text
+            local SYNTAX="--syntax=txt"
+        fi
+    esac
 
     highlight --line-numbers --validate-input --style=zenburn --plug-in=java_library $EXTRA $SYNTAX -O xterm256 $1 | less -R
 }
@@ -390,6 +397,7 @@ function _java_prompt_()
     local oraclejava7=/usr/local/jdk1.7.0
     local oraclejava8=/usr/local/jdk1.8.0
     local oraclejava9=/usr/local/jdk-9
+    local openjdk11=/usr/local/jdk-11
     local ibmjava6=/usr/local/ibm-jdk1.6.0
     local ibmjava7=/usr/local/ibm-jdk1.7.0
     local i
@@ -415,6 +423,9 @@ function _java_prompt_()
         ;;
       "oraclejava9")
         export JAVA_HOME=$oraclejava9
+        ;;
+      "openjdk11")
+        export JAVA_HOME=$openjdk11
         ;;
       "ibmjava6")
         export JAVA_HOME=$ibmjava6
@@ -460,6 +471,13 @@ function oraclejava9()
     _java_prompt_ oraclejava9
 
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE9)%{"$'\e[00m''%}'
+}
+
+function openjdk11()
+{
+    _java_prompt_ openjdk11
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA11)%{"$'\e[00m''%}'
 }
 
 function ibmjava6()

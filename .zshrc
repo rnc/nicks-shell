@@ -176,11 +176,34 @@ then
         ZSH_HIGHLIGHT_STYLES[globbing]='fg=045'
     fi
 
-    # Note : without the following fixed the background updating can cause
-    # ZSH to consume 100% CPU.
-    # https://bugzilla.redhat.com/show_bug.cgi?id=1120424
-    # http://www.zsh.org/mla/workers/2014/msg00217.html
-    if [ -d $PREFIX/zsh-vcs-prompt ]
+    # Python handling
+    [[ -d $PREFIX/zsh-autoswitch-virtualenv ]] && source $PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
+    RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
+
+    # Different git prompt systems
+    #
+    # https://github.com/woefe/git-prompt.zsh
+    if [ -d $PREFIX/git-prompt.zsh ]
+    then
+        autoload -U colors
+        colors
+
+        ZSH_GIT_PROMPT_SHOW_STASH=1
+        ZSH_THEME_GIT_PROMPT_UNSTAGED="%{$fg[yellow]%}✚"
+        ZSH_THEME_GIT_PROMPT_SUFFIX="]"
+
+        source $PREFIX/git-prompt.zsh/git-prompt.zsh
+
+        # This prompt uses the above GIT system.
+        PROMPT='%m$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA $ '
+        function prompt_updater_chpwd ()
+        {
+            PROMPT='%m$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA $ '
+            RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
+        }
+        add-zsh-hook chpwd prompt_updater_chpwd
+    # https://github.com/yonchu/zsh-vcs-prompt/
+    elif [ -d $PREFIX/zsh-vcs-prompt ]
     then
         autoload -U is-at-least
         if ! is-at-least 5.0.5
@@ -246,25 +269,30 @@ then
 
             # Remove hook to use delayed prompt init.
             add-zsh-hook -d precmd _zsh_vcs_prompt_precmd_hook_func
-
             add-zsh-hook precmd vcs_precmd
             add-zsh-hook chpwd vcs_chpwd
         fi
+    # https://github.com/starcraftman/zsh-git-prompt
     elif [ -d $PREFIX/zsh-git-prompt ]
     then
-        # Using https://github.com/rnc/zsh-git-prompt / Fork branch
         export ZSH_THEME_GIT_PROMPT_STASHED_ACTIVE=1
         export __GIT_PROMPT_DIR=$PREFIX/zsh-git-prompt
         source $PREFIX/zsh-git-prompt/zshrc.sh
 
         # This prompt uses the above GIT system.
         PROMPT='%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA $ '
+
+        function prompt_updater_chpwd ()
+        {
+            PROMPT='%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA $ '
+            RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
+        }
+        add-zsh-hook chpwd prompt_updater_chpwd
     else
-        echo "$PREFIX/zsh-git-prompt does not exist."
+        echo "Resorting to default prompt."
 
         PROMPT='%m$PROMPT_JAVA$PROMPT_EXTRA $ '
     fi
-    RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
 elif [ "$TERM" = "dumb" ]
 then
     # Dumb terminal might be e.g. emacs.
@@ -447,8 +475,6 @@ source $HOME/.commonshell
 source $HOME/.aliases
 [[ -f $HOME/.corbashell ]] && source $HOME/.corbashell
 
-[[ -d $PREFIX/zsh-autoswitch-virtualenv ]] && source $PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
-
 #################
 ### Autoloads ###
 #################
@@ -465,6 +491,7 @@ then
     if [ `bc<<<"$(rpm -q --queryformat '%{VERSION}\n' rhpkg)>=1.31"` = "1" ]
     then
         autoload -U +X bashcompinit && bashcompinit
+        # This hack removes usage of lower case path variable which conflicts in ZSH.
         tmprhpg=$(mktemp -q)
         cat /etc/bash_completion.d/rhpkg.bash | sed 's/path=/tmppath=/g;s/\$path/\$tmppath/g' >! $tmprhpg
         source $tmprhpg

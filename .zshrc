@@ -176,6 +176,8 @@ then
         ZSH_HIGHLIGHT_STYLES[globbing]='fg=045'
     fi
 
+    : ${PROMPT_SYMBOL:="❯"}
+
     # Python handling
     [[ -d $PREFIX/zsh-autoswitch-virtualenv ]] && source $PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
     RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
@@ -185,23 +187,21 @@ then
     # https://github.com/woefe/git-prompt.zsh
     if [ -d $PREFIX/git-prompt.zsh ]
     then
-        autoload -U colors
-        colors
-
         ZSH_GIT_PROMPT_SHOW_STASH=1
-        ZSH_THEME_GIT_PROMPT_UNSTAGED="%{$fg[yellow]%}✚"
+        ZSH_THEME_GIT_PROMPT_UNSTAGED="%F{yellow}✚%f"
         ZSH_THEME_GIT_PROMPT_SUFFIX="]"
 
         source $PREFIX/git-prompt.zsh/git-prompt.zsh
 
         # This prompt uses the above GIT system.
-        PROMPT='%m$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA $ '
-        function prompt_updater_chpwd ()
+        PROMPT='$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA ${PROMPT_SYMBOL} '
+        function prompt_updater ()
         {
-            PROMPT='%m$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA $ '
+            # Prompt turns red if the previous command didn't exit with 0
+            PROMPT="$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
             RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
         }
-        add-zsh-hook chpwd prompt_updater_chpwd
+        add-zsh-hook precmd prompt_updater
     # https://github.com/yonchu/zsh-vcs-prompt/
     elif [ -d $PREFIX/zsh-vcs-prompt ]
     then
@@ -249,7 +249,7 @@ then
             {
                 if zle -l update_super_status
                 then
-                    PROMPT='%m[waiting]$PROMPT_JAVA$PROMPT_EXTRA $ '
+                    PROMPT='%m[waiting]$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b '
                 fi
             }
 
@@ -280,18 +280,18 @@ then
         source $PREFIX/zsh-git-prompt/zshrc.sh
 
         # This prompt uses the above GIT system.
-        PROMPT='%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA $ '
+        PROMPT="%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
 
-        function prompt_updater_chpwd ()
+        function prompt_updater ()
         {
-            PROMPT='%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA $ '
+            PROMPT="%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
             RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
         }
-        add-zsh-hook chpwd prompt_updater_chpwd
+        add-zsh-hook precmd prompt_updater
     else
         echo "Resorting to default prompt."
 
-        PROMPT='%m$PROMPT_JAVA$PROMPT_EXTRA $ '
+        PROMPT='%m$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b '
     fi
 elif [ "$TERM" = "dumb" ]
 then

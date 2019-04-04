@@ -190,6 +190,7 @@ then
         ZSH_GIT_PROMPT_SHOW_STASH=1
         ZSH_THEME_GIT_PROMPT_UNSTAGED="%F{yellow}✚%f"
         ZSH_THEME_GIT_PROMPT_SUFFIX="]"
+        ZSH_THEME_GIT_PROMPT_STASHED="%{"$'\e[0;33;40m'"%}⚑"
 
         source $PREFIX/git-prompt.zsh/git-prompt.zsh
 

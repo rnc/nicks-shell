@@ -106,23 +106,18 @@ function f()
       ".properties")
         SYNTAX="--syntax=ini"
         ;;
-      ".gradle")
-        SYNTAX="--syntax=java"
-        ;;
       ".log")
         SYNTAX="--syntax=txt"
         ;;
       *)
-        if [[ "`head -n 1 $1`" = "# -*- sh -*-" ]]
-        then
-            SYNTAX="--syntax=sh"
-        elif [[ "`head -n 1 $1`" = "# -*- zsh -*-" ]]
+        local h=$(head -n 1 $1)
+        if [[ "$h" = "# -*- sh -*-" ]] || [[ "$h" = "# -*- bash -*-" ]] || [[ "$h" = "# -*- zsh -*-" ]]
         then
             SYNTAX="--syntax=sh"
         elif [[ ! $extension =~ ^($(highlight --list-scripts=langs | egrep -v /usr/share | tr -d '()'| egrep '.*[a-zA-Z]+.*:.*[a-zA-Z]+.*' | cut -f2 -d':' | tr -s [:space:] '|'))$ ]]
         then
             # Complete fallback to text
-            local SYNTAX="--syntax=txt"
+            SYNTAX="--syntax=txt"
         fi
     esac
 
@@ -625,6 +620,18 @@ function maven-3.6.0()
 function gradle-2.13()
 {
     PATH=/usr/local/gradle-2.13/bin:$PATH
+    echo "Gradle executable is `which gradle`"
+}
+
+function gradle-4.7()
+{
+    PATH=/usr/local/gradle-4.7/bin:$PATH
+    echo "Gradle executable is `which gradle`"
+}
+
+function gradle-5.3.1()
+{
+    PATH=/usr/local/gradle-5.3.1/bin:$PATH
     echo "Gradle executable is `which gradle`"
 }
 

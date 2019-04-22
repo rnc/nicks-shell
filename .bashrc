@@ -13,9 +13,9 @@ fi
 ### Configuration file may contain
 #
 # Prefix where useful things are stored in the users file system
-# PREFIX=xxx
+# NS_PREFIX=xxx
 # e.g. brew-koji zsh completion code. For example set it to $HOME/Work/Miscellaneous
-# PREFIX is added to the fpath and used to source zsh-git-prompt.
+# NS_PREFIX is added to the fpath and used to source zsh-git-prompt.
 #
 # Any other functions etc can also be put in here.
 [[ -f $HOME/.shell-configuration ]] && source $HOME/.shell-configuration
@@ -79,10 +79,10 @@ then
 
     echo "Running .bashrc..."
 
-    if [ -d $PREFIX/zsh-vcs-prompt ]
+    if [ -d $NS_PREFIX/zsh-vcs-prompt ]
     then
         unset $(compgen -v | grep ZSH_VCS_)
-        source $PREFIX/zsh-vcs-prompt/zshrc.sh
+        source $NS_PREFIX/zsh-vcs-prompt/zshrc.sh
         export PS1='\[\e[1;32m\]\h:$(vcs_super_info) $\[\e[0m\] '
     else
         export PS1='\[\e[1;32m\]\h:\W $\[\e[0m\] '

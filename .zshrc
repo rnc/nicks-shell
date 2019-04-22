@@ -10,15 +10,15 @@
 ### Configuration file may contain
 #
 # Prefix where useful things are stored in the users file system
-# PREFIX=xxx
+# NS_PREFIX=xxx
 # e.g. brew-koji zsh completion code. For example set it to $HOME/Work/Miscellaneous
-# PREFIX is added to the fpath and used to source zsh-git-prompt.
-#
+# NS_PREFIX is added to the fpath and used to source zsh-git-prompt.
+
 # Any other functions etc can also be put in here.
 [[ -f $HOME/.shell-configuration ]] && source $HOME/.shell-configuration
 
 # Source ZSH functions.
-fpath=($PREFIX/brew-koji/zsh $PREFIX/zsh-completions/src $fpath)
+fpath=($NS_PREFIX/brew-koji/zsh $NS_PREFIX/gradle-completion $NS_PREFIX/zsh-completions/src $fpath)
 
 ####################################
 #### Set various options. ##########
@@ -161,14 +161,13 @@ autoload -U add-zsh-hook
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen-256color" ]
 then
     # ZSH-Syntax-Highlighting
-    if [ -d $PREFIX/fast-syntax-highlighting ]
+    if [ -d $NS_PREFIX/fast-syntax-highlighting ]
     then
-        fpath=($PREFIX/fast-syntax-highlighting $fpath)
-        source $PREFIX/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
-    elif [ -d $PREFIX/zsh-syntax-highlighting ]
+        source $NS_PREFIX/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+    elif [ -d $NS_PREFIX/zsh-syntax-highlighting ]
     then
         ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
-        source $PREFIX/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+        source $NS_PREFIX/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
         ZSH_HIGHLIGHT_STYLES[path]='fg=251'
         ZSH_HIGHLIGHT_STYLES[path_prefix]='fg=251'
@@ -179,20 +178,20 @@ then
     : ${PROMPT_SYMBOL:="❯"}
 
     # Python handling
-    [[ -d $PREFIX/zsh-autoswitch-virtualenv ]] && source $PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
+    [[ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]] && source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
     RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
 
     # Different git prompt systems
     #
     # https://github.com/woefe/git-prompt.zsh
-    if [ -d $PREFIX/git-prompt.zsh ]
+    if [ -d $NS_PREFIX/git-prompt.zsh ]
     then
         ZSH_GIT_PROMPT_SHOW_STASH=1
         ZSH_THEME_GIT_PROMPT_UNSTAGED="%F{yellow}✚%f"
         ZSH_THEME_GIT_PROMPT_SUFFIX="]"
         ZSH_THEME_GIT_PROMPT_STASHED="%{"$'\e[0;33;40m'"%}⚑"
 
-        source $PREFIX/git-prompt.zsh/git-prompt.zsh
+        source $NS_PREFIX/git-prompt.zsh/git-prompt.zsh
 
         # This prompt uses the above GIT system.
         PROMPT='$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA ${PROMPT_SYMBOL} '
@@ -204,7 +203,7 @@ then
         }
         add-zsh-hook precmd prompt_updater
     # https://github.com/yonchu/zsh-vcs-prompt/
-    elif [ -d $PREFIX/zsh-vcs-prompt ]
+    elif [ -d $NS_PREFIX/zsh-vcs-prompt ]
     then
         autoload -U is-at-least
         if ! is-at-least 5.0.5
@@ -214,7 +213,7 @@ then
             typeset -g update_prompt_fd
             PROMPT='%m[waiting]$PROMPT_JAVA$PROMPT_EXTRA $ '
 
-            source $PREFIX/zsh-vcs-prompt/zshrc.sh
+            source $NS_PREFIX/zsh-vcs-prompt/zshrc.sh
             ZSH_VCS_PROMPT_ENABLE_CACHING='true'
             ZSH_VCS_PROMPT_UNSTAGED_SIGIL='✚'
             ZSH_VCS_PROMPT_AHEAD_SIGIL='↑'
@@ -274,11 +273,11 @@ then
             add-zsh-hook chpwd vcs_chpwd
         fi
     # https://github.com/starcraftman/zsh-git-prompt
-    elif [ -d $PREFIX/zsh-git-prompt ]
+    elif [ -d $NS_PREFIX/zsh-git-prompt ]
     then
         export ZSH_THEME_GIT_PROMPT_STASHED_ACTIVE=1
-        export __GIT_PROMPT_DIR=$PREFIX/zsh-git-prompt
-        source $PREFIX/zsh-git-prompt/zshrc.sh
+        export __GIT_PROMPT_DIR=$NS_PREFIX/zsh-git-prompt
+        source $NS_PREFIX/zsh-git-prompt/zshrc.sh
 
         # This prompt uses the above GIT system.
         PROMPT="%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
@@ -480,6 +479,7 @@ source $HOME/.aliases
 ### Autoloads ###
 #################
 
+
 autoload -U compinit && compinit
 autoload -U zmv
 
@@ -502,6 +502,7 @@ fi
 ##############
 ### Styles ###
 ##############
+
 
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zcache
@@ -527,14 +528,11 @@ zstyle ':completion:*:messages' format $'%{\e[0;31m%}%d%{\e[0m%}'
 zstyle ':completion:*:warnings' format $'%{\e[0;31m%}No matches for: %d%{\e[0m%}'
 zstyle ':completion:*:corrections' format $'%{\e[0;31m%}%d (errors: %e)%{\e[0m%}'
 zstyle ':completion:*' group-name ''
-#zstyle ':completion:*' format 'Completing %d'
-#zstyle ':completion:*' group-name ''
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu select
 
 # zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
 # zstyle ':completion:*' list-prompt '%SAt %p: Hit TAB for more, or the character to insert%s'
-# zstyle :compinstall filename '/home/rnc/.zshrc'
 
 zstyle ':completion:*:descriptions' format "- %d -"
 zstyle ':completion:*:corrections' format "- %d - (errors %e})"
@@ -542,8 +540,6 @@ zstyle ':completion:*:corrections' format "- %d - (errors %e})"
 # Make completion lists scrollable so "do you wish to see all n possibilities"
 # is no longer displayed.
 zstyle ':completion:*' list-prompt '%p'
-
-# End of lines added by compinstall
 
 # http://michael.stapelberg.de/Artikel/zsh_recent_completion
 # 'ctrl-x r' will complete the 12 last modified (mtime) files/directories

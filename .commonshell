@@ -36,9 +36,9 @@ export QT_LOGGING_RULES
 SVN_EDITOR="$EDITOR"
 
 # https://github.com/trapd00r/LS_COLORS
-if [ -d $HOME/Work/Miscellaneous/LS_COLORS ]
+if [ -d $NS_PREFIX/LS_COLORS ]
 then
-    eval $( dircolors -b $HOME/Work/Miscellaneous/LS_COLORS/LS_COLORS )
+    eval $( dircolors -b $NS_PREFIX/LS_COLORS/LS_COLORS )
 fi
 
 export UARCH HOST ARCHBIN EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY

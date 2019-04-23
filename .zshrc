@@ -150,9 +150,15 @@ NO_VERBOSE \
 NO_XTRACE
 
 
-###########################################
-##### autoload functions ##################
-#########################'#################
+################################################
+##### Autoloads and functions ##################
+################################################
+
+autoload -U compinit && compinit
+autoload -U zmv
+
+alias cpz='noglob zmv -W -C'
+alias mvz='noglob zmv -W'
 
 # Autoload all shell functions from all directories in $fpath
 autoload $^fpath/*(N.)
@@ -475,16 +481,9 @@ source $HOME/.commonshell
 source $HOME/.aliases
 [[ -f $HOME/.corbashell ]] && source $HOME/.corbashell
 
-#################
-### Autoloads ###
-#################
-
-
-autoload -U compinit && compinit
-autoload -U zmv
-
-alias cpz='noglob zmv -W -C'
-alias mvz='noglob zmv -W'
+#############
+### rhpkg ###
+#############
 
 rpm -q rhpkg > /dev/null
 if [ "$?" = 0 ]
@@ -499,10 +498,10 @@ then
         rm -f $tmprhpg
     fi
 fi
+
 ##############
 ### Styles ###
 ##############
-
 
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zcache

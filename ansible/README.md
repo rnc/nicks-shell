@@ -1,5 +1,7 @@
 
-# Setup my Fedora 29 KDE Spin Workstation.
+# Setup my Fedora KDE Spin Workstation.
+
+* Tested on F29/F30.
 
 Relies on python3 being available and uses local connection to setup the machine.
 

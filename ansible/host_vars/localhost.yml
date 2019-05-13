@@ -193,12 +193,11 @@ development_packages_to_install:
   - python3-pytest-mock # cekit
   - python3-pyyaml # cekit
   - python3-sphinx # cekit (sphinx)
-  - python3-sphinx-autobuild # cekit (sphinx)
+  - python-sphinx-autobuild # cekit (sphinx)
   - python3-tox # cekit
   - python3-virtualenv
   - qemu-kvm # Virtualisation
   - rhpkg
-  - rpmdiff
   - rubygem-jekyll # jekyll site generator (PME)
   - source-to-image # cekit
   - texlive-bibtex

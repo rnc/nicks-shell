@@ -635,6 +635,12 @@ function gradle-5.3.1()
     echo "Gradle executable is `which gradle`"
 }
 
+function gradle-5.4.1()
+{
+    PATH=/usr/local/gradle-5.4.1/bin:$PATH
+    echo "Gradle executable is `which gradle`"
+}
+
 function groovy-2.5.4()
 {
     PATH=/usr/local/groovy-2.5.4/bin:$PATH

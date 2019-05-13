@@ -36,12 +36,13 @@
   - block:
     - name: Install bootstrap VPN
       unarchive:
+        decrypt: yes
         src: files/bootstrapvpn.tar
         dest: /
     - name: Activate network for bootstrap VPN
       command: nmcli connection reload
     - name: Establish temporary vpn filename
-      shell: basename $(tar tf files/bootstrapvpn.tar */system-connections/* )
+      shell: basename $(ls /etc/NetworkManager/system-connections/* )
       register: vpn_filename
     - name: Note this action.
       set_fact:

@@ -3,17 +3,23 @@ nicks-shell
 
 Shell initialisation scripts.
 
-Both bash and zsh initialisation utilise a common configuration file (```$HOME/.shell-configuration```) which may be used to stored common properties e.g.
-* NS_PREFIX - where common support software (e.g. brew-koji & zsh-git-prompt) are stored in the filesystem.
-* VMAN_HOME - installation of VMAN
-* IP_CONFIG - location of IP configuration
-* IP_TOOLING - location of IP_TOOLING
+Tested on ZSH 5.7 and above.
 
-For even more colourful highlighting install https://github.com/zsh-users/zsh-syntax-highlighting in `NS_PREFIX` location..
+Both bash and zsh initialisation utilise a common configuration file (```$HOME/.shell-configuration```) which may be used to stored common properties e.g.
+* `NS_PREFIX` - where common support software (e.g. brew-koji & zsh-git-prompt) are stored in the filesystem.
+* `VMAN_HOME` - installation of VMAN
+* `IP_CONFIG` - location of IP configuration
+* `IP_TOOLING` - location of IP_TOOLING
 
 For even more completions install https://github.com/zsh-users/zsh-completions in `NS_PREFIX` location.
 
-### Prompt ###
+### Command line and Prompt ###
+
+#### File Colours #####
+
+It will check for existence (inside `NS_PREFIX`) for:
+
+* https://github.com/trapd00r/LS_COLORS
 
 #### Syntax Highlighting ####
 
@@ -27,8 +33,8 @@ It will check for existence (inside `NS_PREFIX`) for any of the below, in the fo
 
 It will check for existence (inside `NS_PREFIX`) for any of the below, in the following order:
 
-* https://github.com/woefe/git-prompt.zsh use the 'Fork' branch.
-* https://github.com/yonchu/zsh-vcs-prompt and ensure you are using ZSH >= 5.0.5
+* https://github.com/woefe/git-prompt.zsh
+* https://github.com/yonchu/zsh-vcs-prompt
 * https://github.com/rnc/zsh-git-prompt use the 'Fork' branch.
 
 For Bash:
@@ -57,7 +63,3 @@ These contains various useful functions and aliases.
 GitConfig
 ---------
 Various useful aliases suitable for placing in /etc/gitconfig
-
-Misc
-----
-.dir_colors contains a custom set of colours.

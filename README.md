@@ -9,14 +9,28 @@ Both bash and zsh initialisation utilise a common configuration file (```$HOME/.
 * IP_CONFIG - location of IP configuration
 * IP_TOOLING - location of IP_TOOLING
 
-For even more colourful highlighting install https://github.com/zsh-users/zsh-syntax-highlighting in NS_PREFIX location..
+For even more colourful highlighting install https://github.com/zsh-users/zsh-syntax-highlighting in `NS_PREFIX` location..
 
-For even more completions install https://github.com/zsh-users/zsh-completions in NS_PREFIX location.
+For even more completions install https://github.com/zsh-users/zsh-completions in `NS_PREFIX` location.
 
 ### Prompt ###
-For ZSH, there are two options available.
-* Install https://github.com/rnc/zsh-git-prompt in NS_PREFIX location and use the 'Fork' branch.
-* Install https://github.com/yonchu/zsh-vcs-prompt in NS_PREFIX location and ensure you are using ZSH >= 5.0.5
+
+#### Syntax Highlighting ####
+
+It will check for existence (inside `NS_PREFIX`) for any of the below, in the following order:
+
+* https://github.com/zdharma/fast-syntax-highlighting
+* https://github.com/zdharma/zsh-syntax-highlighting
+
+
+#### Git ####
+
+It will check for existence (inside `NS_PREFIX`) for any of the below, in the following order:
+
+* https://github.com/woefe/git-prompt.zsh use the 'Fork' branch.
+* https://github.com/yonchu/zsh-vcs-prompt and ensure you are using ZSH >= 5.0.5
+* https://github.com/rnc/zsh-git-prompt use the 'Fork' branch.
+
 For Bash:
 * Install https://github.com/yonchu/zsh-vcs-prompt in NS_PREFIX location.
 

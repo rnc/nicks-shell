@@ -266,7 +266,7 @@ then
                 if zle -l update_super_status
                 then
                     (( update_prompt_fd )) && zle -F $update_prompt_fd >/dev/null
-                    exec {update_prompt_fd}<<( internal_vcs_super_info )
+                    exec {update_prompt_fd} < <( internal_vcs_super_info )
                     zle -F -w $update_prompt_fd update_super_status
                 fi
             }

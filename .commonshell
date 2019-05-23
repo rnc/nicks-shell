@@ -617,6 +617,13 @@ function maven-3.6.0()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.6.1()
+{
+    M2_HOME=/usr/local/apache-maven-3.6.1
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 function gradle-2.13()
 {
     PATH=/usr/local/gradle-2.13/bin:$PATH

@@ -5,13 +5,16 @@
 #
 #
 
-which zsh >& /dev/null
-if [ "$?" == 0 ]
+if [[ $- == *i* ]]
 then
-    echo "Execing ZSH"
-    export SHELL=`which zsh`
-    zsh
-    exit
+    which zsh >& /dev/null
+    if [ "$?" == 0 ]
+    then
+        echo "Execing ZSH"
+        export SHELL=`which zsh`
+        zsh
+        exit
+    fi
 fi
 
 # Default to .bashrc

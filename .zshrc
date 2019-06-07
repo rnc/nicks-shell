@@ -185,7 +185,7 @@ then
 
     # Python handling
     [[ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]] && source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
-    RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
+    RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
 
     # Different git prompt systems
     #
@@ -205,7 +205,7 @@ then
         {
             # Prompt turns red if the previous command didn't exit with 0
             PROMPT="$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
-            RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
+            RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
         }
         add-zsh-hook precmd prompt_updater
     # https://github.com/yonchu/zsh-vcs-prompt/
@@ -244,7 +244,7 @@ then
             function update_super_status ()
             {
                 PROMPT="%m$(read -rE -u$1)$PROMPT_JAVA$PROMPT_EXTRA $ "  # double quotes, not promptsubst
-                RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
+                RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
                 update_prompt_fd=0
                 zle -F $1           # Remove the handler
                 exec {1}>&-         # Close the descriptor
@@ -291,7 +291,7 @@ then
         function prompt_updater ()
         {
             PROMPT="%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
-            RPROMPT="%{"$'\e[0;35m'"%}$([[ -v VIRTUAL_ENV ]] && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
+            RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
         }
         add-zsh-hook precmd prompt_updater
     else

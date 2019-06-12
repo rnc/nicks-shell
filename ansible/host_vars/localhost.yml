@@ -66,6 +66,7 @@ packages_to_remove:
   - mariadb-server
   - mariadb-server-utils
   - mariadb-tokudb-engine
+  - open-vm-tools
   - perl-DBD-MySQL
   - perl-DBI
   - perl-Math-BigInt
@@ -79,6 +80,7 @@ packages_to_remove:
   - radiotray # SparkyLinux radio
   - speech-dispatcher
   - uget # SparkyLinux
+  - virtualbox-guest-additions
   - vokoscreen # Sparkylinux webcast
 
 base_packages_to_install:
@@ -124,6 +126,7 @@ standard_packages_to_install:
   - gwenview
   - hplip
   - httpie
+  - kcron
   - kde-connect
   - kdesu
   - kgpg
@@ -169,6 +172,7 @@ development_packages_to_install:
   - golang # Go language
   - golang-bin
   - java-1.8.0-openjdk-devel # Explicitly install Java 8 (later Fedora use Java 10)
+  - java-1.8.0-openjdk-src # Explicitly install Java 8 src (later Fedora use Java 10)
   - libvirt # Virtualisation
   - lm_sensors
   - make

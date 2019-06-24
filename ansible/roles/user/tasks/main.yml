@@ -13,3 +13,9 @@
       src: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
       state: link
       force: yes
+
+  - name: Configure rnc shell account
+    user:
+      name: rnc
+      shell: /bin/zsh
+      groups: rnc,wheel,libvirt

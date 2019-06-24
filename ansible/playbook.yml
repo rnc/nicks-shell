@@ -172,11 +172,11 @@
       dest: /etc/krb5.conf
     when: ansible_distribution == "Fedora"
 
+  - name: User account configuration
+    include_role:
+      name: user
+
   - name: Install minishift
     include_role:
       name: minishift
     when: ansible_distribution == "Fedora"
-
-  - name: User account configuration
-    include_role:
-      name: user

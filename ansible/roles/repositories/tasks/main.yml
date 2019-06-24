@@ -45,7 +45,7 @@
       baseurl: http://{{ csb_repo }}/rhel7-csb-stage
       gpgcheck: yes
       enabled: yes
-      priority: 2
+      priority: "2"
       includepkgs: redhat*,slack,bluejeans
       gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
 

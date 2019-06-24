@@ -636,6 +636,12 @@ function gradle-4.7()
     echo "Gradle executable is `which gradle`"
 }
 
+function gradle-4.10.2()
+{
+    PATH=/usr/local/gradle-4.10.2/bin:$PATH
+    echo "Gradle executable is `which gradle`"
+}
+
 function gradle-5.3.1()
 {
     PATH=/usr/local/gradle-5.3.1/bin:$PATH

@@ -37,8 +37,15 @@ It will check for existence (inside `NS_PREFIX`) for any of the below, in the fo
 * https://github.com/yonchu/zsh-vcs-prompt
 * https://github.com/rnc/zsh-git-prompt use the 'Fork' branch.
 
-For Bash:
-* Install https://github.com/yonchu/zsh-vcs-prompt in NS_PREFIX location.
+#### Completions ####
+
+If either https://github.com/zsh-users/zsh-completions.git or https://github.com/gradle/gradle-completion are
+installed in the `NS_PREFIX` directory it will add these to the completion system.
+
+#### Python ####
+
+If https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv/ is installed in the `NS_PREFIX` directory it will activate this for Python environments.
+
 
 Installation
 ------------

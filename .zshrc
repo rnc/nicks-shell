@@ -188,7 +188,7 @@ then
     [[ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]] && source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
     RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
 
-    # Different git prompt systems
+    # Different git prompt systems. Search in the following order
     #
     # https://github.com/woefe/git-prompt.zsh
     if [ -d $NS_PREFIX/git-prompt.zsh ]

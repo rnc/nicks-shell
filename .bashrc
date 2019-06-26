@@ -68,7 +68,7 @@ export SHELL=`which bash`
 # Get common aliases and functions
 #
 source $HOME/.commonshell
-source $HOME/.aliases
+[[ -f $HOME/.aliases ]] && source $HOME/.aliases
 
 # Setup prompt and columns
 if [[ $- == *i* ]]

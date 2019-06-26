@@ -156,6 +156,7 @@ NO_XTRACE
 
 autoload -U compinit && compinit
 autoload -U zmv
+autoload -U is-at-least
 
 alias cpz='noglob zmv -W -C'
 alias mvz='noglob zmv -W'
@@ -211,7 +212,6 @@ then
     # https://github.com/yonchu/zsh-vcs-prompt/
     elif [ -d $NS_PREFIX/zsh-vcs-prompt ]
     then
-        autoload -U is-at-least
         if ! is-at-least 5.0.5
         then
             echo "ZSH Version must be at least 5.0.5"
@@ -393,70 +393,74 @@ SAVEHIST=10000
 ### Functions ###
 #################
 
-add-zsh-hook preexec title_preexec
-add-zsh-hook precmd title_precmd
+if is-at-least 5.0.5
+then
+    add-zsh-hook preexec title_preexec
+    add-zsh-hook precmd title_precmd
 
-# Instead of using chpwd just use zsh built in which is executed
-# just before prompt is drawn. chpwd can clash with functions.
-function title_precmd ()
-{
-    title
-}
+    # Instead of using chpwd just use zsh built in which is executed
+    # just before prompt is drawn. chpwd can clash with functions.
+    function title_precmd ()
+    {
+        title
+    }
 
-# From http://zshwiki.org/home/examples/hardstatus
-# Used by preexec to print '<pwd> : <cmd>'
-function title () {
-    # The hardcoded limit is because KDE konsole only appears to support 74
-    # characters for a title. See
-    # http://www.debian-administration.org/articles/548
-    #
-    # Previously was just using %~ but named directory expansion means
-    # that just printed JACORB_DIR which is not very helpful.
-    [[ -n "$SSH_CONNECTION" ]] && local rhs="$HOST:"
-    if (( $# > 0 ))
-    then
-        # If we have a command (with args) then take it and truncate it
-        # as konsole tabs explode otherwise
-        local arg=$(echo $*)
-        print -nR $'\033]0;'$rhs${arg[1,54]}...$'\a'
-    else
-        local cwd="`print -Pn \"%74<..<${PWD/$HOME/~}\"`"
-        print -nR $'\033]0;'$rhs$cwd$'\a'
-    fi
-}
-
-function title_preexec()
-{
-  emulate -L zsh
-
-  local -a cmd; cmd=(${(z)1})             # Re-parse the command line
-
-  # Construct a command that will output the desired job number.
-  case $cmd[1] in
-      fg)
-        if (( $#cmd == 1 )); then
-          # No arguments, must find the current job
-          cmd=(builtin jobs -l %+)
+    # From http://zshwiki.org/home/examples/hardstatus
+    # Used by preexec to print '<pwd> : <cmd>'
+    function title () {
+        # The hardcoded limit is because KDE konsole only appears to support 74
+        # characters for a title. See
+        # http://www.debian-administration.org/articles/548
+        #
+        # Previously was just using %~ but named directory expansion means
+        # that just printed JACORB_DIR which is not very helpful.
+        [[ -n "$SSH_CONNECTION" ]] && local rhs="$HOST:"
+        if (( $# > 0 ))
+        then
+            # If we have a command (with args) then take it and truncate it
+            # as konsole tabs explode otherwise
+            local arg=$(echo $*)
+            print -nR $'\033]0;'$rhs${arg[1,54]}...$'\a'
         else
-          # Replace the command name, ignore extra args.
-          cmd=(builtin jobs -l ${(Q)cmd[2]})
-        fi;;
-       %*) cmd=(builtin jobs -l ${(Q)cmd[1]});; # Same as "else" above
-       exec) shift cmd;& # If the command is 'exec', drop that, because
+            local cwd="`print -Pn \"%74<..<${PWD/$HOME/~}\"`"
+            print -nR $'\033]0;'$rhs$cwd$'\a'
+        fi
+    }
+
+    function title_preexec()
+    {
+        emulate -L zsh
+
+        local -a cmd; cmd=(${(z)1})             # Re-parse the command line
+
+        # Construct a command that will output the desired job number.
+        case $cmd[1] in
+          fg)
+            if (( $#cmd == 1 )); then
+                # No arguments, must find the current job
+                cmd=(builtin jobs -l %+)
+            else
+                # Replace the command name, ignore extra args.
+                cmd=(builtin jobs -l ${(Q)cmd[2]})
+            fi;;
+          %*) cmd=(builtin jobs -l ${(Q)cmd[1]});; # Same as "else" above
+          exec) shift cmd;& # If the command is 'exec', drop that, because
           # we'd rather just see the command that is being
           # exec'd. Note the ;& to fall through.
-       *)  title $cmd[1]:t "$cmd[2,-1]"    # Not resuming a job,
-          return;;                        # so we're all done
-      esac
+          *)  title $cmd[1]:t "$cmd[2,-1]"    # Not resuming a job,
+              return;;                        # so we're all done
+        esac
 
-  local -A jt; jt=(${(kv)jobtexts})       # Copy jobtexts for subshell
+        local -A jt; jt=(${(kv)jobtexts})       # Copy jobtexts for subshell
 
-  # Run the command, read its output, and look up the jobtext.
-  # Could parse $rest here, but $jobtexts (via $jt) is easier.
-  $cmd >>(read num rest
-          cmd=(${(z)${(e):-\$jt$num}})
-          title $cmd[1]:t "$cmd[2,-1]") 2>/dev/null
-}
+        # Run the command, read its output, and look up the jobtext.
+        # Could parse $rest here, but $jobtexts (via $jt) is easier.
+        $cmd >>(read num rest
+                cmd=(${(z)${(e):-\$jt$num}})
+                title $cmd[1]:t "$cmd[2,-1]") 2>/dev/null
+    }
+
+fi
 
 # Show current status of ZSH options (from mailing list).
 function showoptions()
@@ -477,9 +481,14 @@ _git-tagcommit () { _git-rev-parse "$@" }
 #
 # Get common aliases and functions
 #
-source $HOME/.commonshell
-source $HOME/.aliases
+if is-at-least 5.0.5
+then
+    source $HOME/.commonshell
+fi
+[[ -f $HOME/.aliases ]] && source $HOME/.aliases
 [[ -f $HOME/.corbashell ]] && source $HOME/.corbashell
+
+unset -f is-at-least
 
 #############
 ### rhpkg ###

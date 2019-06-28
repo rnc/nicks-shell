@@ -30,7 +30,7 @@ Alternatively, if using KDEWalletManager then as per https://ercpe.de/blog/use-k
 
 # Variables
 
-The vars/private.yml file needs to contain
+A private variable file needs to contain
 
   * rcm_repo: "..."
   * csb_repo: "..."
@@ -45,11 +45,14 @@ The vars/private.yml file needs to contain
   * hostname: "..."
   * user_account: "..."
 
-The files/bootstrapvpn.tar needs to be a tar file containing:
+By default this will use `vars/private.yml` ; pass `-e private_vars=<my-variable-file.yml>` to override.
+
+A tar file containing VPN bootstrap information - this needs to contain:
 
   * etc/NetworkManager/system-connections/vpnconfig.ovpn
   * etc/pki/tls/certs/certificate.pem
 
+By default this will use `files/bootstrapvpn.tar` ; pass `-e bootstrap_vpn=<my-bootstrap-file.tar>` to override.
 To view this private file use:
 
     ansible-vault --vault-id ./vault.sh view vars/private.yml

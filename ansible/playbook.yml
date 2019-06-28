@@ -2,8 +2,6 @@
 
 - name: run the playbook tasks on the localhost
   hosts: localhost
-  vars_files:
-    - vars/private.yml
   vars:
     - vpn_bootstrap: false
   vars_prompt:
@@ -12,6 +10,7 @@
     private: yes
 
   tasks:
+  - include_vars: "{{ private_vars }}"
   - include_vars: fedora.yml
     when: ansible_distribution == 'Fedora'
   - include_vars: debian.yml
@@ -37,7 +36,7 @@
     - name: Install bootstrap VPN
       unarchive:
         decrypt: yes
-        src: files/bootstrapvpn.tar
+        src: "{{ bootstrap_vpn }}"
         dest: /
     - name: Activate network for bootstrap VPN
       command: nmcli connection reload

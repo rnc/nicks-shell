@@ -4,12 +4,14 @@ if [ "$( grep '^ID=fedora' /etc/os-release )" ]
 then
     PKGQ="rpm -q"
     PKGI="dnf"
-    EXTRA="ansible_become_pass=$(kwallet-query -l kdewallet -f ksshaskpass -v -r '' ) "
+    WALLET="ansible_become_pass=$(kwallet-query -l kdewallet -f ksshaskpass -v -r '' ) "
 else
     PKGQ="dpkg-query -W"
     PKGI="apt-get"
-    EXTRA=" "
+    WALLET=" "
 fi
+
+EXTRA="$WALLET $@"
 
 $PKGQ ansible git > /dev/null
 if [ "$?" == "2" ]
@@ -26,5 +28,5 @@ else
         exit 1
     fi
 
-    ansible-playbook -v playbook.yml -e "$EXTRA"
+    ansible-playbook -v playbook.yml -e $EXTRA
 fi

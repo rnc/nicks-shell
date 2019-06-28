@@ -10,12 +10,12 @@
 
   - file:
       path: "/etc/gitconfig"
-      src: "/home/rnc/Work/Miscellaneous/nicks-shell/gitconfig"
+      src: "{{ playbook_dir }}/../gitconfig"
       state: link
       force: yes
 
-  - name: Configure rnc shell account
+  - name: Configure user shell account
     user:
-      name: rnc
+      name: "{{ user_account }}"
       shell: /bin/zsh
-      groups: rnc,wheel,libvirt
+      groups: "{{ user_account }},wheel,libvirt"

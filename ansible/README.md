@@ -43,6 +43,7 @@ The vars/private.yml file needs to contain
   * kerberos_domain2: "..."
   * kerberos_server: "..."
   * hostname: "..."
+  * user_account: "..."
 
 The files/bootstrapvpn.tar needs to be a tar file containing:
 

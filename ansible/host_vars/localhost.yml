@@ -1,5 +1,9 @@
 ---
 
+private_vars: "vars/private.yml"
+
+bootstrap_vpn: "files/bootstrapvpn.tar"
+
 packages_to_remove:
   - akonadi
   - akonadi-import-wizard

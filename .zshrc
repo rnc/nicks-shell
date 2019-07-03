@@ -414,7 +414,7 @@ then
         #
         # Previously was just using %~ but named directory expansion means
         # that just printed JACORB_DIR which is not very helpful.
-        [[ -n "$SSH_CONNECTION" ]] && local rhs="$HOST:"
+        [[ -n "$SSH_CONNECTION" ]] && local rhs="$HOSTNAME:"
         if (( $# > 0 ))
         then
             # If we have a command (with args) then take it and truncate it

@@ -163,7 +163,6 @@ standard_packages_to_install:
   - yarock
 
 development_packages_to_install:
-  #        - kernel-tools
   - brewkoji
   - cmake
   - code # Visual Studio Code

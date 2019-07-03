@@ -8,9 +8,6 @@
 ### Variables ###
 #################
 
-UARCH=`uname -sm`
-HOST=`hostname | sed 's/\..*//'`
-ARCHBIN="$HOME/bin/`echo $UARCH| sed 's/ /\//'`"
 PATH=$PATH:$HOME/bin
 
 # Note: this may need changing for F26 : https://fedoraproject.org/wiki/Changes/KerberosKCMCache
@@ -41,7 +38,7 @@ then
     eval $( dircolors -b $NS_PREFIX/LS_COLORS/LS_COLORS )
 fi
 
-export UARCH HOST ARCHBIN EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY
+export EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY
 
 if tput setaf 0 &>/dev/null
 then

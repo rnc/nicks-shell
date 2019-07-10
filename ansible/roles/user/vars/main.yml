@@ -1,0 +1,5 @@
+---
+
+docker_warning: |
+  Docker is installed but NOT started (use 'sudo systemctl start docker'). Also, the user has been
+  configured with the docker group which is a security risk (See: https://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-docker-in-centos-fedora-or-rhel ).

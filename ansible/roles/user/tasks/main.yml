@@ -14,8 +14,21 @@
       state: link
       force: yes
 
+  # Would prefer not to have to create a docker group but CEKit needs it.
+  # https://developer.fedoraproject.org/tools/docker/docker-installation.html
+  # https://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-docker-in-centos-fedora-or-rhel/
+  - name: Create docker group
+    group:
+      name: docker
+      state: present
+
+  - name: display docker message
+    debug:
+      msg={{ docker_warning.split('\n') }}
+
+
   - name: Configure user shell account
     user:
       name: "{{ user_account }}"
       shell: /bin/zsh
-      groups: "{{ user_account }},wheel,libvirt"
+      groups: "{{ user_account }},wheel,libvirt,docker"

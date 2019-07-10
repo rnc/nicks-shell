@@ -185,7 +185,18 @@ then
     : ${PROMPT_SYMBOL:="❯"}
 
     # Python handling
-    [[ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]] && source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
+    if [ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]
+    then
+        source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
+        # Add an implicit conftest.py enabling pytest to recognise app modules without
+        # modifying PYTHONPATH.
+        # https://stackoverflow.com/questions/34466027/in-pytest-what-is-the-use-of-conftest-py-files
+        functions[mkvenv]="
+                $functions[mkvenv]
+                echo \"Adding conftest.py\"
+                touch $PWD/conftest.py
+        "
+    fi
     RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
 
     # Different git prompt systems. Search in the following order

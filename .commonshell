@@ -51,6 +51,7 @@ then
     BLUE="$(tput setaf 4)"
     WHITE="$(tput setaf 7)"
     ERROR="${BOLD}${RED}%s${OFF}\n"
+    INFO="${BOLD}${GREEN}%s${OFF}\n"
 fi
 
 #################
@@ -1119,6 +1120,41 @@ function mergePullRequest()
         fi
     done
     echo -e "\033[49;32;1mFinished\033[0m"
+}
+
+
+resetFeatureBranch ()
+{
+    local master=""
+    local upstream=""
+    for i in $(git trackbranch | sed 's/\(.*\) <-.*/\1/g')
+    do
+        local r="$(git b | grep remotes | grep upstream/$i | cut -f 3 -d ' ')"
+        if [ -n "$r" ]
+        then
+            master=$i
+            upstream="${r#remotes/}"
+            break
+        fi
+    done
+    local currentBranch=$(git symbolic-ref --short HEAD)
+    [[ "$?" != "0" ]] && printf "$ERROR" "Error establishing current branch; aborting..." && return 1
+    [[ -z "$currentBranch" ]] && printf "$ERROR" "Current branch not set" && return 1
+    [[ -z "$master" ]] && printf "$ERROR" "Master branch not set" && return 1
+    [[ -z "$upstream" ]] && printf "$ERROR" "Upstream branch not set" && return 1
+    git llg5
+    printf "$INFO" "Current branch is $currentBranch"
+    printf "$INFO" "Known 'master' is $master"
+    printf "$INFO" "Upstream 'master' $upstream"
+    echo ""
+    [[ "$currentBranch" = "$master" ]] && printf "$ERROR" "Current equals master; aborting..." && return 1
+    git checkout $master
+    echo "Deleting current and remote feature branch"
+    git branch -d $currentBranch
+    [[ -n "$(git ls-remote --exit-code --heads origin $currentBranch)" ]] && git push origin --delete $currentBranch
+    echo "Updating local"
+    git pull -q `echo $upstream | tr '/' ' '`
+    git llg5
 }
 
 

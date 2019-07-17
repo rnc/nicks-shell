@@ -11,8 +11,6 @@
 #
 # Prefix where useful things are stored in the users file system
 # NS_PREFIX=xxx
-# e.g. brew-koji zsh completion code. For example set it to $HOME/Work/Miscellaneous
-# NS_PREFIX is added to the fpath and used to source zsh-git-prompt.
 
 # Any other functions etc can also be put in here.
 [[ -f $HOME/.shell-configuration ]] && source $HOME/.shell-configuration
@@ -20,145 +18,12 @@
 # Source ZSH functions.
 fpath=($NS_PREFIX/brew-koji/zsh $NS_PREFIX/gradle-completion $NS_PREFIX/zsh-completions/src $fpath)
 
-####################################
-#### Set various options. ##########
-####################################
-
-setopt \
-ALL_EXPORT \
-ALWAYS_TO_END \
-ALWAYS_LAST_PROMPT \
-APPEND_HISTORY \
-AUTO_CD \
-NO_AUTO_LIST \
-AUTO_MENU \
-AUTO_NAME_DIRS \
-NO_AUTO_PARAM_KEYS \
-AUTO_PARAM_SLASH \
-AUTO_PUSHD \
-AUTO_REMOVE_SLASH \
-NO_AUTO_RESUME \
-BAD_PATTERN \
-BANG_HIST \
-BARE_GLOB_QUAL \
-BASH_AUTO_LIST \
-NO_BEEP \
-NO_BG_NICE \
-NO_BRACE_CCL \
-NO_BSD_ECHO \
-NO_CDABLE_VARS \
-CHASE_DOTS \
-NO_CHASE_LINKS \
-CHECK_JOBS \
-NO_CLOBBER \
-NO_COMPLETE_ALIASES \
-COMPLETE_IN_WORD \
-CORRECT \
-CORRECT_ALL \
-NO_CSH_JUNKIE_HISTORY \
-NO_CSH_JUNKIE_LOOPS \
-NO_CSH_JUNKIE_QUOTES \
-NO_CSH_NULLCMD \
-NO_DVORAK \
-EQUALS \
-NO_ERR_EXIT \
-EXEC \
-EXTENDED_GLOB \
-NO_EXTENDED_HISTORY \
-FLOW_CONTROL \
-FUNCTION_ARGZERO \
-GLOB \
-GLOBAL_EXPORT \
-NO_GLOBAL_RCS \
-GLOB_COMPLETE \
-GLOB_DOTS \
-NO_GLOB_SUBST \
-HASH_CMDS \
-HASH_DIRS \
-HASH_LIST_ALL \
-NO_HIST_ALLOW_CLOBBER \
-NO_HIST_BEEP \
-HIST_EXPIRE_DUPS_FIRST \
-HIST_FIND_NO_DUPS \
-HIST_IGNORE_ALL_DUPS \
-HIST_IGNORE_DUPS \
-HIST_IGNORE_SPACE \
-NO_HIST_NO_FUNCTIONS \
-NO_HIST_NO_STORE \
-HIST_REDUCE_BLANKS \
-HIST_SAVE_NO_DUPS \
-NO_HIST_VERIFY \
-NO_HUP \
-NO_IGNORE_BRACES \
-IGNORE_EOF \
-INC_APPEND_HISTORY \
-INTERACTIVE_COMMENTS \
-NO_KSH_ARRAYS \
-NO_KSH_AUTOLOAD \
-NO_KSH_GLOB \
-NO_KSH_OPTION_PRINT \
-LIST_AMBIGUOUS \
-NO_LIST_BEEP \
-NO_LIST_PACKED \
-LIST_ROWS_FIRST \
-LIST_TYPES \
-LONG_LIST_JOBS \
-MAGIC_EQUAL_SUBST \
-NO_MAIL_WARNING \
-MARK_DIRS \
-NO_MENU_COMPLETE \
-MONITOR \
-MULTIOS \
-NO_NOMATCH \
-NOTIFY \
-NO_NULL_GLOB \
-NO_NUMERIC_GLOB_SORT \
-NO_OCTAL_ZEROES \
-NO_OVERSTRIKE \
-NO_PATH_DIRS \
-NO_PRINT_EIGHT_BIT \
-NO_PRINT_EXIT_VALUE \
-NO_PRIVILEGED \
-NO_PROMPT_BANG \
-PROMPT_CR \
-PROMPT_PERCENT \
-PROMPT_SUBST \
-PUSHD_IGNORE_DUPS \
-NO_PUSHD_MINUS \
-NO_PUSHD_SILENT \
-PUSHD_TO_HOME \
-NO_RC_EXPAND_PARAM \
-NO_RC_QUOTES \
-RCS \
-NO_REC_EXACT \
-NO_RESTRICTED \
-NO_RM_STAR_SILENT \
-NO_RM_STAR_WAIT \
-SHARE_HISTORY \
-NO_SH_FILE_EXPANSION \
-NO_SH_GLOB \
-NO_SHIN_STDIN \
-NO_SH_NULLCMD \
-NO_SH_OPTION_LETTERS \
-NO_SHORT_LOOPS \
-NO_SH_WORD_SPLIT \
-NO_SINGLE_COMMAND \
-NO_SINGLE_LINE_ZLE \
-NO_SUN_KEYBOARD_HACK \
-UNSET \
-NO_VERBOSE \
-NO_XTRACE
-
 ################################################
 ##### Autoloads and functions ##################
 ################################################
 
 autoload -U compinit && compinit
-autoload -U zmv
 autoload -U is-at-least
-
-alias cpz='noglob zmv -W -C'
-alias mvz='noglob zmv -W'
 
 # Autoload all shell functions from all directories in $fpath
 autoload $^fpath/*(N.)
@@ -186,10 +51,8 @@ then
     # Python handling
     if [ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]
     then
-        () {
-            setopt local_options no_all_export
-            source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
-        }
+        source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
+
         # Add an implicit conftest.py enabling pytest to recognise app modules without
         # modifying PYTHONPATH.
         # https://stackoverflow.com/questions/34466027/in-pytest-what-is-the-use-of-conftest-py-files
@@ -538,6 +401,136 @@ then
             }
     fi
 fi
+
+####################################
+#### Set various options. ##########
+####################################
+
+setopt \
+ALL_EXPORT \
+ALWAYS_TO_END \
+ALWAYS_LAST_PROMPT \
+APPEND_HISTORY \
+AUTO_CD \
+NO_AUTO_LIST \
+AUTO_MENU \
+AUTO_NAME_DIRS \
+NO_AUTO_PARAM_KEYS \
+AUTO_PARAM_SLASH \
+AUTO_PUSHD \
+AUTO_REMOVE_SLASH \
+NO_AUTO_RESUME \
+BAD_PATTERN \
+BANG_HIST \
+BARE_GLOB_QUAL \
+BASH_AUTO_LIST \
+NO_BEEP \
+NO_BG_NICE \
+NO_BRACE_CCL \
+NO_BSD_ECHO \
+NO_CDABLE_VARS \
+CHASE_DOTS \
+NO_CHASE_LINKS \
+CHECK_JOBS \
+NO_CLOBBER \
+NO_COMPLETE_ALIASES \
+COMPLETE_IN_WORD \
+CORRECT \
+CORRECT_ALL \
+NO_CSH_JUNKIE_HISTORY \
+NO_CSH_JUNKIE_LOOPS \
+NO_CSH_JUNKIE_QUOTES \
+NO_CSH_NULLCMD \
+NO_DVORAK \
+EQUALS \
+NO_ERR_EXIT \
+EXEC \
+EXTENDED_GLOB \
+NO_EXTENDED_HISTORY \
+FLOW_CONTROL \
+FUNCTION_ARGZERO \
+GLOB \
+GLOBAL_EXPORT \
+NO_GLOBAL_RCS \
+GLOB_COMPLETE \
+GLOB_DOTS \
+NO_GLOB_SUBST \
+HASH_CMDS \
+HASH_DIRS \
+HASH_LIST_ALL \
+NO_HIST_ALLOW_CLOBBER \
+NO_HIST_BEEP \
+HIST_EXPIRE_DUPS_FIRST \
+HIST_FIND_NO_DUPS \
+HIST_IGNORE_ALL_DUPS \
+HIST_IGNORE_DUPS \
+HIST_IGNORE_SPACE \
+NO_HIST_NO_FUNCTIONS \
+NO_HIST_NO_STORE \
+HIST_REDUCE_BLANKS \
+HIST_SAVE_NO_DUPS \
+NO_HIST_VERIFY \
+NO_HUP \
+NO_IGNORE_BRACES \
+IGNORE_EOF \
+INC_APPEND_HISTORY \
+INTERACTIVE_COMMENTS \
+NO_KSH_ARRAYS \
+NO_KSH_AUTOLOAD \
+NO_KSH_GLOB \
+NO_KSH_OPTION_PRINT \
+LIST_AMBIGUOUS \
+NO_LIST_BEEP \
+NO_LIST_PACKED \
+LIST_ROWS_FIRST \
+LIST_TYPES \
+LONG_LIST_JOBS \
+MAGIC_EQUAL_SUBST \
+NO_MAIL_WARNING \
+MARK_DIRS \
+NO_MENU_COMPLETE \
+MONITOR \
+MULTIOS \
+NO_NOMATCH \
+NOTIFY \
+NO_NULL_GLOB \
+NO_NUMERIC_GLOB_SORT \
+NO_OCTAL_ZEROES \
+NO_OVERSTRIKE \
+NO_PATH_DIRS \
+NO_PRINT_EIGHT_BIT \
+NO_PRINT_EXIT_VALUE \
+NO_PRIVILEGED \
+NO_PROMPT_BANG \
+PROMPT_CR \
+PROMPT_PERCENT \
+PROMPT_SUBST \
+PUSHD_IGNORE_DUPS \
+NO_PUSHD_MINUS \
+NO_PUSHD_SILENT \
+PUSHD_TO_HOME \
+NO_RC_EXPAND_PARAM \
+NO_RC_QUOTES \
+RCS \
+NO_REC_EXACT \
+NO_RESTRICTED \
+NO_RM_STAR_SILENT \
+NO_RM_STAR_WAIT \
+SHARE_HISTORY \
+NO_SH_FILE_EXPANSION \
+NO_SH_GLOB \
+NO_SHIN_STDIN \
+NO_SH_NULLCMD \
+NO_SH_OPTION_LETTERS \
+NO_SHORT_LOOPS \
+NO_SH_WORD_SPLIT \
+NO_SINGLE_COMMAND \
+NO_SINGLE_LINE_ZLE \
+NO_SUN_KEYBOARD_HACK \
+UNSET \
+NO_VERBOSE \
+NO_XTRACE
+
 
 ##############
 ### Styles ###

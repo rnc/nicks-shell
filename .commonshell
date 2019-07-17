@@ -26,7 +26,6 @@ QUOTING_STYLE=literal
 
 # https://forum.manjaro.org/t/kde-plasma-related-error-messages-in-journal/21790
 QT_LOGGING_RULES='*=false'
-export QT_LOGGING_RULES
 
 [[ -z $EDITOR ]] && EDITOR="emacs -nw --no-init-file --no-site-file"
 
@@ -38,21 +37,28 @@ then
     eval $( dircolors -b $NS_PREFIX/LS_COLORS/LS_COLORS )
 fi
 
-export EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY
+export PATH EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY QUOTING_STYLE QT_LOGGING_RULES
 
+# https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+# https://misc.flogisoft.com/bash/tip_colors_and_formatting
 if tput setaf 0 &>/dev/null
 then
-    # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
-    OFF="$(tput sgr0)"
-    BOLD="$(tput bold)"
-    RED="$(tput setaf 1)"
-    GREEN="$(tput setaf 2)"
-    YELLOW="$(tput setaf 3)"
-    BLUE="$(tput setaf 4)"
-    WHITE="$(tput setaf 7)"
-    ERROR="${BOLD}${RED}%s${OFF}\n"
-    INFO="${BOLD}${GREEN}%s${OFF}\n"
+    OFF="\e[0m"
+    # Equivalent to $(tput bold)
+    BOLD="\e[1m"
+    # Equivalent to $(tput setaf 1)
+    RED="\e[31m"
+    # Equivalent to $(tput setaf 2)
+    GREEN="\e[32m"
+    # Equivalent to $(tput setaf 3)
+    YELLOW="\e[33m"
+    # Equivalent to $(tput setaf 4)
+    BLUE="\e[34m"
+    # Equivalent to $(tput setaf 7)
+    WHITE="\e[37m"
 fi
+ERROR="${BOLD}${RED}%s${OFF}\n"
+INFO="${BOLD}${GREEN}%s${OFF}\n"
 
 #################
 ### Functions ###

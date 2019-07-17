@@ -149,7 +149,6 @@ UNSET \
 NO_VERBOSE \
 NO_XTRACE
 
-
 ################################################
 ##### Autoloads and functions ##################
 ################################################
@@ -187,15 +186,20 @@ then
     # Python handling
     if [ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]
     then
-        source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
+        () {
+            setopt local_options no_all_export
+            source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
+        }
         # Add an implicit conftest.py enabling pytest to recognise app modules without
         # modifying PYTHONPATH.
         # https://stackoverflow.com/questions/34466027/in-pytest-what-is-the-use-of-conftest-py-files
-        functions[mkvenv]="
-                $functions[mkvenv]
-                echo \"Adding conftest.py\"
-                touch $PWD/conftest.py
-        "
+        # https://unix.stackexchange.com/questions/450043/overwrite-and-reuse-existing-function-in-zsh
+        eval "function mkvenv() {
+            $functions[mkvenv]
+            echo \"Adding conftest.py\"
+            touch \$PWD/conftest.py
+            export PY_COLORS=1
+            }"
     fi
     RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
 
@@ -318,6 +322,7 @@ then
     unset zle_bracketed_paste
 fi
 
+
 ########################################
 #### Key Bindings ######################
 ########################################
@@ -406,72 +411,84 @@ SAVEHIST=10000
 
 if is-at-least 5.0.5
 then
-    add-zsh-hook preexec title_preexec
-    add-zsh-hook precmd title_precmd
 
-    # Instead of using chpwd just use zsh built in which is executed
-    # just before prompt is drawn. chpwd can clash with functions.
-    function title_precmd ()
-    {
-        title
-    }
-
-    # From http://zshwiki.org/home/examples/hardstatus
-    # Used by preexec to print '<pwd> : <cmd>'
-    function title () {
-        # The hardcoded limit is because KDE konsole only appears to support 74
-        # characters for a title. See
-        # http://www.debian-administration.org/articles/548
+    if [ -d $NS_PREFIX/oh-my-zsh ]
+    then
+        source $NS_PREFIX/oh-my-zsh/lib/termsupport.zsh
+        ZSH_THEME_TERM_TAB_TITLE_IDLE="%8<...<%~%<<%#" #15 char left truncated PWD
+        ZSH_THEME_TERM_TITLE_IDLE="%~"
+    else
         #
-        # Previously was just using %~ but named directory expansion means
-        # that just printed JACORB_DIR which is not very helpful.
-        [[ -n "$SSH_CONNECTION" ]] && local rhs="$HOSTNAME:"
-        if (( $# > 0 ))
-        then
-            # If we have a command (with args) then take it and truncate it
-            # as konsole tabs explode otherwise
-            local arg=$(echo $*)
-            print -nR $'\033]0;'$rhs${arg[1,54]}...$'\a'
-        else
-            local cwd="`print -Pn \"%74<..<${PWD/$HOME/~}\"`"
-            print -nR $'\033]0;'$rhs$cwd$'\a'
-        fi
-    }
+        # Alternative method if oh-my-zsh termsupport is not available.
+        #
+        add-zsh-hook preexec title_preexec
+        add-zsh-hook precmd title_precmd
 
-    function title_preexec()
-    {
-        emulate -L zsh
+        # Instead of using chpwd just use zsh built in which is executed
+        # just before prompt is drawn. chpwd can clash with functions.
+        function title_precmd ()
+        {
+            title
+        }
 
-        local -a cmd; cmd=(${(z)1})             # Re-parse the command line
+        # From http://zshwiki.org/home/examples/hardstatus
+        # Used by preexec to print '<pwd> : <cmd>'
+        function title () {
+            # The hardcoded limit is because KDE konsole only appears to support 74
+            # characters for a title. See
+            # http://www.debian-administration.org/articles/548
+            #
+            # Previously was just using %~ but named directory expansion means
+            # that just printed JACORB_DIR which is not very helpful.
+            [[ -n "$SSH_CONNECTION" ]] && local rhs="$HOSTNAME:"
 
-        # Construct a command that will output the desired job number.
-        case $cmd[1] in
-          fg)
-            if (( $#cmd == 1 )); then
-                # No arguments, must find the current job
-                cmd=(builtin jobs -l %+)
+            if (( $# > 0 ))
+            then
+                # If we have a command (with args) then take it and truncate it
+                # as konsole tabs explode otherwise
+                local arg=$(echo $*)
+                print -nR $'\033]0;'$rhs${arg[1,54]}...$'\a'
             else
-                # Replace the command name, ignore extra args.
-                cmd=(builtin jobs -l ${(Q)cmd[2]})
-            fi;;
-          %*) cmd=(builtin jobs -l ${(Q)cmd[1]});; # Same as "else" above
-          exec) shift cmd;& # If the command is 'exec', drop that, because
-          # we'd rather just see the command that is being
-          # exec'd. Note the ;& to fall through.
-          *)  title $cmd[1]:t "$cmd[2,-1]"    # Not resuming a job,
-              return;;                        # so we're all done
-        esac
+                local cwd="`print -Pn \"%74<..<${PWD/$HOME/~}\"`"
+                print -nR $'\033]0;'$rhs$cwd$'\a'
+            fi
+        }
 
-        local -A jt; jt=(${(kv)jobtexts})       # Copy jobtexts for subshell
+        function title_preexec()
+        {
+            emulate -L zsh
 
-        # Run the command, read its output, and look up the jobtext.
-        # Could parse $rest here, but $jobtexts (via $jt) is easier.
-        $cmd >>(read num rest
-                cmd=(${(z)${(e):-\$jt$num}})
-                title $cmd[1]:t "$cmd[2,-1]") 2>/dev/null
-    }
+            local -a cmd; cmd=(${(z)1})             # Re-parse the command line
 
+            # Construct a command that will output the desired job number.
+            case $cmd[1] in
+              fg)
+                if (( $#cmd == 1 )); then
+                    # No arguments, must find the current job
+                    cmd=(builtin jobs -l %+)
+                else
+                    # Replace the command name, ignore extra args.
+                    cmd=(builtin jobs -l ${(Q)cmd[2]})
+                fi;;
+              %*) cmd=(builtin jobs -l ${(Q)cmd[1]});; # Same as "else" above
+              exec) shift cmd;& # If the command is 'exec', drop that, because
+              # we'd rather just see the command that is being
+              # exec'd. Note the ;& to fall through.
+              *)  title $cmd[1]:t "$cmd[2,-1]"    # Not resuming a job,
+                  return;;                        # so we're all done
+            esac
+
+            local -A jt; jt=(${(kv)jobtexts})       # Copy jobtexts for subshell
+
+            # Run the command, read its output, and look up the jobtext.
+            # Could parse $rest here, but $jobtexts (via $jt) is easier.
+            $cmd >>(read num rest
+                    cmd=(${(z)${(e):-\$jt$num}})
+                    title $cmd[1]:t "$cmd[2,-1]") 2>/dev/null
+        }
+    fi
 fi
+
 
 # Show current status of ZSH options (from mailing list).
 function showoptions()
@@ -510,12 +527,15 @@ if [ "$?" = 0 ]
 then
     if [ `bc<<<"$(rpm -q --queryformat '%{VERSION}\n' rhpkg)>=1.31"` = "1" ]
     then
-        autoload -U +X bashcompinit && bashcompinit
-        # This hack removes usage of lower case path variable which conflicts in ZSH.
-        tmprhpg=$(mktemp -q)
-        cat /etc/bash_completion.d/rhpkg.bash | sed 's/path=/tmppath=/g;s/\$path/\$tmppath/g' >! $tmprhpg
-        source $tmprhpg
-        rm -f $tmprhpg
+        # Anonymous function to avoid local variable polution.
+        () {
+            autoload -U +X bashcompinit && bashcompinit
+            # This hack removes usage of lower case path variable which conflicts in ZSH.
+            local tmprhpg=$(mktemp -q)
+            cat /etc/bash_completion.d/rhpkg.bash | sed 's/path=/tmppath=/g;s/\$path/\$tmppath/g' >! $tmprhpg
+            source $tmprhpg
+            rm -f $tmprhpg
+            }
     fi
 fi
 

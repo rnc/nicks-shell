@@ -112,7 +112,14 @@ standard_packages_to_install:
   - android-tools # ADB Bridge
   - aria2 # Download accelerator
   - bolt # Connection to Thunderbolt dock
-  - cherrytree
+  - cherrytree #
+               # This brings in:
+               # python2-2.7.16-2.fc30.x86_64
+               # python2-cairo-1.18.1-1.fc30.x86_64
+               # python2-dbus-1.2.8-5.fc30.x86_64
+               # python2-libs-2.7.16-2.fc30.x86_64
+               # python2-enchant-2.0.0-7.fc30.noarch
+               # python2-appindicator-12.10.0-24.fc30.x86_64
   - colordiff
   - digikam
   - dolphin
@@ -125,6 +132,7 @@ standard_packages_to_install:
   - emacs-json-snatcher
   - emacs-rpm-spec-mode
   - emacs-yaml-mode
+  - fuse-exfat # Mounting exfat filesystems
   - gnome-themes-extra # Installs GTK3 Adwaita[-dark] themes
   - gnupg2
   - gwenview
@@ -144,8 +152,7 @@ standard_packages_to_install:
   - openldap-clients # ldapsearch
   - openssh-clients
   - openvpn
-  - python2-brewkoji # Brew and Koji libraries
-  - python2-urlgrabber # Used by mead-load-build-dependencies
+  - python3-urlgrabber # Used by mead-load-build-dependencies
   - python3-keyring
   - python3-qt5
   - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
@@ -184,9 +191,9 @@ development_packages_to_install:
   - plasma-sdk # For plasmoidviewer
   - podman
   - pylint # Check python code
-  - python2-pytest # Fedpkg building python rpms
-  - python2-pytz # For IP_TOOLING.
-  - python2-virtualenv
+# Comment out ready for F31
+#  - python2-pytest # Fedpkg building python rpms
+#  - python2-pytz # For IP_TOOLING.
   - python3-behave # cekit
   - python3-colorlog # cekit
   - python3-docker # cekit

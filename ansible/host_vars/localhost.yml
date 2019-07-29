@@ -16,6 +16,7 @@ packages_to_remove:
   - florence # SparkyLinux keyboard
   - hexchat # SparkyLinux chat
   - initial-setup
+  - java-openjdk-headless # Remove Java 12 rolling release. Use specified JDK versions
   - jemalloc
   - juk
   - k3b
@@ -138,9 +139,11 @@ standard_packages_to_install:
   - gwenview
   - hplip
   - httpie
+  - kaccounts-providers # Google authentication
   - kcron
   - kde-connect
   - kdesu
+  - kio-gdrive # Google Drive integration
   - kgpg
   - konversation
   - krb5-workstation
@@ -198,8 +201,10 @@ development_packages_to_install:
   - python3-colorlog # cekit
   - python3-docker # cekit
   - python3-docker-squash # cekit
+  - python3-gssapi # linfo
   - python3-jenkins-job-builder
   - python3-jinja2 # cekit
+  - python3-ldap # cekit
   - python3-lxml # cekit
   - python3-mock # cekit
   - python3-pykwalify # cekit

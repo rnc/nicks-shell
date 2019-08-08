@@ -11,6 +11,7 @@ packages_to_remove:
   - calligra-core
   - camorama # SparkyLinux webcam
   - cdrskin # No CD drive in current laptop.
+  - cryfs # Encrypted file system for dropbox
   - dragon
   - falkon
   - florence # SparkyLinux keyboard
@@ -161,6 +162,7 @@ standard_packages_to_install:
   - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
   - redhat-internal-cert-install
   - redhat-lsb-core
+  - sirikali # Replacement for plasma-vault as provides Wallet integration and auto-start
   - slack
   - srcclr
   - subversion

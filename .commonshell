@@ -1139,7 +1139,7 @@ resetFeatureBranch ()
 {
     local master=""
     local upstream=""
-    for i in $(git trackbranch | sed 's/\(.*\) <-.*/\1/g')
+    for i in $(git trackbranch | egrep '.* <- .+' | sed 's/\(.*\) <-.*/\1/g')
     do
         local r="$(git b | grep remotes | grep upstream/$i | cut -f 3 -d ' ')"
         if [ -n "$r" ]
@@ -1161,8 +1161,9 @@ resetFeatureBranch ()
     echo ""
     [[ "$currentBranch" = "$master" ]] && printf "$ERROR" "Current equals master; aborting..." && return 1
     git checkout $master
+    [[ "$?" != 0 ]] && printf "$ERROR" "Unable to switch branch" && return 1
     echo "Deleting current and remote feature branch"
-    git branch -d $currentBranch
+    git branch -D $currentBranch
     [[ -n "$(git ls-remote --exit-code --heads origin $currentBranch)" ]] && git push origin --delete $currentBranch
     echo "Updating local"
     git pull -q `echo $upstream | tr '/' ' '`

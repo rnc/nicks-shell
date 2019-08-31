@@ -630,37 +630,37 @@ function maven-3.6.1()
 
 function gradle-2.13()
 {
-    PATH=/usr/local/gradle-2.13/bin:$PATH
+    PATH=/usr/local/gradle-2.13/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-4.7()
 {
-    PATH=/usr/local/gradle-4.7/bin:$PATH
+    PATH=/usr/local/gradle-4.7/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-4.10.2()
 {
-    PATH=/usr/local/gradle-4.10.2/bin:$PATH
+    PATH=/usr/local/gradle-4.10.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-5.3.1()
 {
-    PATH=/usr/local/gradle-5.3.1/bin:$PATH
+    PATH=/usr/local/gradle-5.3.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-5.4.1()
 {
-    PATH=/usr/local/gradle-5.4.1/bin:$PATH
+    PATH=/usr/local/gradle-5.4.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-5.5.1()
 {
-    PATH=/usr/local/gradle-5.5.1/bin:$PATH
+    PATH=/usr/local/gradle-5.5.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 

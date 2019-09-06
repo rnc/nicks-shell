@@ -81,6 +81,17 @@ git -c core.pager="less" >& /dev/null
 [[ "$?" == "129" ]] && GIT_NOCMDCONFIG=true
 
 
+# Translates a group:artifact:id to a format that httpie / DA accepts
+# Use with http e.g.
+# http POST http://<url>/da/rest/v-1/reports/lookup/gavs
+#   [ versionSuffix=temporary-redhat repositoryGroup=DA-temporary-builds ]
+#   "gavs:=$(gav com.fasterxml.jackson.core:jackson-databind:2.9.9)" | jq ".[].bestMatchVersion"
+function gav()
+{
+    [[ -z "$1" ]] && printf "$ERROR" "Specify-the-gav" && return 1
+    echo $1 | awk '{split($0, a, ":"); print "[{\"groupId\":\""a[1]"\",\"artifactId\":\""a[2]"\",\"version\":\""a[3]"\"}]" }'
+}
+
 # Displays a syntax highlighted file in the terminal
 function f()
 {
@@ -89,9 +100,15 @@ function f()
     [[ $# = 0 ]] && echo "Pass in file" && return 1
 
     local EXTRA=""
+    local LINENUM="--line-numbers"
     while [[ $# -ne 1 ]]
     do
-        EXTRA=$1
+        if [ "$1" = "-n" ] # No line numbers
+        then
+            LINENUM=""
+        else
+            EXTRA=$1
+        fi
         shift
     done
 
@@ -125,7 +142,7 @@ function f()
         fi
     esac
 
-    highlight --line-numbers --validate-input --style=zenburn --plug-in=java_library $EXTRA $SYNTAX -O xterm256 $1 | less -R
+    highlight $LINENUM --validate-input --style=zenburn --plug-in=java_library $EXTRA $SYNTAX -O xterm256 $1 | less -R
 }
 
 # Generates a complex password and inserts it into the clipboard
@@ -643,6 +660,12 @@ function gradle-4.7()
 function gradle-4.10.2()
 {
     PATH=/usr/local/gradle-4.10.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+
+function gradle-5.1.1()
+{
+    PATH=/usr/local/gradle-5.1.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 

@@ -137,6 +137,7 @@ standard_packages_to_install:
   - fuse-exfat # Mounting exfat filesystems
   - gnome-themes-extra # Installs GTK3 Adwaita[-dark] themes
   - gnupg2
+  - gstreamer1-libav # Gstreamer plugin for mpeg4 decoding.
   - gwenview
   - hplip
   - httpie

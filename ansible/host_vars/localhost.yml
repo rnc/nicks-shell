@@ -15,6 +15,7 @@ packages_to_remove:
   - dragon
   - falkon
   - florence # SparkyLinux keyboard
+  - google-noto-emoji-color-fonts # Don't need these fonts.
   - hexchat # SparkyLinux chat
   - initial-setup
   - java-openjdk-headless # Remove Java 12 rolling release. Use specified JDK versions
@@ -157,6 +158,8 @@ standard_packages_to_install:
   - openldap-clients # ldapsearch
   - openssh-clients
   - openvpn
+  - overpass-fonts # RH Fonts
+  - overpass-mono-fonts # RH Fonts
   - python3-urlgrabber # Used by mead-load-build-dependencies
   - python3-keyring
   - python3-qt5
@@ -200,6 +203,7 @@ development_packages_to_install:
 # Comment out ready for F31
 #  - python2-pytest # Fedpkg building python rpms
 #  - python2-pytz # For IP_TOOLING.
+  - python3-ansi2html # Convert console output (e.g. build logs) to HTML
   - python3-behave # cekit
   - python3-colorlog # cekit
   - python3-docker # cekit

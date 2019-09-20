@@ -62,8 +62,9 @@ Bash
 
 Common
 ------
-.commonshell
-.aliases
+
+* .commonshell
+* .aliases
 
 These contains various useful functions and aliases.
 

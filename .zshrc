@@ -47,6 +47,8 @@ then
     fi
 
     : ${PROMPT_SYMBOL:="❯"}
+    # https://jmtd.net/log/multi-coloured_fedoras (\u!F3A9).
+    : ${PROMPT_HAT:="%F{red}🎩%f"}
 
     # Python handling
     if [ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]
@@ -79,11 +81,11 @@ then
         source $NS_PREFIX/git-prompt.zsh/git-prompt.zsh
 
         # This prompt uses the above GIT system.
-        PROMPT='$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA ${PROMPT_SYMBOL} '
+        PROMPT='$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA $PROMPT_HAT${PROMPT_SYMBOL} '
         function prompt_updater ()
         {
             # Prompt turns red if the previous command didn't exit with 0
-            PROMPT="$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
+            PROMPT="$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA $PROMPT_HAT%(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
             RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
         }
         add-zsh-hook precmd prompt_updater

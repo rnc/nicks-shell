@@ -80,13 +80,20 @@ then
 
         source $NS_PREFIX/git-prompt.zsh/git-prompt.zsh
 
+        # Embed the tag into the prompt
+        function git_tag_display()
+        {
+            local tags="$([[ -d .git ]] && git tag --points-at | awk '{ printf("%s", NR == 1 ? $0 : ","$0); }')"
+            [[ -n "$tags" ]] && echo "%{$fg_bold[magenta]%}$ZSH_THEME_GIT_PROMPT_PREFIX$tags$ZSH_THEME_GIT_PROMPT_SUFFIX"
+        }
+
         # This prompt uses the above GIT system.
         PROMPT='$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA $PROMPT_HAT${PROMPT_SYMBOL} '
         function prompt_updater ()
         {
             # Prompt turns red if the previous command didn't exit with 0
             PROMPT="$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA $PROMPT_HAT%(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
-            RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
+            RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)$(git_tag_display)%{"$'\e[00m%}'" %T"
         }
         add-zsh-hook precmd prompt_updater
     # https://github.com/yonchu/zsh-vcs-prompt/

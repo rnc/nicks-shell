@@ -72,4 +72,5 @@
 
   - name: Enable Fedora Copr for LXD
     command: "dnf copr enable -y rnc/cryfs"
-    creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:rnc:cryfs.repo
+    args:
+      creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:rnc:cryfs.repo

@@ -172,6 +172,7 @@ standard_packages_to_install:
   - subversion
   - texlive-pdfjam # pdfnup etc.
   - thunderbird
+  - unifont-fonts # Fonts for zsh prompt
   - vlc
   - wireshark
   - xclip

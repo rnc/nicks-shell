@@ -79,7 +79,7 @@ then
         ZSH_THEME_GIT_PROMPT_UNSTAGED="%F{yellow}✚%f"
         ZSH_THEME_GIT_PROMPT_SUFFIX="]"
         ZSH_THEME_GIT_PROMPT_STASHED="%{"$'\e[0;33;40m'"%}⚑"
-        ZSH_THEME_GIT_PROMPT_TAGS_SEPERATOR=","
+        ZSH_THEME_GIT_PROMPT_TAGS_SEPARATOR=","
 
         source $NS_PREFIX/git-prompt.zsh/git-prompt.zsh
 

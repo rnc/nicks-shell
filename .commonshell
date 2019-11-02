@@ -1177,10 +1177,10 @@ resetFeatureBranch ()
     local upstream=""
     for i in $(git trackbranch | egrep '.* <- .+' | sed 's/\(.*\) <-.*/\1/g')
     do
+        master=$i
         local r="$(git b | grep remotes | grep upstream/$i | cut -f 3 -d ' ')"
         if [ -n "$r" ]
         then
-            master=$i
             upstream="${r#remotes/}"
             break
         fi
@@ -1189,11 +1189,15 @@ resetFeatureBranch ()
     [[ "$?" != "0" ]] && printf "$ERROR" "Error establishing current branch; aborting..." && return 1
     [[ -z "$currentBranch" ]] && printf "$ERROR" "Current branch not set" && return 1
     [[ -z "$master" ]] && printf "$ERROR" "Master branch not set" && return 1
-    [[ -z "$upstream" ]] && printf "$ERROR" "Upstream branch not set" && return 1
     git llg5
     printf "$INFO" "Current branch is $currentBranch"
     printf "$INFO" "Known 'master' is $master"
-    printf "$INFO" "Upstream 'master' $upstream"
+    if [ -z "$upstream" ]
+    then
+        echo "No upstream configured ; assuming local PR and merge..."
+    else
+        printf "$INFO" "Upstream 'master' $upstream"
+    fi
     echo ""
     [[ "$currentBranch" = "$master" ]] && printf "$ERROR" "Current equals master; aborting..." && return 1
     git checkout $master
@@ -1201,9 +1205,12 @@ resetFeatureBranch ()
     echo "Deleting current and remote feature branch"
     git branch -D $currentBranch
     [[ -n "$(git ls-remote --exit-code --heads origin $currentBranch)" ]] && git push origin --delete $currentBranch
-    echo "Updating local"
-    git pull -q `echo $upstream | tr '/' ' '`
-    git llg5
+    if [ -n "$upstream" ]
+    then
+        echo "Updating local"
+        git pull -q `echo $upstream | tr '/' ' '`
+        git llg5
+    fi
 }
 
 

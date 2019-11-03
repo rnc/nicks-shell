@@ -74,3 +74,8 @@
     command: "dnf copr enable -y rnc/cryfs"
     args:
       creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:rnc:cryfs.repo
+
+  - name: Enable Fedora Copr for CherryTree
+    command: "dnf copr enable -y bcotton/cherrytree"
+    args:
+      creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:bcotton:cherrytree.repo

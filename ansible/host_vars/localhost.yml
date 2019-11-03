@@ -11,7 +11,6 @@ packages_to_remove:
   - calligra-core
   - camorama # SparkyLinux webcam
   - cdrskin # No CD drive in current laptop.
-  - cryfs # Encrypted file system for dropbox
   - dragon
   - falkon
   - florence # SparkyLinux keyboard
@@ -123,6 +122,7 @@ standard_packages_to_install:
                # python2-libs-2.7.16-2.fc30.x86_64
                # python2-enchant-2.0.0-7.fc30.noarch
                # python2-appindicator-12.10.0-24.fc30.x86_64
+  - cryfs # Encrypted file system for dropbox
   - colordiff
   - digikam
   - dolphin

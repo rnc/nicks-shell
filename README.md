@@ -7,6 +7,9 @@ Tested on ZSH 5.7 and above.
 
 Both bash and zsh initialisation utilise a common configuration file (```$HOME/.shell-configuration```) which may be used to stored common properties e.g.
 * `NS_PREFIX` - where common support software (e.g. brew-koji & zsh-git-prompt) are stored in the filesystem.
+* `SW_PREFIX` - where system software (such as the JDK, Maven, Gradle etc) are stored in the filesystem.
+
+These prefixes are 'internal' ; specific to certain areas of my work and therefore not required generally.
 * `VMAN_HOME` - installation of VMAN
 * `IP_CONFIG` - location of IP configuration
 * `IP_TOOLING` - location of IP_TOOLING

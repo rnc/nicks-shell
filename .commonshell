@@ -408,14 +408,14 @@ function _java_prompt_()
     [[ -z "$1" && "$1" != "oraclejava5" && "$1" != "oraclejava6" && "$1" != "oraclejava7" \
         && "$1" != "ibmjava6"  && "$1" != "ibmjava7" ]] && printf "$ERROR" "Private java setup function" && return
 
-    local oraclejava5=/usr/local/jdk1.5.0
-    local oraclejava6=/usr/local/jdk1.6.0
-    local oraclejava7=/usr/local/jdk1.7.0
-    local oraclejava8=/usr/local/jdk1.8.0
-    local oraclejava9=/usr/local/jdk-9
-    local openjdk11=/usr/local/jdk-11
-    local ibmjava6=/usr/local/ibm-jdk1.6.0
-    local ibmjava7=/usr/local/ibm-jdk1.7.0
+    local oraclejava5=$SW_PREFIX/jdk1.5.0
+    local oraclejava6=$SW_PREFIX/jdk1.6.0
+    local oraclejava7=$SW_PREFIX/jdk1.7.0
+    local oraclejava8=$SW_PREFIX/jdk1.8.0
+    local oraclejava9=$SW_PREFIX/jdk-9
+    local openjdk11=$SW_PREFIX/jdk-11
+    local ibmjava6=$SW_PREFIX/ibm-jdk1.6.0
+    local ibmjava7=$SW_PREFIX/ibm-jdk1.7.0
     local i
 
     for i in $oraclejava5 $oraclejava6 $oraclejava7 $oraclejava8 $ibmjava6 $ibmjava7
@@ -512,7 +512,7 @@ function ibmjava7()
 
 function ant17()
 {
-    export ANT_HOME=/usr/local/apache-ant-1.7.0
+    export ANT_HOME=$SW_PREFIX/apache-ant-1.7.0
     export PATH=$ANT_HOME/bin:$PATH
 
     alias ant='ant -logger org.apache.tools.ant.NoBannerLogger'
@@ -520,7 +520,7 @@ function ant17()
 
 function ant18()
 {
-    export ANT_HOME=/usr/local/apache-ant-1.8.4
+    export ANT_HOME=$SW_PREFIX/apache-ant-1.8.4
     export PATH=$ANT_HOME/bin:$PATH
 
     alias ant='ant -logger org.apache.tools.ant.NoBannerLogger'
@@ -528,181 +528,181 @@ function ant18()
 
 function maven-3.0.3()
 {
-    M2_HOME=/usr/local/apache-maven-3.0.3
+    M2_HOME=$SW_PREFIX/apache-maven-3.0.3
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.0.4()
 {
-    M2_HOME=/usr/local/apache-maven-3.0.4
+    M2_HOME=$SW_PREFIX/apache-maven-3.0.4
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.0.5()
 {
-    M2_HOME=/usr/local/apache-maven-3.0.5
+    M2_HOME=$SW_PREFIX/apache-maven-3.0.5
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.0.5-prod()
 {
-    M2_HOME=/usr/local/apache-maven-3.0.5-prod
+    M2_HOME=$SW_PREFIX/apache-maven-3.0.5-prod
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.1.1()
 {
-    M2_HOME=/usr/local/apache-maven-3.1.1
+    M2_HOME=$SW_PREFIX/apache-maven-3.1.1
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.1.1-prod()
 {
-    M2_HOME=/usr/local/apache-maven-3.1.1-prod
+    M2_HOME=$SW_PREFIX/apache-maven-3.1.1-prod
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.2.3-prod()
 {
-    M2_HOME=/usr/local/apache-maven-3.2.3-prod
+    M2_HOME=$SW_PREFIX/apache-maven-3.2.3-prod
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.2.5()
 {
-    M2_HOME=/usr/local/apache-maven-3.2.5
+    M2_HOME=$SW_PREFIX/apache-maven-3.2.5
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.2.5-prod()
 {
-    M2_HOME=/usr/local/apache-maven-3.2.5-prod
+    M2_HOME=$SW_PREFIX/apache-maven-3.2.5-prod
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.3.3()
 {
-    M2_HOME=/usr/local/apache-maven-3.3.3
+    M2_HOME=$SW_PREFIX/apache-maven-3.3.3
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.3.3-prod()
 {
-    M2_HOME=/usr/local/apache-maven-3.3.3-prod
+    M2_HOME=$SW_PREFIX/apache-maven-3.3.3-prod
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.3.9-prod()
 {
-    M2_HOME=/usr/local/apache-maven-3.3.9-prod
+    M2_HOME=$SW_PREFIX/apache-maven-3.3.9-prod
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.5.0-prod()
 {
-    M2_HOME=/usr/local/apache-maven-3.5.0-prod
+    M2_HOME=$SW_PREFIX/apache-maven-3.5.0-prod
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.3.9()
 {
-    M2_HOME=/usr/local/apache-maven-3.3.9
+    M2_HOME=$SW_PREFIX/apache-maven-3.3.9
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.5.0()
 {
-    M2_HOME=/usr/local/apache-maven-3.5.0
+    M2_HOME=$SW_PREFIX/apache-maven-3.5.0
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.6.0()
 {
-    M2_HOME=/usr/local/apache-maven-3.6.0
+    M2_HOME=$SW_PREFIX/apache-maven-3.6.0
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.6.1()
 {
-    M2_HOME=/usr/local/apache-maven-3.6.1
+    M2_HOME=$SW_PREFIX/apache-maven-3.6.1
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function maven-3.6.2()
 {
-    M2_HOME=/usr/local/apache-maven-3.6.2
+    M2_HOME=$SW_PREFIX/apache-maven-3.6.2
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
 function gradle-2.13()
 {
-    PATH=/usr/local/gradle-2.13/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    PATH=$SW_PREFIX/gradle-2.13/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-4.7()
 {
-    PATH=/usr/local/gradle-4.7/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    PATH=$SW_PREFIX/gradle-4.7/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-4.10.2()
 {
-    PATH=/usr/local/gradle-4.10.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    PATH=$SW_PREFIX/gradle-4.10.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-5.1.1()
 {
-    PATH=/usr/local/gradle-5.1.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    PATH=$SW_PREFIX/gradle-5.1.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-5.3.1()
 {
-    PATH=/usr/local/gradle-5.3.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    PATH=$SW_PREFIX/gradle-5.3.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-5.4.1()
 {
-    PATH=/usr/local/gradle-5.4.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    PATH=$SW_PREFIX/gradle-5.4.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-5.5.1()
 {
-    PATH=/usr/local/gradle-5.5.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    PATH=$SW_PREFIX/gradle-5.5.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function gradle-5.6.2()
 {
-    PATH=/usr/local/gradle-5.6.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    PATH=$SW_PREFIX/gradle-5.6.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
 function groovy-2.5.4()
 {
-    PATH=/usr/local/groovy-2.5.4/bin:$PATH
+    PATH=$SW_PREFIX/groovy-2.5.4/bin:$PATH
     echo "Groovy executable is `which groovy`"
 }
 
@@ -742,8 +742,8 @@ function _update-maven-extensions()
     for m in `echo \\$*`
     do
         echo \"\033[49;32;1mProcessing \$m\033[0m\"
-        /bin/rm -fv /usr/local/apache-\$m/lib/ext/*.jar
-        /bin/cp -v \$file /usr/local/apache-\$m/lib/ext
+        /bin/rm -fv $SW_PREFIX/apache-\$m/lib/ext/*.jar
+        /bin/cp -v \$file $SW_PREFIX/apache-\$m/lib/ext
     done
     "
     local f2=`mktemp`

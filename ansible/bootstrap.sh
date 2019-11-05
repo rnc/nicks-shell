@@ -14,13 +14,14 @@ fi
 EXTRA="$WALLET $@"
 
 $PKGQ ansible git > /dev/null
-if [ "$?" == "2" ]
+if [ "$?" != "0" ]
 then
     echo -e "\033[49;32;1mBootstraps to /tmp/nicks-shell...\033[0m"
     $PKGI install -y ansible git
     [[ "$?" == 1 ]] && exit 1
     git clone https://github.com/rnc/nicks-shell.git /tmp/nicks-shell
     cd /tmp/nicks-shell
+    ansible-playbook --ask-vault-pass -v playbook.yml --ask-become-pass
 else
     echo -e "\033[49;32;1mBootstrap already performed ; executing ansible using vault method...\033[0m"
     if [ "`basename $(pwd)`" != "ansible" ]
@@ -28,6 +29,5 @@ else
         echo "Run from ansible directory"
         exit 1
     fi
+    ansible-playbook -v playbook.yml -e $EXTRA
 fi
-ansible-playbook -v playbook.yml -e $EXTRA
-

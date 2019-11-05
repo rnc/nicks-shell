@@ -167,7 +167,7 @@ standard_packages_to_install:
   - redhat-internal-cert-install
   - redhat-lsb-core
   - sirikali # Replacement for plasma-vault as provides Wallet integration and auto-start
-  - slack
+  # - slack # Commenting this out until we actually have a need for it.
   - srcclr
   - subversion
   - texlive-pdfjam # pdfnup etc.
@@ -180,7 +180,7 @@ standard_packages_to_install:
   - yarock
 
 development_packages_to_install:
-  - brewkoji
+#  - brewkoji
   - cmake
   - code # Visual Studio Code
   - cpio # RPM
@@ -219,12 +219,12 @@ development_packages_to_install:
   - python3-pytest # cekit
   - python3-pytest-mock # cekit
   - python3-pyyaml # cekit
-  - python3-sphinx # cekit (sphinx)
-  - python-sphinx-autobuild # cekit (sphinx)
+#  - python3-sphinx # cekit (sphinx) RETIRED BY FEDORA
+#  - python-sphinx-autobuild # cekit (sphinx) RETIRED BY FEDORA
   - python3-tox # cekit
   - python3-virtualenv
   - qemu-kvm # Virtualisation
-  - rhpkg
+#  - rhpkg
   - rubygem-jekyll # jekyll site generator (PME)
   - source-to-image # cekit
   - texlive-bibtex

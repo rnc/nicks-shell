@@ -6,7 +6,7 @@
     - vpn_bootstrap: false
   vars_prompt:
   - name: "vpn_password"
-    prompt: "Enter VPN password"
+    prompt: "Enter VPN password (NOT kerberos)"
     private: yes
 
   tasks:

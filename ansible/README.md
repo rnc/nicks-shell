@@ -83,7 +83,15 @@ Note: KDE only requires the boltctl commands due to https://bugs.kde.org/show_bu
 After its recognised, for KDE Plasma : Audio, you may need to enter `System Settings/Multimedia/Audio and Video` and configure each audio device to prefer the dock.
 
 # Reinstallation Notes
-Normally Anaconda creates a user of ID 1000. As the existing backup of `/home/...` is using that we need that one. Therefore create a 'dummy user' when installing and then follow https://muffinresearch.co.uk/linux-changing-uids-and-gids-for-user/ to swap the IDs.
+Normally Anaconda creates a user of ID 1000. As the existing backup of `/home/...` is using that we need that one. Therefore create a 'dummy user' when installing and then follow https://muffinresearch.co.uk/linux-changing-uids-and-gids-for-user/ to swap the IDs. Alternatively when installing the 'temporary' user ensure it uses a high non-clashing UID.
+
+Then add (without overwriting the home directories) the existing users e.g.
+
+```
+    useradd -U -u <existing-uid> -C "Human Name" <username>
+    usermod -a -G wheel <username>
+    passwd <id>
+```
 
 # TODO
 

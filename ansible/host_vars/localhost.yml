@@ -15,6 +15,9 @@ packages_to_remove:
   - falkon
   - florence # SparkyLinux keyboard
   - google-noto-emoji-color-fonts # Don't need these fonts.
+  - google-noto-sans-gurmukhi-fonts # Don't need these fonts.
+  - google-noto-cjk-fonts-common # Don't need these fonts.
+  - google-noto-sans-sinhala-vf-fonts # Don't need these fonts.
   - hexchat # SparkyLinux chat
   - initial-setup
   - java-openjdk-headless # Remove Java 12 rolling release. Use specified JDK versions
@@ -137,6 +140,7 @@ standard_packages_to_install:
   - emacs-rpm-spec-mode
   - emacs-yaml-mode
   - fuse-exfat # Mounting exfat filesystems
+  - google-noto-sans-fonts # Basic Noto fonts.
   - gnome-themes-extra # Installs GTK3 Adwaita[-dark] themes
   - gnupg2
   - gstreamer1-libav # Gstreamer plugin for mpeg4 decoding.

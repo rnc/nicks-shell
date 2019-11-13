@@ -113,6 +113,7 @@ standard_packages_to_install:
   - CPUFreqUtility
   - android-tools # ADB Bridge
   - aria2 # Download accelerator
+  - backintime-qt # Backup
   - bolt # Connection to Thunderbolt dock
   - cherrytree #
                # This brings in:

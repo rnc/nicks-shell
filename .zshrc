@@ -29,6 +29,10 @@ autoload -U is-at-least
 autoload $^fpath/*(N.)
 autoload -U add-zsh-hook
 
+# https://bugs.kde.org/show_bug.cgi?id=385920
+# https://beamtic.com/kde-huge-cursor-size
+[[ -n "$XCURSOR_THEME" ]] && export XCURSOR_SIZE=24
+
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen-256color" ]
 then
     # ZSH-Syntax-Highlighting

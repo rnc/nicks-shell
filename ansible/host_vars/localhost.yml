@@ -157,6 +157,7 @@ standard_packages_to_install:
   - krb5-workstation
   - ksysguard
   - kwalletmanager
+  - libva-intel-driver # HW video decode support for Intel integrated graphics
   - libnotify
   - libreoffice-langpack-en
   - okular

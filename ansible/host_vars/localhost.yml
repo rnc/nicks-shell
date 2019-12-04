@@ -171,9 +171,6 @@ standard_packages_to_install:
   - python3-urlgrabber # Used by mead-load-build-dependencies
   - python3-keyring
   - python3-qt5
-  - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
-  - redhat-internal-cert-install
-  - redhat-lsb-core
   - sirikali # Replacement for plasma-vault as provides Wallet integration and auto-start
   # - slack # Commenting this out until we actually have a need for it.
   - srcclr
@@ -186,6 +183,11 @@ standard_packages_to_install:
   - xclip
   - xorg-x11-server-utils
   - yarock
+
+internal_packages_to_install:
+  - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
+  - redhat-internal-cert-install
+  - redhat-lsb-core
 
 development_packages_to_install:
 #  - brewkoji

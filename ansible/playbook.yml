@@ -4,13 +4,19 @@
   hosts: localhost
   vars:
     - vpn_bootstrap: false
+    - do_vault: true
+    - do_minishift: false
   vars_prompt:
   - name: "vpn_password"
     prompt: "Enter VPN password (NOT kerberos)"
     private: yes
 
   tasks:
+  - debug:
+      msg: "Decrypting vault :  {{ do_vault }}"
+
   - include_vars: "{{ private_vars }}"
+    when: do_vault == true
   - include_vars: fedora.yml
     when: ansible_distribution == 'Fedora'
   - include_vars: debian.yml
@@ -46,8 +52,9 @@
     - name: Note this action.
       set_fact:
         vpn_bootstrap: True
-    when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages and ansible_distribution == "Fedora"'
+    when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages and ansible_distribution == "Fedora" and do_vault == true'
 
+  
   - block:
     - name: Connect to VPN
       expect:
@@ -64,20 +71,25 @@
     - name: Check bootstrap VPN exists
       command: ip link show tun0 up
       changed_when: False
-    when: ansible_distribution == "Fedora"
+    when: ansible_distribution == "Fedora" and do_vault == true
 
   - name: Install all package upgrades
     package: name=* state=latest
 
-  - name: Add repositories
+  - name: Add public repositories
     include_role:
       name: repositories
     when: ansible_distribution == "Fedora"
 
+  - name: Add private repositories
+    include_role:
+      name: repositories
+    when: ansible_distribution == "Fedora" and do_vault == true
+
   - name: Set hostname
     hostname:
       name: "{{ hostname }}"
-    when: ansible_distribution == "Fedora"
+    when: ansible_distribution == "Fedora" and do_vault == true
 
   - name: Check GPG Key exists
     stat:
@@ -89,7 +101,7 @@
     get_url:
       url: http://{{ csb_repo }}/rhel7-csb-stage/RPM-GPG-KEY-helpdesk
       dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
-    when: not stat_gpg_result.stat.exists and ansible_distribution == "Fedora"
+    when: not stat_gpg_result.stat.exists and ansible_distribution == "Fedora" and do_vault == true
 
   - block:
     - name: Download SpiderOAK
@@ -122,6 +134,12 @@
       state: present
     when: ansible_distribution == "Fedora"
 
+  - name: Install internal RH required software
+    package:
+      name: "{{ internal_packages_to_install }}"
+      state: present
+    when: ansible_distribution == "Fedora" and do_vault == true
+
   - name: Install development software
     package:
       name: "{{ development_packages_to_install }}"
@@ -152,7 +170,7 @@
       line: "username={{ vpn_username }}"
     with_fileglob:
       - "/etc/NetworkManager/system-connections/*.ovpn"
-    when: ansible_distribution == "Fedora"
+    when: ansible_distribution == "Fedora" and do_vault == true
 
   - name: Allow port ranges for KDEConnect
     firewalld:
@@ -169,7 +187,7 @@
     template:
       src: krb5.conf.j2
       dest: /etc/krb5.conf
-    when: ansible_distribution == "Fedora"
+    when: ansible_distribution == "Fedora" and do_vault == true
 
   - name: User account configuration
     include_role:
@@ -178,4 +196,4 @@
   - name: Install minishift
     include_role:
       name: minishift
-    when: ansible_distribution == "Fedora" and minishift == "true"
+    when: ansible_distribution == "Fedora" and do_minishift == "true"

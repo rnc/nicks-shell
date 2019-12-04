@@ -30,25 +30,6 @@
   #     enabled: yes
   #     gpgkey: http://linux.dropbox.com/fedora/rpm-public-key.asc
 
-  - name : Repository - RCM
-    yum_repository:
-      name: rcm-tools-fedora
-      description: RCM Tools for Fedora $releasever (RPMs)
-      baseurl: http://{{ rcm_repo }}/rel-eng/RCMTOOLS/latest-RCMTOOLS-2-F-$releasever/compose/Everything/$basearch/os/
-      gpgcheck: no
-      enabled: yes
-
-  - name : Repository - CSB
-    yum_repository:
-      name: rhel7-csb-stage
-      description: RHEL7 CSB packages
-      baseurl: http://{{ csb_repo }}/rhel7-csb-stage
-      gpgcheck: yes
-      enabled: yes
-      priority: "2"
-      includepkgs: redhat*,slack,bluejeans
-      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
-
   - name: Install RPMFusion Free
     dnf:
       name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"

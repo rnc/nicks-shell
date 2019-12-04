@@ -178,4 +178,4 @@
   - name: Install minishift
     include_role:
       name: minishift
-    when: ansible_distribution == "Fedora"
+    when: ansible_distribution == "Fedora" and minishift == "true"

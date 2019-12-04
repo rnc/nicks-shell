@@ -12,6 +12,7 @@ packages_to_remove:
   - camorama # SparkyLinux webcam
   - cdrskin # No CD drive in current laptop.
   - dragon
+  - espeak-ng
   - falkon
   - florence # SparkyLinux keyboard
   - google-noto-emoji-color-fonts # Don't need these fonts.
@@ -56,7 +57,6 @@ packages_to_remove:
   - kolourpaint
   - korganizer
   - kpat
-  - krdc
   - krfb
   - kruler
   - krusader
@@ -91,6 +91,7 @@ packages_to_remove:
   - uget # SparkyLinux
   - virtualbox-guest-additions
   - vokoscreen # Sparkylinux webcast
+  - wodim # No CD drive in current laptop.
 
 base_packages_to_install:
   - ansible
@@ -128,6 +129,7 @@ standard_packages_to_install:
                # python2-appindicator-12.10.0-24.fc30.x86_64
   - cryfs # Encrypted file system for dropbox
   - colordiff
+  - comps-extras # Extra images for dnfdragora
   - digikam
   - dolphin
   - emacs-auctex
@@ -199,6 +201,7 @@ development_packages_to_install:
   - golang-bin
   - java-1.8.0-openjdk-devel # Explicitly install Java 8 (later Fedora use Java 10)
   - java-1.8.0-openjdk-src # Explicitly install Java 8 src (later Fedora use Java 10)
+  - krdc # Remote desktop
   - libvirt # Virtualisation
   - lm_sensors
   - make
@@ -206,6 +209,7 @@ development_packages_to_install:
   - odcs-client # cekit
   - plasma-sdk # For plasmoidviewer
   - podman
+  - poetry # Python3 Dependency Mgmt System
   - pylint # Check python code
 # Comment out ready for F31
 #  - python2-pytest # Fedpkg building python rpms

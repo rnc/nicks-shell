@@ -57,3 +57,9 @@
 
         # Print out current aliases
         alias = !git config -l | grep alias
+
+        # Fetch remote pull request
+        fetchpr = "!f() { [[ ! -z \"$2\" ]] && o=origin || o=$1 ; shift ; then git fetch origin pull/$1/head:pr-$1 }; f"
+
+        # Uncommit
+        uncommit = reset --soft HEAD~1

@@ -43,7 +43,7 @@
 
   - name: Check minishift exists
     stat:
-      path: /opt/minishift-{{ kvm_driver_version.stdout }}-linux-amd64
+      path: /opt/minishift-{{ minishift_version.stdout }}-linux-amd64
     register: minishift_exists
     no_log: True
 

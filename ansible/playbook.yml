@@ -54,7 +54,7 @@
         vpn_bootstrap: True
     when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages and ansible_distribution == "Fedora" and do_vault == true'
 
-  
+
   - block:
     - name: Connect to VPN
       expect:
@@ -83,7 +83,7 @@
 
   - name: Add private repositories
     include_role:
-      name: repositories
+      name: repositories-private
     when: ansible_distribution == "Fedora" and do_vault == true
 
   - name: Set hostname

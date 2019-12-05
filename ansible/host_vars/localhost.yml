@@ -15,6 +15,7 @@ packages_to_remove:
   - espeak-ng
   - falkon
   - florence # SparkyLinux keyboard
+  - fprintd # Fingerprint daemon
   - google-noto-emoji-color-fonts # Don't need these fonts.
   - google-noto-sans-gurmukhi-fonts # Don't need these fonts.
   - google-noto-cjk-fonts-common # Don't need these fonts.

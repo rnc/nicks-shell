@@ -81,6 +81,27 @@ git -c core.pager="less" >& /dev/null
 [[ "$?" == "129" ]] && GIT_NOCMDCONFIG=true
 
 
+# Handle logging and colour
+function mytee()
+{
+    if [[ $SHELL != *"zsh" ]]
+    then
+        echo "mytee valid only with zsh"
+        return
+    fi
+    {
+        printf "$INFO" "Running my tee with:"
+        printf "$INFO" "${@[1, $(expr $# - 1)]}"
+        printf "\t$INFO" "and log file is ${@: -1} "
+        # https://superuser.com/questions/352697/preserve-colors-while-piping-to-tee
+        unbuffer -p ${@[1, $#argv-1]} |& tee ${@: -1}
+    } always {
+        # https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream/380778#380778
+        sed -i 's/\x1b\[[0-9;]*m//g' ${@: -1}
+    }
+}
+
+
 # Translates a group:artifact:id to a format that httpie / DA accepts
 # Use with http e.g.
 # http POST http://<url>/da/rest/v-1/reports/lookup/gavs
@@ -831,7 +852,7 @@ function searchJars()
 
     for i in `find . \( -name "*.jar" -o -name "*.war" \)`
     do
-        if [ -f $i ]
+        if $(zipinfo $i > /dev/null 2>&1) && [ -f $i ]
         then
             if [ -n "`jar tf $i | egrep \"$pattern\"`" ]
             then

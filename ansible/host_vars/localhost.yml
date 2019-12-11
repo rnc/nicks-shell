@@ -197,6 +197,7 @@ development_packages_to_install:
   - cpio # RPM
   - dmidecode
   - docker
+  - expect # Adds unbuffer command for piping with colours
   - fedpkg # Working with Fedora packages (implicitly pulls in python3-click which is needed by cekit)
   - gcc-c++ # C++ Compiler
   - glide # Go dependency manager

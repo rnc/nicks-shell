@@ -108,6 +108,7 @@ base_packages_to_install:
   - keepassxc
   - pwgen
   - libreoffice-calc
+  - libreoffice-kde5
   - libreoffice-draw
   - libreoffice-impress
   - libreoffice-writer

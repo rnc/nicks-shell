@@ -81,26 +81,6 @@ git -c core.pager="less" >& /dev/null
 [[ "$?" == "129" ]] && GIT_NOCMDCONFIG=true
 
 
-# Handle logging and colour
-function mytee()
-{
-    if [[ $SHELL != *"zsh" ]]
-    then
-        echo "mytee valid only with zsh"
-        return
-    fi
-    {
-        printf "$INFO" "Running my tee with:"
-        printf "$INFO" "${@[1, $(expr $# - 1)]}"
-        printf "\t$INFO" "and log file is ${@: -1} "
-        # https://superuser.com/questions/352697/preserve-colors-while-piping-to-tee
-        unbuffer -p ${@[1, $#argv-1]} |& tee ${@: -1}
-    } always {
-        # https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream/380778#380778
-        sed -i 's/\x1b\[[0-9;]*m//g' ${@: -1}
-    }
-}
-
 
 # Translates a group:artifact:id to a format that httpie / DA accepts
 # Use with http e.g.
@@ -673,22 +653,39 @@ function maven-3.6.2()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function _gradle_daemon_workaround()
+{
+    PROMPT_SYMBOL="$"
+    PROMPT_HAT=""
+    echo "Unsetting PROMPT_HAT/SYMBOL to workaround Gradle daemon issues"
+}
+
 function gradle-2.13()
 {
     PATH=$SW_PREFIX/gradle-2.13/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
+    _gradle_daemon_workaround
 }
 
 function gradle-4.7()
 {
     PATH=$SW_PREFIX/gradle-4.7/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
+    _gradle_daemon_workaround
+}
+
+function gradle-4.8()
+{
+    PATH=$SW_PREFIX/gradle-4.8/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+    _gradle_daemon_workaround
 }
 
 function gradle-4.10.2()
 {
     PATH=$SW_PREFIX/gradle-4.10.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
+    _gradle_daemon_workaround
 }
 
 function gradle-5.1.1()

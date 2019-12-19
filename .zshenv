@@ -24,7 +24,6 @@ CLASSPATH=.
 export LD_LIBRARY_PATH
 export CLASSPATH
 export PATH
-export SHELL=`which zsh`
 
 if [[ $- == *i* ]]
 then
@@ -32,3 +31,28 @@ then
     export COLUMNS
     [[ -z "$COLUMNS" ]] && COLUMNS=`tput cols` && echo "Forcing columns value to $COLUMNS"
 fi
+
+
+##############################
+### ZSH Specific functions ###
+##############################
+
+# Handle logging and colour
+function mytee()
+{
+    if [[ $SHELL != *"zsh" ]]
+    then
+        echo "mytee valid only with zsh"
+        return
+    fi
+    {
+        printf "$INFO" "Running my tee with:"
+        printf "$INFO" "${@[1, $(expr $# - 1)]}"
+        printf "\t$INFO" "and log file is ${@: -1} "
+        # https://superuser.com/questions/352697/preserve-colors-while-piping-to-tee
+        unbuffer -p ${@[1, $#argv-1]} |& tee ${@: -1}
+    } always {
+        # https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream/380778#380778
+        sed -i 's/\x1b\[[0-9;]*m//g' ${@: -1}
+    }
+}

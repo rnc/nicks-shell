@@ -64,10 +64,16 @@ then
         # https://stackoverflow.com/questions/34466027/in-pytest-what-is-the-use-of-conftest-py-files
         # https://unix.stackexchange.com/questions/450043/overwrite-and-reuse-existing-function-in-zsh
         eval "function mkvenv() {
+            # Compatibility for poetry projects.
+            [[ -f pyproject.toml && ! -f setup.py ]] && create_setup.py
             $functions[mkvenv]
             echo \"Adding conftest.py\"
             touch \$PWD/conftest.py
             export PY_COLORS=1
+            }"
+        eval "function _autoswitch_message() {
+            $functions[_autoswitch_message]
+            echo \"${GREEN}Use disable_autoswitch_virtualenv to deactivate${NORMAL}\"
             }"
     fi
     RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"

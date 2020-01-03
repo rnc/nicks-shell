@@ -1,8 +1,8 @@
 # Global config suitable for /etc/gitconfig
 
-[color]
-        # Note : In git 1.8.4 this defaults to true and won't be needed.
-	ui = true
+[diff]
+        # https://github.com/git/git/blob/e5272d304af3528163cd5faa822f88086448ae57/Documentation/diff-options.txt#L311-L312
+	wsErrorHighlight = all
 
 [alias]
         # Log aliases

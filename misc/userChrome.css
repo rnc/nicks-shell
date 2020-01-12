@@ -1,0 +1,54 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"); /* only needed once */
+
+/* Some interesting references in https://github.com/Aris-t2/CustomCSSforFx */
+
+/* This section is to move the button from right to left */
+
+#PanelUI-button,
+#customization-panel-container,
+#customization-panelWrapper .panel-arrow { -moz-box-ordinal-group: 0 !important;}
+
+/* Panel UI */
+#PanelUI-button {background-position: 100% 0, calc(100% - 1px) 0, calc(100% - 2px) 0 !important;}
+#PanelUI-popup {margin-right:-350px!important;}
+#PanelUI-popup .panel-arrow {margin-right:340px!important;}
+
+/* #PanelUI-quit  #PanelUI-customize  #PanelUI-help */
+#PanelUI-footer #PanelUI-footer-inner {direction:rtl !important;}
+
+
+/*
+private-tabs.css
+https://gist.github.com/Arty2/4658f49ca815980b0cb2
+*/
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);
+
+#main-window[privatebrowsingmode=temporary] #urlbar {
+  border-color: #841ebe !important;
+  background-color: #841ebe !important;
+  color: #fff !important;
+}
+
+#main-window[privatebrowsingmode=temporary] .tabbrowser-tab[selected] {
+    background: #841ebe !important;
+}
+
+/* Always display the list all tabs button */
+#tabbrowser-tabs ~ #alltabs-button {visibility:visible!important}
+
+
+/* Remove back button circle */
+/* https://www.reddit.com/r/FirefoxCSS/comments/8nhq6b/back_button_circle_still_does_not_go_away/ */
+#back-button:not(:hover),
+#back-button:not(:hover) > .toolbarbutton-icon {
+    transform: scale(.85, .85) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#back-button:hover,
+#back-button:hover > .toolbarbutton-icon {
+    border: none !important;
+    border-radius: 2px !important;
+}

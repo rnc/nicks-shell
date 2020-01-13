@@ -45,6 +45,7 @@ function mytee()
         echo "mytee valid only with zsh"
         return
     fi
+    # try / catch to ensure we always perform the sed.
     {
         printf "$INFO" "Running my tee with:"
         printf "$INFO" "${@[1, $(expr $# - 1)]}"

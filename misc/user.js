@@ -23,6 +23,8 @@ user_pref("toolkit.telemetry.shutdownPingSender.enabled", false);
 // Always show download button
 user_pref("browser.download.autohideButton", false);
 
+// Always ask where to save
+user_pref("browser.download.useDownloadDir", false);
 
 // Session store
 user_pref("browser.sessionstore.warnOnQuit", true);

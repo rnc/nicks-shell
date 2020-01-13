@@ -1,0 +1,18 @@
+{
+  "closeParentBehaviorMode": 1,
+  "configsVersion": 8,
+  "lastConfirmedToCloseTabs": 1578773852968,
+  "notifiedFeaturesVersion": 4,
+  "optionsExpandedSections": [
+    "section-appearance",
+    "section-contextMenu",
+    "section-drag",
+    "section-advanced",
+    "section-treeBehavior",
+    "section-addons",
+    "section-debug"
+  ],
+  "style": "plain-dark",
+  "userStyleRules": "/* Change styling of pending (unloaded) tabs */\ntab-item.discarded {\n  opacity: 0.75;\n}\n\n/* Change styling of the favicon of pending (unloaded) tabs */\ntab-item.discarded tab-favicon {\n  display: none\n}\n\n\n\n/* Tab close button on hover */\n.tab:not(:hover) .closebox {\n  display: none;\n}\n\n/* Hide tab button */\n.newtab-button-box {\n  display: none;\n}\n\n#tabbar {\n  bottom: 0 !important; /* Eliminate dead space on bottom */\n}\n\n\n\n/* regular width scrollbar */\n#tabbar { scrollbar-width: auto; }\n\n/* put scrollbar rightside */\n:root.left #tabbar { direction: ltr; }\n\n",
+  "warnOnCloseTabs": false
+}

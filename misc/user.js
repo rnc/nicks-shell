@@ -7,13 +7,8 @@
 user_pref("general.warnOnAboutConfig", false); // for the XUL version
 user_pref("browser.aboutConfig.showWarning", false); // for the new HTML version [FF71+]
 
-
-user_pref("browser.tabs.insertAfterCurrent", true);
-
-
 // https://support.mozilla.org/bm/questions/1241129
 user_pref("browser.ctrlTab.recentlyUsedOrder", false);
-
 
 // https://github.com/Aris-t2/CustomCSSforFx
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
@@ -40,4 +35,4 @@ user_pref("privacy.donottrackheader.enabled", true);
 
 
 // Hide recommended extensions/addons
-user_pref("extensions.htmlaboutaddons.recommendations.enabled", false)
+user_pref("extensions.htmlaboutaddons.recommendations.enabled", false);

@@ -1,5 +1,3 @@
-@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"); /* only needed once */
-
 /* Some interesting references in https://github.com/Aris-t2/CustomCSSforFx */
 
 /* This section is to move the button from right to left */
@@ -16,13 +14,6 @@
 /* #PanelUI-quit  #PanelUI-customize  #PanelUI-help */
 #PanelUI-footer #PanelUI-footer-inner {direction:rtl !important;}
 
-
-/*
-private-tabs.css
-https://gist.github.com/Arty2/4658f49ca815980b0cb2
-*/
-@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);
-
 #main-window[privatebrowsingmode=temporary] #urlbar {
   border-color: #841ebe !important;
   background-color: #841ebe !important;
@@ -35,7 +26,6 @@ https://gist.github.com/Arty2/4658f49ca815980b0cb2
 
 /* Always display the list all tabs button */
 #tabbrowser-tabs ~ #alltabs-button {visibility:visible!important}
-
 
 /* Remove back button circle */
 /* https://www.reddit.com/r/FirefoxCSS/comments/8nhq6b/back_button_circle_still_does_not_go_away/ */
@@ -51,4 +41,13 @@ https://gist.github.com/Arty2/4658f49ca815980b0cb2
 #back-button:hover > .toolbarbutton-icon {
     border: none !important;
     border-radius: 2px !important;
+}
+
+
+/* Tree style Tab */
+/* https://github.com/piroor/treestyletab/wiki/Code-snippets-for-custom-style-rules#auto-hide-sidebar-when-fullscreen-1548 */
+#main-window[inFullscreen] #sidebar-box,
+#main-window[inFullscreen] #sidebar-splitter {
+  display: none !important;
+  width: 0px !important;
 }

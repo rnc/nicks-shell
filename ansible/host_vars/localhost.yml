@@ -173,6 +173,7 @@ standard_packages_to_install:
   - python3-urlgrabber # Used by mead-load-build-dependencies
   - python3-keyring
   - python3-qt5
+  - redshift # Time of day screen temperature
   - sirikali # Replacement for plasma-vault as provides Wallet integration and auto-start
   # - slack # Commenting this out until we actually have a need for it.
   - srcclr
@@ -192,7 +193,7 @@ internal_packages_to_install:
   - redhat-lsb-core
 
 development_packages_to_install:
-#  - brewkoji
+  - brewkoji
   - cmake
   - code # Visual Studio Code
   - cpio # RPM
@@ -239,7 +240,7 @@ development_packages_to_install:
   - python3-tox # cekit
   - python3-virtualenv
   - qemu-kvm # Virtualisation
-#  - rhpkg
+  - rhpkg
   - rubygem-jekyll # jekyll site generator (PME)
   - source-to-image # cekit
   - texlive-bibtex

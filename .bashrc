@@ -62,7 +62,6 @@ CLASSPATH=.
 export LD_LIBRARY_PATH
 export CLASSPATH
 export PATH
-export SHELL=`which bash`
 
 #
 # Get common aliases and functions
@@ -79,12 +78,5 @@ then
 
     echo "Running .bashrc..."
 
-    if [ -d $NS_PREFIX/zsh-vcs-prompt ]
-    then
-        unset $(compgen -v | grep ZSH_VCS_)
-        source $NS_PREFIX/zsh-vcs-prompt/zshrc.sh
-        export PS1='\[\e[1;32m\]\h:$(vcs_super_info) $\[\e[0m\] '
-    else
-        export PS1='\[\e[1;32m\]\h:\W $\[\e[0m\] '
-    fi
+    export PS1='\[\e[1;32m\]\h:\W $\[\e[0m\] '
 fi

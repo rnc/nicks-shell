@@ -53,7 +53,8 @@ function mytee()
         # https://superuser.com/questions/352697/preserve-colors-while-piping-to-tee
         unbuffer -p ${@[1, $#argv-1]} |& tee ${@: -1}
     } always {
+        printf "$INFO" "Removing special characters from ${@: -1}..."
         # https://superuser.com/questions/380772/removing-ansi-color-codes-from-text-stream/380778#380778
-        sed -i 's/\x1b\[[0-9;]*m//g' ${@: -1}
+        sed -i 's/\x1b\[[0-9;]*[a-zA-Z]//g' ${@: -1}
     }
 }

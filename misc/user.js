@@ -35,3 +35,6 @@ user_pref("extensions.htmlaboutaddons.recommendations.enabled", false);
 user_pref("privacy.trackingprotection.enabled", true);
 user_pref("privacy.trackingprotection.socialtracking.enabled", true);
 user_pref("privacy.donottrackheader.enabled", true);
+
+// Ensure tab on toolbar goes to next text field and not to buttons
+user_pref("browser.toolbars.keyboard_navigation", false);

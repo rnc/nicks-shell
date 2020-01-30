@@ -996,7 +996,6 @@ function makemead()
 
     [[ -z "$CFG" ]] && local -x CFG="$IP_CONFIG/builder.cfg"
 
-    local currentlocation=`basename $PWD`
     local gitreponame=`git remote -v | sed -nre 's/\s*origin\s*.*(\/)(.*)\s[(]fetch.*/\2/p'`
 
     if [ -z "$gitreponame" ]
@@ -1352,4 +1351,20 @@ function printBOMGAs
 function blt()
 {
     brew list-tag-inheritance $1 | sed -e 's/  │          .*/  │       [...tag continues...]/g' -e 's/              .*/              [...tag continues...]/g' | uniq | egrep '...tag continues...|$'
+}
+
+function patchContraService()
+{
+    local currentlocation=`basename $PWD`
+    local cwd=$PWD
+
+    [[ "$currentlocation" != "service" ]] && printf "$ERROR" "Run from service repository" && return 1
+    [[ ! -d  "$cwd/../productization" ]] && printf "$ERROR" "Ensure productization repository is checked out as a sibling" && return 1
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+
+    mkdir -p src/com/redhat/contra
+    cd $NOCHPWD src/com/redhat/contra
+    [[ ! -L productization ]] && ln -s $cwd/../productization/src/com/redhat/contra/productization .
+
+    cd $NOCHPWD $cwd
 }

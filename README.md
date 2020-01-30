@@ -74,3 +74,14 @@ These contains various useful functions and aliases.
 GitConfig
 ---------
 Various useful aliases suitable for placing in /etc/gitconfig
+
+Misc
+----
+
+Both of the following are for Firefox configuration. Symbolic links should be placed in the Firefox directory.
+
+* userChrome.css (`$HOME/.mozilla/<id>/chrome/<userChrome.css as symbolic link>`)
+* user.js (`$HOME/.mozilla/<id>/<user.js as symbolic link>`)
+
+The `configs-treestyletab@piro.sakura.ne.jp.json` is a backup of the configuration for TreeStyleTab.
+The `create_setup.py` is a modified instance that can be used with poetry to generate a setup.py

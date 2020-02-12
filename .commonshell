@@ -8,7 +8,7 @@
 ### Variables ###
 #################
 
-PATH=$PATH:$HOME/bin
+[[ $PATH != *"$HOME/bin"* ]] && PATH=$PATH:$HOME/bin
 
 # Note: this may need changing for F26 : https://fedoraproject.org/wiki/Changes/KerberosKCMCache
 if ! grep -q "default_ccache_name" /etc/krb5.conf
@@ -1367,4 +1367,19 @@ function patchContraService()
     [[ ! -L productization ]] && ln -s $cwd/../productization/src/com/redhat/contra/productization .
 
     cd $NOCHPWD $cwd
+}
+
+
+# Token should be stored in $HOME/.travis/config.yml under a field of ' access_token: <id> '
+# The Job ID is displayed in the build log after expanding "Build system information".
+function restartTravisJob()
+{
+    [[ -z "$1" ]] && printf "$ERROR" "Specify job id" && return 1
+    curl -s -X POST \
+         -H "Content-Type: application/json" \
+         -H "Accept: application/json" \
+         -H "Travis-API-Version: 3" \
+         -H "Authorization: token $(awk '{gsub(/ /, "", $1); if ($1 == "access_token") print $2; }' FS=':' $HOME/.travis/config.yml)" \
+         -d '{ "quiet": true }' \
+         https://api.travis-ci.org/job/$1/debug
 }

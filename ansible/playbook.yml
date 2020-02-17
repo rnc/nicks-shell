@@ -197,3 +197,7 @@
     include_role:
       name: minishift
     when: ansible_distribution == "Fedora" and do_minishift == "true"
+
+  - name: Add HTTPIE-Kerberos Python
+    pip:
+      name: httpie-negotiate

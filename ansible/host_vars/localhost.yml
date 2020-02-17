@@ -191,11 +191,11 @@ internal_packages_to_install:
   - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
   - redhat-internal-cert-install
   - redhat-lsb-core
+  - subscription-manager
 
 development_packages_to_install:
   - brewkoji
   - cmake
-  - code # Visual Studio Code
   - cpio # RPM
   - dmidecode
   - docker
@@ -242,6 +242,7 @@ development_packages_to_install:
   - qemu-kvm # Virtualisation
   - rhpkg
   - rubygem-jekyll # jekyll site generator (PME)
+  - rubygem-minitest
   - source-to-image # cekit
   - texlive-bibtex
   - texlive-latex

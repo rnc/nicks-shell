@@ -65,6 +65,7 @@ packages_to_remove:
   - ktorrent
   - libburn # No CD drive in current laptop.
   - libkmahjongg
+  - libkmahjongg-data
   - mariadb
   - mariadb-backup
   - mariadb-common

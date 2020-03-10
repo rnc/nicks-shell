@@ -45,9 +45,15 @@
 
 
 /* Tree style Tab */
-/* https://github.com/piroor/treestyletab/wiki/Code-snippets-for-custom-style-rules#auto-hide-sidebar-when-fullscreen-1548 */
+/* https://github.com/piroor/treestyletab/wiki/Code-snippets-for-custom-style-rules */
 #main-window[inFullscreen] #sidebar-box,
 #main-window[inFullscreen] #sidebar-splitter {
   display: none !important;
   width: 0px !important;
+}
+/* Close Tabs to End */
+*[id^="treestyletab_piro_sakura_ne_jp-menuitem-_context_closeTabsToTheEnd"],
+/* Close Other Tabs */
+*[id^="treestyletab_piro_sakura_ne_jp-menuitem-_context_closeOtherTabs"] {
+  display: none;
 }

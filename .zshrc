@@ -53,6 +53,7 @@ then
     : ${PROMPT_SYMBOL:="❯"}
     # https://jmtd.net/log/multi-coloured_fedoras (\u!F3A9).
     : ${PROMPT_HAT:="%F{red}🎩%f"}
+    : ${PROMPT_TIME:="%T"}
 
     # Python handling
     if [ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]
@@ -76,7 +77,7 @@ then
             echo \"${GREEN}Use disable_autoswitch_virtualenv to deactivate${NORMAL}\"
             }"
     fi
-    RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
+    RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" ${PROMPT_TIME}"
 
     # Different git prompt systems. Search in the following order
     #
@@ -90,6 +91,7 @@ then
         ZSH_THEME_GIT_PROMPT_SUFFIX="]"
         ZSH_THEME_GIT_PROMPT_STASHED="%{"$'\e[0;33;40m'"%}⚑"
         ZSH_THEME_GIT_PROMPT_TAGS_SEPARATOR=","
+        ZSH_GIT_PROMPT_SHOW_UPSTREAM="full"
 
         source $NS_PREFIX/git-prompt.zsh/git-prompt.zsh
 
@@ -99,7 +101,7 @@ then
         {
             # Prompt turns red if the previous command didn't exit with 0
             PROMPT="$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA $PROMPT_HAT%(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
-            RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)$(gitprompt_secondary)%{"$'\e[00m%}'" %T"
+            RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)$(gitprompt_secondary)%{"$'\e[00m%}'" ${PROMPT_TIME}"
         }
         add-zsh-hook precmd prompt_updater
     # https://github.com/yonchu/zsh-vcs-prompt/

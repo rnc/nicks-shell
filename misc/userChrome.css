@@ -57,3 +57,6 @@
 *[id^="treestyletab_piro_sakura_ne_jp-menuitem-_context_closeOtherTabs"] {
   display: none;
 }
+*[id^="treestyletab_piro_sakura_ne_jp-menuitem-_context_reopenInContainer"] {
+  display: none;
+}

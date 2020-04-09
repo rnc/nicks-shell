@@ -737,59 +737,6 @@ function groovy-2.5.4()
     echo "Groovy executable is `which groovy`"
 }
 
-#
-# Call <url>
-#
-function _update-maven-extensions()
-{
-    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
-
-
-    if [ -z "$1" ]
-    then
-        printf "$ERROR" "Invalid URL for new version"
-        return 1
-    else
-        local f1=/tmp/`echo $1 | sed 's/.*\///g'`
-        curl -o$f1 $1
-        if [ "$?" != 0 ]
-        then
-            printf "$ERROR" "Unable to find $1"
-            return 1
-        fi
-    fi
-
-    if [ "$SHELL" = "/bin/bash" ] || [ "$SHELL" = "/usr/bin/bash" ]
-    then
-        local PRODMVN="`functions -F | grep -- -prod | sed 's/declare -f //g' |  tr '\n' ' '`"
-    else
-        # ZSH
-        local PRODMVN="`print -l ${(ok)functions} | grep -- -prod | grep -v 3.0.5 | tr '\n' ' '`"
-    fi
-
-    # Use a temporary file as we can't use sudo with a function
-    content="#!/bin/bash\n
-    file=\$1 ; shift
-    for m in `echo \\$*`
-    do
-        echo \"\033[49;32;1mProcessing \$m\033[0m\"
-        /bin/rm -fv $SW_PREFIX/apache-\$m/lib/ext/*.jar
-        /bin/cp -v \$file $SW_PREFIX/apache-\$m/lib/ext
-    done
-    "
-    local f2=`mktemp`
-    echo "Writing content to $f2"
-    echo -e "$content" >> "$f2"
-    chmod uog+x $f2
-
-    echo "Executing... sudo $f2 $f1 $PRODMVN"
-
-    sudo $f2 $f1 $PRODMVN
-
-    /bin/rm -f $f1 $f2
-
-}
-
 function unsignjar()
 {
     [[ -z "$@" ]] && echo "Usage: unsignjar <jar> <jar>...." && return
@@ -1078,46 +1025,6 @@ function makemead()
     trap - 2 3 15
 }
 
-
-# IP_TOOLING - checkout of make_mead location.
-# VMAN_HOME - location of VMAN. This may either be a path to a binary jar or a path to the checkout of built sources.
-function vman()
-{
-    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
-
-    [[ -z "$VMAN_HOME" ]] && printf "$ERROR" "Set VMAN_HOME" && return 1
-    [[ -f "$VMAN_HOME" ]] && local JAR=$VMAN_HOME || local JAR=$VMAN_HOME/target/vman.jar
-
-    [[ "$1" = "-clean" ]] && echo "Cleaning for vman..." && rm -rf `find . -type d -name target` && rm -rf `find . -name vman-workspace` && rgit reset --hard && shift
-
-    if [ -n "$IP_TOOLING" ]
-    then
-        local KEYSTORE=$IP_TOOLING/jssecacerts
-        local CERT="-Djavax.net.ssl.trustStore=${KEYSTORE} -Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStoreType=jks -Djavax.net.ssl.keyStore=${KEYSTORE} -Djavax.net.ssl.keyStorePassword=changeit -Djavax.net.ssl.keyStoreType=jks"
-    else
-        echo "IP_TOOLING not set; not setting jssecacerts"
-    fi
-    if [[ "$*" != *--version-suffix* ]] && [[ "$*" != *-s* ]]
-    then
-        echo "\033[49;32;1mWARNING: Recommend explicitly passing version-suffix on command line\033[0m"
-    fi
-
-    # JAVA_OPTS allow dynamic configuration of the VM for e.g. debugging etc.
-    java $JAVA_OPTS `echo $CERT` -jar $JAR "$@"
-
-    if [ "$?" = "0" ]
-    then
-        echo ""
-        echo "For modified dependencies either:"
-        echo "\033[49;32;1m    less vman-workspace/reports/modified-dependencies.md\033[0m"
-        echo "or if https://addons.mozilla.org/en-US/firefox/addon/markdown-viewer is installed:"
-        echo "\033[49;32;1m    firefox -new-tab vman-workspace/reports/modified-dependencies.md\033[0m"
-        echo "\033[49;32;1m    firefox -new-tab vman-workspace/reports/mapped-dependencies.md\033[0m"
-        echo "\033[49;32;1m    firefox -new-tab vman-workspace/reports/unmapped-dependencies.md\033[0m"
-    else
-        echo "" ; echo "Errors running vman."
-    fi
-}
 
 #
 # This script is sourced from

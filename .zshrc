@@ -173,22 +173,6 @@ then
             add-zsh-hook precmd vcs_precmd
             add-zsh-hook chpwd vcs_chpwd
         fi
-    # https://github.com/starcraftman/zsh-git-prompt
-    elif [ -d $NS_PREFIX/zsh-git-prompt ]
-    then
-        export ZSH_THEME_GIT_PROMPT_STASHED_ACTIVE=1
-        export __GIT_PROMPT_DIR=$NS_PREFIX/zsh-git-prompt
-        source $NS_PREFIX/zsh-git-prompt/zshrc.sh
-
-        # This prompt uses the above GIT system.
-        PROMPT="%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
-
-        function prompt_updater ()
-        {
-            PROMPT="%m$(git_super_status)$PROMPT_JAVA$PROMPT_EXTRA %(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
-            RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" %T"
-        }
-        add-zsh-hook precmd prompt_updater
     else
         echo "Resorting to default prompt."
 

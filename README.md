@@ -10,7 +10,6 @@ Both bash and zsh initialisation utilise a common configuration file (```$HOME/.
 * `SW_PREFIX` - where system software (such as the JDK, Maven, Gradle etc) are stored in the filesystem.
 
 These prefixes are 'internal' ; specific to certain areas of my work and therefore not required generally.
-* `VMAN_HOME` - installation of VMAN
 * `IP_CONFIG` - location of IP configuration
 * `IP_TOOLING` - location of IP_TOOLING
 
@@ -38,7 +37,6 @@ It will check for existence (inside `NS_PREFIX`) for any of the below, in the fo
 
 * https://github.com/woefe/git-prompt.zsh
 * https://github.com/yonchu/zsh-vcs-prompt
-* https://github.com/rnc/zsh-git-prompt use the 'Fork' branch.
 
 #### Completions ####
 

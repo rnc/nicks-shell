@@ -10,9 +10,9 @@
 
   - name : Repository - CSB
     yum_repository:
-      name: rhel7-csb-stage
-      description: RHEL7 CSB packages
-      baseurl: http://{{ csb_repo }}/rhel7-csb-stage
+      name: rhel8
+      description: RHEL8 CSB packages
+      baseurl: http://{{ csb_repo }}/rhel8
       gpgcheck: yes
       enabled: yes
       priority: "2"

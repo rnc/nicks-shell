@@ -1297,3 +1297,46 @@ function restartTravisJob()
          -d '{ "quiet": true }' \
          https://api.travis-ci.org/job/$1/debug
 }
+
+
+# Find pull requests between tag and 'head'.
+function findPRs()
+{
+    current_tag="$2"
+    name_with_owner="$1"
+
+    [[ -z "$name_with_owner" ]] && printf "$ERROR" "Pass 'organisation/repo' as first parameter" && return 1
+    [[ -z "$current_tag" ]] && printf "$ERROR" "Pass tag as second parameter" && return 1
+    [[ -z "$GITHUB_PRS_TOKEN" ]] && printf "$ERROR" "Define CHANGELOG_GITHUB_TOKEN environment variable" && return 1
+
+    tags=$(curl -s -H "Authorization: Token $GITHUB_PRS_TOKEN" \
+                "https://api.github.com/repos/$name_with_owner/tags")
+    key=$(jq -r --arg current_tag $current_tag 'to_entries | .[] | select(.value.name == $current_tag) | .key' <<< "$tags")
+    previous_tag=$(jq -r --arg index $((key+1)) '.[$index | tonumber].name' <<< "$tags")
+
+    printf "$INFO" "Compare between $previous_tag & $current_tag"
+
+    commits=$(curl -s -H "Authorization: Token $GITHUB_PRS_TOKEN" \
+                   "https://api.github.com/repos/$name_with_owner/compare/$previous_tag...$current_tag" | \
+                  jq -r '.commits[].sha')
+
+
+    # Only have a query of maximum of 256 character so we only process 17 sha for each request
+    count=0
+    max_per_request=17
+    while read sha; do
+        if [ $count == 0 ]; then
+            query="repo:$name_with_owner%20type:pr"
+        fi
+        query="$query%20SHA:%20${sha:0:7}"
+        count=$((count+1))
+        if ! (($count % $max_per_request)); then
+            # echo "https://api.github.com/search/issues?q=$query"
+            curl -s -H "Authorization: Token $GITHUB_PRS_TOKEN" \
+                 "https://api.github.com/search/issues?q=$query" | jq -r '.items[] | [.html_url,.title] | @csv'
+            #            "https://api.github.com/search/issues?q=$query" | jq -r '.items[].html_url'
+            count=0
+        fi
+    done <<< "$commits"
+
+}

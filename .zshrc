@@ -15,6 +15,9 @@
 # Any other functions etc can also be put in here.
 [[ -f $HOME/.shell-configuration ]] && source $HOME/.shell-configuration
 
+# Allow '=' to be word splitter
+WORDCHARS=$(echo $WORDCHARS | tr -d =)
+
 # Source ZSH functions.
 fpath=($NS_PREFIX/brew-koji/zsh $NS_PREFIX/gradle-completion $NS_PREFIX/zsh-completions/src $fpath)
 

@@ -56,6 +56,11 @@
     args:
       creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:rnc:cryfs.repo
 
+  - name: Enable Fedora Copr for Birdtray
+    command: "dnf copr enable -y rnc/Birdtray"
+    args:
+      creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:rnc:Birdtray.repo
+
   - name: Enable Fedora Copr for CherryTree
     command: "dnf copr enable -y bcotton/cherrytree"
     args:

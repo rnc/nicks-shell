@@ -198,6 +198,7 @@ internal_packages_to_install:
 development_packages_to_install:
   - brewkoji
   - cmake
+  - code # Visual Studio Code
   - cpio # RPM
   - dmidecode
   - docker

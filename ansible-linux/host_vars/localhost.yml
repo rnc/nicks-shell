@@ -166,6 +166,7 @@ standard_packages_to_install:
   - libva-intel-driver # HW video decode support for Intel integrated graphics
   - libnotify
   - libreoffice-langpack-en
+  - multimarkdown
   - okular
   - openldap-clients # ldapsearch
   - openssh-clients

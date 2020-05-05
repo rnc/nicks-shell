@@ -1,0 +1,67 @@
+---
+
+- name: run the playbook tasks on the localhost
+  hosts: windows
+  vars:
+    - do_vault: true
+  # vars_prompt:
+  # - name: "vpn_password"
+  #   prompt: "Enter VPN password (NOT kerberos)"
+  #   private: yes
+#
+#  pre_tasks:
+#   - include: pre-tasks/init.yml  # TODO: Do we need this?
+#   - include: pre-tasks/system.yml   # TODO: Move this elsewhere - its windows configuration not pre-tasks
+
+  tasks:
+  - include_vars: packages.yml
+  - include_vars: "{{ private_vars }}"
+    when: do_vault == true
+#    no_log: True
+
+  - debug:
+      msg: "Running Ansible for Windows"
+
+  # Install other users (Mia/Ethan)
+  - name: Create local users
+    win_user:
+      name: '{{ item.name }}'
+      password: '{{ item.password }}'
+      groups: '{{ item.groups }}'
+      groups_action: 'add'
+      state: present
+    loop: "{{ user_accounts }}"
+
+  - name: Install packages
+    win_chocolatey:
+      name: "{{ standard_packages_to_install }}"
+      state: present
+
+  - name: Install self updating packages
+    win_chocolatey:
+      name: "{{ self_updating_packages_to_install }}"
+      state: present
+      pinned: true
+
+  - name: Install all security, critical, and rollup updates without a scheduled task
+    win_updates:
+      category_names:
+        - SecurityUpdates
+        - CriticalUpdates
+        - UpdateRollups
+      reboot: yes
+
+  # - name: Install all critical and security updates
+  #   win_updates:
+  #     category_names:
+  #       - CriticalUpdates
+  #       - SecurityUpdates
+  #       state: installed
+#      register: update_result
+
+  # # Trigger reboot
+  # - name: Reboot host if required
+  #   win_reboot:
+  #   when: update_result.reboot_required
+
+  # Other powershell changes?

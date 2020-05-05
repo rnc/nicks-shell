@@ -6,6 +6,12 @@
   "context_reloadTree": false,
   "insertNewChildAt": -1,
   "lastConfirmedToCloseTabs": 1584095997087,
+  "lastDraggedTabs": {
+    "tabIds": [
+      247
+    ],
+    "urlsDigest": "3bfaed3e36bd5b771e3f0f05b8eb969024579868"
+  },
   "migratedBookmarkUrls": [
     "moz-extension://3b948974-02d0-48de-85ce-f1cfb6d775b8/resources/group-tab.html",
     "moz-extension://3b948974-02d0-48de-85ce-f1cfb6d775b8/options/options.html",
@@ -25,6 +31,7 @@
     "section-advanced"
   ],
   "style": "plain-dark",
+  "tabDragBehaviorShift": 5,
   "treeDoubleClickBehavior": 1,
   "userStyleRules": "/* Change styling of pending (unloaded) tabs */\ntab-item.discarded {\n  opacity: 0.75;\n}\n\n/* Change styling of the favicon of pending (unloaded) tabs */\ntab-item.discarded tab-favicon {\n  display: none\n}\n\n\n\n/* Tab close button on hover */\n.tab:not(:hover) .closebox {\n  display: none;\n}\n\n/* Hide tab button */\n.newtab-button-box {\n  display: none;\n}\n\n#tabbar {\n  bottom: 0 !important; /* Eliminate dead space on bottom */\n}\n\n\n/* regular width scrollbar */\n#tabbar { scrollbar-width: auto; }\n\n/* put scrollbar rightside */\n:root.left #tabbar { direction: ltr; }\n\n/** Colour background of tabs for different domains */\ntab-item[data-current-uri*=\"redhat.com\"] {\n  background-color: #ee0000 !important;\n/*  background-color: #cc0000 !important; */\n}\ntab-item[data-current-uri*=\"google.com\"] {\n  background-color: #4285F4 !important;\n}\n\n",
   "warnOnCloseTabs": false,

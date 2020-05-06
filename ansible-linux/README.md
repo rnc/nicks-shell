@@ -8,7 +8,7 @@ Relies on python3 being available and uses local connection to setup the machine
 ## Bootstrap
 
 ```
-wget https://raw.githubusercontent.com/rnc/nicks-shell/master/ansible/bootstrap.sh
+wget https://raw.githubusercontent.com/rnc/nicks-shell/master/ansible-linux/bootstrap.sh
 ./bootstrap.sh
 
 ```

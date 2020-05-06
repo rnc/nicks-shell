@@ -4,10 +4,6 @@
   hosts: windows
   vars:
     - do_vault: true
-  # vars_prompt:
-  # - name: "vpn_password"
-  #   prompt: "Enter VPN password (NOT kerberos)"
-  #   private: yes
 #
 #  pre_tasks:
 #   - include: pre-tasks/init.yml  # TODO: Do we need this?
@@ -22,7 +18,7 @@
   - debug:
       msg: "Running Ansible for Windows"
 
-  # Install other users (Mia/Ethan)
+  # Install other local users. Don't handle Microsoft account users.
   - name: Create local users
     win_user:
       name: '{{ item.name }}'
@@ -50,18 +46,3 @@
         - CriticalUpdates
         - UpdateRollups
       reboot: yes
-
-  # - name: Install all critical and security updates
-  #   win_updates:
-  #     category_names:
-  #       - CriticalUpdates
-  #       - SecurityUpdates
-  #       state: installed
-#      register: update_result
-
-  # # Trigger reboot
-  # - name: Reboot host if required
-  #   win_reboot:
-  #   when: update_result.reboot_required
-
-  # Other powershell changes?

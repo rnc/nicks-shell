@@ -1,0 +1,27 @@
+---
+
+- name: CreateScriptDir
+  win_file:
+    path: "{{ script_location }}"
+    state: directory
+
+- name: Retrieve my forked setup
+  win_get_url:
+    url: https://github.com/rnc/Win10-Initial-Setup-Script/archive/master.zip
+    dest: "{{ script_location }}/master.zip"
+    force: true
+
+- name: Unpack it
+  win_unzip:
+    src: "{{ script_location }}/master.zip"
+    dest: "{{ script_location }}"
+    delete_archive: yes
+
+- name: Run the powershell
+  win_command: >
+    powershell.exe
+    -NoProfile
+    -ExecutionPolicy Bypass
+    -File "{{ script_location }}\Win10-Initial-Setup-Script-master\Win10.ps1"
+    -include "{{ script_location }}\Win10-Initial-Setup-Script-master\Win10.psm1"
+    -preset "{{ script_location }}\Win10-Initial-Setup-Script-master\Default.preset"

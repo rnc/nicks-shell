@@ -17,6 +17,7 @@ standard_packages_to_install:
   - xnview                              # 2.49.2
 
 extra_packages_to_install:
+  - debotnet
 
 # These need pinning after as the OS then handles the updates
 self_updating_packages_to_install:

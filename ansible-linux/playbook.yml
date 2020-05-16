@@ -146,6 +146,17 @@
       state: present
     when: ansible_distribution == "Fedora"
 
+  - block:
+    - name: Download ZOOM
+      get_url:
+        url: https://zoom.us/client/latest/zoom_x86_64.rpm
+        dest: /tmp/zoom_x86_64.rpm
+    - name: Install ZOOM
+      dnf:
+        name: /tmp/zoom_x86_64.rpm
+        state: present
+    when: '"zoom" not in ansible_facts.packages and ansible_distribution == "Fedora"'
+
   # If development packages affect original install list.
   - name: Final software cleanup
     package:

@@ -44,16 +44,6 @@
     ignore_errors: true
     loop: "{{ services_to_disable }}"
 
-  - name: Disable services
-    win_service:
-      # If state is absent it will remove the service but that can be dangerous.
-      state: stopped
-      start_mode: disabled
-      name: "{{ item }}"
-      force_dependent_services: "yes"
-    ignore_errors: true
-    loop: "{{ services_to_disable }}"
-
   - name: Install packages
     win_chocolatey:
       name: "{{ standard_packages_to_install }}"
@@ -63,6 +53,20 @@
     win_chocolatey:
       name: "{{ extra_packages_to_install }}"
       state: latest
+
+  # Use this as choco package is out of date
+  - name: Install Sumatra
+    win_package:
+      path: https://www.sumatrapdfreader.org/dl2/SumatraPDF-3.2-64-install.exe
+      product_id: SumatraPDF
+      arguments:
+      - /s
+      - /install
+      - /with-filter
+      - /with-preview
+      - /d 'C:\Program Files (x86)\SumatraPDF'
+      creates_path: 'C:\Program Files (x86)\SumatraPDF'
+      state: present
 
   - name: Run powershell configurations
     include_role:

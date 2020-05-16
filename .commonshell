@@ -625,6 +625,7 @@ function maven-3.3.9()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+# From Maven 3.5.0 and up M2_HOME is not strictly required.
 function maven-3.5.0()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.5.0

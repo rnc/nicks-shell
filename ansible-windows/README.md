@@ -7,15 +7,12 @@
 <!-- TocDown End -->
 
 
-* Tested on Windows 10
+## Introduction
 
-## Usage
+This is for Windows 10 (current update version). It will perform various features, install software from packages, disable services and tweak UI/privacy/etc configurations.
 
-### SSH
 
-* Ensure OpenSSH server is installed on the Windows machine - if you can't SSH from a local powershell into `localhost` then follow https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse
-
-### Changes made
+### TODO:
 
 * Turn off live tiles
 * Windows update on demand (???)
@@ -35,10 +32,50 @@
 * Avoid the Built-in Solitaire Game
 * Remove windows ink
 
-#### Powershell Invocations
+#### Notes on todo
 
+* Only reveal hidden files (etc) for single user not all.
 
-### Run
+## SSH Setup
+
+Ensure OpenSSH server is installed on the Windows machine. Use the below instructions (even if running within a VM).
+
+First, ensure OpenSSH server is enabled:
+
+``` sh
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+
+Start-Service sshd
+# OPTIONAL but recommended:
+Set-Service -Name sshd -StartupType 'Automatic'
+# Confirm the Firewall rule is configured. It should be created automatically by setup.
+Get-NetFirewallRule -Name *ssh*
+# There should be a firewall rule named "OpenSSH-Server-In-TCP", which should be enabled
+# If the firewall does not exist, create one
+New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+
+```
+Test via running `ssh localhost` (which also creates the `.ssh` directory).
+
+Copy the public key across to the Windows Virtual Machine. Don't use `ssh-copy-id` as that only works on Linux. Note that the key must also be placed in `C:\ProgramData\ssh\administrators_authorized_keys`. Use
+
+``` sh
+    scp -o PreferredAuthentications=password -o PubkeyAuthentication=no -P 3022 ~/.ssh/id_rsa_windows.pub "User@192.168.42.1:C:\Users\User\.ssh\authorized_keys"
+    scp -o PreferredAuthentications=password -o PubkeyAuthentication=no -P 3022 ~/.ssh/id_rsa_windows.pub "User@192.168.42.1:C:\ProgramData\ssh\administrators_authorized_keys'
+```
+
+Then, to correct the permissions on the administrator key use:
+```
+$acl = Get-Acl C:\ProgramData\ssh\administrators_authorized_keys
+$acl.SetAccessRuleProtection($true, $false)
+$administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule("Administrators","FullControl","Allow")
+$systemRule = New-Object system.security.accesscontrol.filesystemaccessrule("SYSTEM","FullControl","Allow")
+$acl.SetAccessRule($administratorsRule)
+$acl.SetAccessRule($systemRule)
+$acl | Set-Acl
+```
+
+## Ansible
 
 Run using
 
@@ -56,7 +93,7 @@ Alternatively, if using KDEWalletManager then as per https://ercpe.de/blog/use-k
 
 ## Background
 
-### Packages
+### Packages Installed
 
 
 ## Pinned Package
@@ -71,49 +108,16 @@ https://www.ghacks.net/2015/08/14/comparison-of-windows-10-privacy-tools/
 
 | **Description** | **URL** |
 |:-:|:-:|
+| Microsoft OpenSSH | https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse |
 | Use a custom private key  | https://stackoverflow.com/questions/44734179/specifying-ssh-key-in-ansible-playbook-file  |
 | SSH Keys in Windows  | https://superuser.com/questions/1342411/setting-ssh-keys-on-windows-10-openssh-server  |
 | SSH / Windows and Admin Users | https://www.concurrency.com/blog/may-2019/key-based-authentication-for-openssh-on-windows |
 | Ansible and SSH  | https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html#windows-ssh-setup  |
-
+| Folder IDs | https://docs.microsoft.com/en-us/windows/win32/shell/knownfolderid |
 
 
 ## Development
 
-This can easily be tested using VirtualBox as Microsoft (at time of writing) makes available a VM image in various formats - see https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/  or https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/
+This can easily be tested using VirtualBox as Microsoft (at time of writing) makes available a VM image in various formats - see https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/  or https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/. We now follow https://www.concurrency.com/blog/may-2019/key-based-authentication-for-openssh-on-windows
 
-Then the following setup needs to be done:
-
-* Ensure OpenSSH server is running in Windows (See above).
 * Configure the VirtualBox network to add port forwarding e.g. 3022 (Host) -> 22 (Guest)
-* Copy the public key across to the Windows Virtual Machine. Don't use `ssh-copy-id` as that only works on Linux. Instead use
-
-``` sh
-    scp -o PreferredAuthentications=password -o PubkeyAuthentication=no -P 3022 ~/.ssh/id_rsa_windows.pub "User@192.168.42.1:C:\Users\User\.ssh\authorized_keys"
-```
-
-
-* Follow https://www.concurrency.com/blog/may-2019/key-based-authentication-for-openssh-on-windows
-  The key must be placed in `C:\ProgramData\ssh\administrators_authorized_keys` so run following powershell:
-
-```
-    cp C:\Users\User\.ssh\authorized_keys 'C:\ProgramData\ssh\administrators_authorized_keys'
-```
-
-```
-$acl = Get-Acl C:\ProgramData\ssh\administrators_authorized_keys
-$acl.SetAccessRuleProtection($true, $false)
-$administratorsRule = New-Object system.security.accesscontrol.filesystemaccessrule("Administrators","FullControl","Allow")
-$systemRule = New-Object system.security.accesscontrol.filesystemaccessrule("SYSTEM","FullControl","Allow")
-$acl.SetAccessRule($administratorsRule)
-$acl.SetAccessRule($systemRule)
-$acl | Set-Acl
-```
-
-
-
-# TODO:
-
-How to _reuse_ other powershell scripts. Zero point in duplicating in my ansible. Can we wget a version, then use it? Which one?
-
-Can we wget a script, install program etc.

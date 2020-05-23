@@ -105,6 +105,8 @@ base_packages_to_install:
   - google-chrome-stable
   - highlight
   - htop # Process viewer
+  - insync
+  - insync-dolphin
   - jq
   - keepassxc
   - pwgen

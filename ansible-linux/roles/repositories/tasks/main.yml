@@ -51,6 +51,16 @@
       enabled: yes
       gpgkey: https://packages.microsoft.com/keys/microsoft.asc
 
+  - name : InSyncHQ
+    yum_repository:
+      name: isynchq
+      description: InSyncHQ
+      baseurl: http://yum.insync.io/fedora/$releasever/
+      gpgcheck: yes
+      enabled: yes
+      gpgkey: https://d2t3ff60b2tol4.cloudfront.net/repomd.xml.key
+
+
   - name: Enable Fedora Copr for LXD
     command: "dnf copr enable -y rnc/cryfs"
     args:

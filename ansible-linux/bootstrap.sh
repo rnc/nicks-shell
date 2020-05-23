@@ -24,7 +24,7 @@ then
     ansible-playbook -v playbook.yml --ask-become-pass -e do_vault=false -e user_account=$USER
 else
     echo -e "\033[49;32;1mBootstrap already performed ; executing ansible using vault method...\033[0m"
-    if [ "`basename $(pwd)`" != "ansible" ]
+    if [ "`basename $(pwd)`" != "ansible-linux" ]
     then
         echo "Run from ansible directory"
         exit 1

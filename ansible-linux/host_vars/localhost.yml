@@ -200,6 +200,7 @@ internal_packages_to_install:
 
 development_packages_to_install:
   - brewkoji
+  - cabextract # Extract MS CAB files (https://www.cabextract.org.uk)
   - cmake
   - code # Visual Studio Code
   - cpio # RPM

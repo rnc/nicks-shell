@@ -14,31 +14,21 @@ This is for Windows 10 (current update version). It will perform various feature
 
 ### TODO:
 
+* Disable Lock Screen Ads
 * Turn off live tiles
-* Windows update on demand (???)
 * Uninstall extra games?
-* Remove advertisments
-* Remove tracking
 * Disable Cortana
   * Potentially _removing_ Cortana can break search (https://superuser.com/questions/977425/uninstall-cortana-windows-10)
-* Disable People icon, and possibly Ink Workspace and touch keyboard buttons.
-* Disable Uploading Updates to Other PCs Over the Internet
-* Disable Lock Screen Ads
-* Stop Suggested Apps From Appearing in the Start Menu
-* Get Rid of Nagging Taskbar Pop-ups
-* Prevent Notification Ads From Appearing
-* Remove Advertisements From File Explorer
-* Banish “Get Office” Notifications
-* Avoid the Built-in Solitaire Game
-* Remove windows ink
 
 #### Notes on todo
 
 * Only reveal hidden files (etc) for single user not all.
+* Consider use of https://chocolatey.org/packages/choco-cleaner but would need to disable scheduled task perhaps.
+* Secondary admin user setup and child user setup.
 
 ## SSH Setup
 
-Ensure OpenSSH server is installed on the Windows machine. Use the below instructions (even if running within a VM).
+Ensure OpenSSH server is installed on the Windows machine and the account has a password. Use the below instructions (even if running within a VM - remember to configure port forwarding).
 
 First, ensure OpenSSH server is enabled:
 
@@ -57,11 +47,11 @@ New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server (sshd)' -Enabled Tru
 ```
 Test via running `ssh localhost` (which also creates the `.ssh` directory).
 
-Copy the public key across to the Windows Virtual Machine. Don't use `ssh-copy-id` as that only works on Linux. Note that the key must also be placed in `C:\ProgramData\ssh\administrators_authorized_keys`. Use
+Copy the public key across to the Windows Virtual Machine. Don't use `ssh-copy-id` as that only works on Linux. Note that the key must also be placed in `C:\ProgramData\ssh\administrators_authorized_keys`. Use (from Linux):
 
 ``` sh
     scp -o PreferredAuthentications=password -o PubkeyAuthentication=no -P 3022 ~/.ssh/id_rsa_windows.pub "User@192.168.42.1:C:\Users\User\.ssh\authorized_keys"
-    scp -o PreferredAuthentications=password -o PubkeyAuthentication=no -P 3022 ~/.ssh/id_rsa_windows.pub "User@192.168.42.1:C:\ProgramData\ssh\administrators_authorized_keys'
+    scp -o PreferredAuthentications=password -o PubkeyAuthentication=no -P 3022 ~/.ssh/id_rsa_windows.pub "User@192.168.42.1:C:\ProgramData\ssh\administrators_authorized_keys"
 ```
 
 Then, to correct the permissions on the administrator key use:
@@ -88,6 +78,7 @@ or
 Alternatively, if using KDEWalletManager then as per https://ercpe.de/blog/use-kde-wallet-to-unlock-your-ansible-vault it is possible to utilise the wallet to store the vault password. If the wallet stores a ansible-vault key / password combination then it will retrieve the vault password automatically e.g. `ansible-playbook -v playbook.yml` ; and if the sudo password is also stored then it could also be retrieved and passed through with:
 
     ansible-playbook -v playbook.yml -e "ansible_become_pass=$(kwallet-query -l kdewallet -f ksshaskpass -v -r '')"
+
 
 
 

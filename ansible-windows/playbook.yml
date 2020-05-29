@@ -7,6 +7,9 @@
     - script_location: C:\PowerShellScripts
 
   tasks:
+  # Useful for debugging priviledge https://docs.ansible.com/ansible/latest/user_guide/become.html#become-and-windows
+  # - win_whoami:
+  #     become: yes
   - include_vars: packages.yml
   - include_vars: services.yml
   - include_vars: "{{ private_vars }}"
@@ -20,11 +23,51 @@
   - name: Create local users
     win_user:
       name: '{{ item.name }}'
+      fullname: '{{ item.fullname }}'
       password: '{{ item.password }}'
       groups: '{{ item.groups }}'
       groups_action: 'add'
       state: present
     loop: "{{ user_accounts }}"
+
+  # Synology mapped drives
+  # misc, music, photo, video, backup [todo]
+  - name: Map Synology Network Misc
+    win_mapped_drive:
+      letter: I
+      path: '\\192.168.0.168\misc'
+      state: present
+      username: cross
+      password: "{{ synology_family_pass }}"
+  - name: Map Synology Network Music
+    win_mapped_drive:
+      letter: M
+      path: '\\192.168.0.168\music'
+      state: present
+      username: cross
+      password: "{{ synology_family_pass }}"
+  - name: Map Synology Network Photo
+    win_mapped_drive:
+      letter: P
+      path: '\\192.168.0.168\photo'
+      state: present
+      username: cross
+      password: "{{ synology_family_pass }}"
+  - name: Map Synology Network Video
+    win_mapped_drive:
+      letter: V
+      path: '\\192.168.0.168\video'
+      state: present
+      username: cross
+      password: "{{ synology_family_pass }}"
+  # - name: Map Synology Network Backups
+  #   win_mapped_drive:
+  #     letter: X
+  #     path: \\192.168.0.168\\backup
+  #     state: present
+  #     username: cross
+  #     password: "{{ synology_family_pass }}"
+
 
   - name: Disable and stop services
     win_service:
@@ -49,11 +92,6 @@
       name: "{{ standard_packages_to_install }}"
       state: latest
 
-  - name: Install packages
-    win_chocolatey:
-      name: "{{ extra_packages_to_install }}"
-      state: latest
-
   # Use this as choco package is out of date
   - name: Install Sumatra
     win_package:
@@ -66,6 +104,15 @@
       - /with-preview
       - /d 'C:\Program Files (x86)\SumatraPDF'
       creates_path: 'C:\Program Files (x86)\SumatraPDF'
+      state: present
+  # Cache/SHA problems (plus out of date) compared to chocolaty
+  - name: Install MediaMonkey
+    win_package:
+      path: https://www.mediamonkey.com/MediaMonkey_Setup.exe
+      product_id: MediaMonkey
+      arguments:
+      - /SILENT
+      creates_path: 'C:\Program Files (x86)\MediaMonkey'
       state: present
 
   - name: Run powershell configurations

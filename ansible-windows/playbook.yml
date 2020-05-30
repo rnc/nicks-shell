@@ -8,16 +8,19 @@
 
   tasks:
   # Useful for debugging priviledge https://docs.ansible.com/ansible/latest/user_guide/become.html#become-and-windows
-  # - win_whoami:
-  #     become: yes
+  - win_whoami:
+    register: user_identity
+    no_log: True
+  - debug:
+      msg: "{{ user_identity.account }}"
+
   - include_vars: packages.yml
+    no_log: True
   - include_vars: services.yml
+    no_log: True
   - include_vars: "{{ private_vars }}"
     when: do_vault == true
-#    no_log: True
-
-  - debug:
-      msg: "Running Ansible for Windows"
+    no_log: True
 
   # Install other local users. Don't handle Microsoft account users.
   - name: Create local users
@@ -115,15 +118,15 @@
       creates_path: 'C:\Program Files (x86)\MediaMonkey'
       state: present
 
-  - name: Run powershell configurations
-    include_role:
-      name: powershell
-
   - name: Install self updating packages
     win_chocolatey:
       name: "{{ self_updating_packages_to_install }}"
       state: latest
       pinned: true
+
+  - name: Run powershell configurations
+    include_role:
+      name: powershell
 
   - name: Install all security, critical, and rollup updates without a scheduled task
     win_updates:

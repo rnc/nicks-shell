@@ -1,7 +1,6 @@
 ---
 
 services_to_disable_and_stop:
-  - "WinRM"                               # Windows Remote Management (WinRM)
   - "WbioSrvc"                            # Windows Biometric Service (required for Fingerprint reader / facial detection)
   - "Remote Registry"                     # Remote Registry
 

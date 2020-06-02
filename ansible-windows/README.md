@@ -4,6 +4,17 @@
 ## Table of Contents
 
 <!-- TocDown Begin -->
+  * [Introduction](#introduction)
+  * [TODO:](#todo)
+  * [Setup](#setup)
+    * [WinRM](#winrm)
+    * [SSH Setup](#ssh-setup)
+  * [Ansible](#ansible)
+  * [Notes](#notes)
+    * [Pinned Package](#pinned-package)
+    * [Comparison of Privacy Tools](#comparison-of-privacy-tools)
+    * [Windows Useful Links](#windows-useful-links)
+  * [Development](#development)
 <!-- TocDown End -->
 
 
@@ -11,9 +22,20 @@
 
 This is for Windows 10 (current update version). It will perform various features, install software from packages, disable services and tweak UI/privacy/etc configurations.
 
+Use a powershell in admin mode to run the commands. Using https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/, one option is `WindowsKey & X`. To copy paths in Explorer press Shift before pressing right click.
 
-### TODO:
+## TODO:
 
+* Per user configuration for powershell (hidden files etc).
+* Remove mention of microsoft edge (shortcuts etc)
+* Custom pin menu?
+  Add explorer to task bar?
+  Add Digikam
+
+* Configure ` Set-MpPreference -PUAProtection 1`
+
+* Consider switching digikam to manual install as package 6.1 is older than 7 (in beta)
+* Unpin Play items from start menu - remove Live Tiles?
 * Disable Lock Screen Ads
 * Turn off live tiles
 * Uninstall extra games?
@@ -26,9 +48,27 @@ This is for Windows 10 (current update version). It will perform various feature
 * Consider use of https://chocolatey.org/packages/choco-cleaner but would need to disable scheduled task perhaps.
 * Secondary admin user setup and child user setup.
 
-## SSH Setup
+
+## Setup
+
+### WinRM
+
+Originally was using SSH but switched to WinRM due to login issues (https://github.com/PowerShell/Win32-OpenSSH/issues/139). Following https://docs.ansible.com/ansible/latest/user_guide/windows_setup.html#winrm-setup to configure it (if running within a VM remember to configure port forwarding to 5986).
+
+``` sh
+$url = "https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"
+$file = "$env:temp\ConfigureRemotingForAnsible.ps1"
+
+(New-Object -TypeName System.Net.WebClient).DownloadFile($url, $file)
+
+powershell.exe -ExecutionPolicy ByPass -File $file -verbose -DisableBasicAuth -GlobalHttpFirewallAccess false
+```
+
+### SSH Setup
 
 Ensure OpenSSH server is installed on the Windows machine and the account has a password. Use the below instructions (even if running within a VM - remember to configure port forwarding).
+
+Note the difference between the build in OpenSSH (https://blog.ipswitch.com/the-future-of-remoting-in-windows-openssh) and the newer version via Chocolatey.
 
 First, ensure OpenSSH server is enabled:
 
@@ -43,15 +83,15 @@ Get-NetFirewallRule -Name *ssh*
 # There should be a firewall rule named "OpenSSH-Server-In-TCP", which should be enabled
 # If the firewall does not exist, create one
 New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
-
 ```
+
 Test via running `ssh localhost` (which also creates the `.ssh` directory).
 
 Copy the public key across to the Windows Virtual Machine. Don't use `ssh-copy-id` as that only works on Linux. Note that the key must also be placed in `C:\ProgramData\ssh\administrators_authorized_keys`. Use (from Linux):
 
 ``` sh
-    scp -o PreferredAuthentications=password -o PubkeyAuthentication=no -P 3022 ~/.ssh/id_rsa_windows.pub "User@192.168.42.1:C:\Users\User\.ssh\authorized_keys"
-    scp -o PreferredAuthentications=password -o PubkeyAuthentication=no -P 3022 ~/.ssh/id_rsa_windows.pub "User@192.168.42.1:C:\ProgramData\ssh\administrators_authorized_keys"
+    scp -o PreferredAuthentications=password -o PubkeyAuthentication=no -P 3022 ~/.ssh/id_rsa_windows.pub "rnc@192.168.42.1:C:\Users\rnc\.ssh\authorized_keys"
+    scp -o PreferredAuthentications=password -o PubkeyAuthentication=no -P 3022 ~/.ssh/id_rsa_windows.pub "rnc@192.168.42.1:C:\ProgramData\ssh\administrators_authorized_keys"
 ```
 
 Then, to correct the permissions on the administrator key use:
@@ -82,12 +122,9 @@ Alternatively, if using KDEWalletManager then as per https://ercpe.de/blog/use-k
 
 
 
-## Background
+## Notes
 
-### Packages Installed
-
-
-## Pinned Package
+### Pinned Package
 
 To remove a package that is pinned (so it can be reinstalled), then follow https://github.com/chocolatey/choco/wiki/CommandsPin
 
@@ -109,6 +146,6 @@ https://www.ghacks.net/2015/08/14/comparison-of-windows-10-privacy-tools/
 
 ## Development
 
-This can easily be tested using VirtualBox as Microsoft (at time of writing) makes available a VM image in various formats - see https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/  or https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/. We now follow https://www.concurrency.com/blog/may-2019/key-based-authentication-for-openssh-on-windows
+This can easily be tested using VirtualBox as Microsoft (at time of writing) makes available a VM image in various formats - see https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/  or https://developer.microsoft.com/en-us/windows/downloads/virtual-machines/. We now follow https://www.concurrency.com/blog/may-2019/key-based-authentication-for-openssh-on-windows or https://www.microsoft.com/en-ca/software-download/windows10ISO
 
 * Configure the VirtualBox network to add port forwarding e.g. 3022 (Host) -> 22 (Guest)

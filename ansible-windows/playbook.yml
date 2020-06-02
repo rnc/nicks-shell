@@ -63,11 +63,11 @@
       path: https://www.sumatrapdfreader.org/dl2/SumatraPDF-3.2-64-install.exe
       product_id: SumatraPDF
       arguments:
-      - /s
       - /with-filter
       - /with-preview
       - /d 'C:\Program Files (x86)\SumatraPDF'
-      creates_path: 'C:\Program Files (x86)\SumatraPDF'
+      - /s
+      - /install
       state: present
   # Cache/SHA problems (plus out of date) compared to chocolaty
   - name: Install MediaMonkey

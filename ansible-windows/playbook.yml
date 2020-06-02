@@ -12,7 +12,8 @@
     register: user_identity
     no_log: True
   - debug:
-      msg: "{{ user_identity.account }}"
+      msg: "On host {{ inventory_hostname }} with {{ user_identity.account }} and {{ user_identity.label }}"
+#  - meta: end_play # DEBUGGING
 
   - include_vars: packages.yml
     no_log: True
@@ -32,45 +33,6 @@
       groups_action: 'add'
       state: present
     loop: "{{ user_accounts }}"
-
-  # Synology mapped drives
-  # misc, music, photo, video, backup [todo]
-  - name: Map Synology Network Misc
-    win_mapped_drive:
-      letter: I
-      path: '\\192.168.0.168\misc'
-      state: present
-      username: cross
-      password: "{{ synology_family_pass }}"
-  - name: Map Synology Network Music
-    win_mapped_drive:
-      letter: M
-      path: '\\192.168.0.168\music'
-      state: present
-      username: cross
-      password: "{{ synology_family_pass }}"
-  - name: Map Synology Network Photo
-    win_mapped_drive:
-      letter: P
-      path: '\\192.168.0.168\photo'
-      state: present
-      username: cross
-      password: "{{ synology_family_pass }}"
-  - name: Map Synology Network Video
-    win_mapped_drive:
-      letter: V
-      path: '\\192.168.0.168\video'
-      state: present
-      username: cross
-      password: "{{ synology_family_pass }}"
-  # - name: Map Synology Network Backups
-  #   win_mapped_drive:
-  #     letter: X
-  #     path: \\192.168.0.168\\backup
-  #     state: present
-  #     username: cross
-  #     password: "{{ synology_family_pass }}"
-
 
   - name: Disable and stop services
     win_service:
@@ -102,7 +64,6 @@
       product_id: SumatraPDF
       arguments:
       - /s
-      - /install
       - /with-filter
       - /with-preview
       - /d 'C:\Program Files (x86)\SumatraPDF'
@@ -127,6 +88,59 @@
   - name: Run powershell configurations
     include_role:
       name: powershell
+
+  # EXP: Jun1 : Nope.
+  # EXP: Jun2: Yes, with Net Use.
+  # Note: dups powershell changes below ... move this down or move net mapping below powershell changes.
+  # - name: Linked
+  #   win_shell: |
+  #     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLinkedConnections" -Type DWord -Value 1
+
+  # Synology mapped drives
+  # misc, music, photo, video, backup [todo]
+  # Synology mapped drives : misc, music, photo, video, backup [todo]
+  # References: https://www.bloggingforlogging.com/2018/11/22/windows-mapped-drives-what-the-hell-is-going-on
+  - name: Mapping Drives
+    block:
+    - name: Save credentials
+      win_credential:
+        name: 192.168.0.168
+        type: domain_password
+        username: cross
+        secret: '{{ synology_family_pass }}'
+        state: present
+
+    - name: run net use to setup mapped drives
+      win_shell: |
+        if (!(Test-Path M:)) { NET USE M: \\192.168.0.168\music /PERSISTENT:YES }
+        if (!(Test-Path P:)) { NET USE P: \\192.168.0.168\photo /PERSISTENT:YES }
+        if (!(Test-Path V:)) { NET USE V: \\192.168.0.168\video /PERSISTENT:YES }
+
+    become: yes
+    become_method: runas
+    vars:
+      ansible_become: yes
+      ansible_become_method: runas
+      ansible_become_user: '{{ ansible_user }}'
+      ansible_become_password: '{{ ansible_password }}'
+
+  - name: Prevent Edge Desktop Shortcut
+    win_regedit:
+      path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer
+      name: "DisableEdgeDesktopShortcutCreation"
+      type: dword
+      data: 1
+
+  - name: Add Digikam Shortcut to desktop. Delete SDCardFormatter and Edge shortcuts.
+    win_shell: |
+      $TargetFile = "C:\Program Files\digiKam\digikam.exe"
+      $ShortcutFile = "$env:Public\Desktop\Digikam.lnk"
+      $WScriptShell = New-Object -ComObject WScript.Shell
+      $Shortcut = $WScriptShell.CreateShortcut($ShortcutFile)
+      $Shortcut.TargetPath = $TargetFile
+      $Shortcut.Save()
+      del 'C:\Users\Public\Desktop\SD Card Formatter.lnk'
+      del 'C:\Users\rnc\Desktop\Microsoft Edge.lnk'
 
   - name: Install all security, critical, and rollup updates without a scheduled task
     win_updates:

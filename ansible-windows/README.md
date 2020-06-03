@@ -26,22 +26,20 @@ Use a powershell in admin mode to run the commands. Using https://www.howtogeek.
 
 ## TODO:
 
-* Backup choice
-* Per user configuration for powershell (hidden files etc).
-* Windows default file associations ; use setuserfta and file association list
-  * http://kolbi.cz/blog/2017/10/25/setuserfta-userchoice-hash-defeated-set-file-type-associations-per-user/
-* Disable Lock Screen Ads - does this still exist?
-* Disable WebSearch on May 2020 Update
-  * https://www.ghacks.net/2018/04/07/microsoft-breaks-disable-web-search-in-windows-10-version-1803/
-
-* Custom pin menu - possibly not needed? Can create shortcut on desktop
-* Consider switching digikam to manual install as package 6.1 is older than 7 (in beta)
+ * Backup choice
+ * Per user configuration for powershell (hidden files etc) and file associations
+ * Windows default file associations ; use setuserfta and file association list
+     * http://kolbi.cz/blog/2017/10/25/setuserfta-userchoice-hash-defeated-set-file-type-associations-per-user/
+ * Disable Lock Screen Ads - does this still exist?
+ * Disable WebSearch on May 2020 Update
+     * https://www.ghacks.net/2018/04/07/microsoft-breaks-disable-web-search-in-windows-10-version-1803/
+ * Custom pin menu - possibly not needed? Can create shortcut on desktop
+ * Consider switching digikam to manual install as package 6.1 is older than 7 (in beta)
 
 #### Notes on todo
 
-* Only reveal hidden files (etc) for single user not all.
-* Consider use of https://chocolatey.org/packages/choco-cleaner but would need to disable scheduled task perhaps.
-* Secondary admin user setup and child user setup.
+ * Consider use of https://chocolatey.org/packages/choco-cleaner but would need to disable scheduled task perhaps.
+ * Secondary admin user setup and child user setup.
 
 
 ## Setup

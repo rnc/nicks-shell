@@ -4,6 +4,7 @@
   hosts: windows
   vars:
     - do_vault: true
+    - do_updates: true
     - script_location: C:\PowerShellScripts
 
   tasks:
@@ -22,6 +23,15 @@
   - include_vars: "{{ private_vars }}"
     when: do_vault == true
     no_log: True
+
+  - name: Install all security, critical, and rollup updates without a scheduled task
+    win_updates:
+      category_names:
+        - SecurityUpdates
+        - CriticalUpdates
+        - UpdateRollups
+      reboot: yes
+    when: do_updates == true
 
   # Install other local users. Don't handle Microsoft account users.
   - name: Create local users
@@ -147,12 +157,3 @@
     win_shell:
       SetUserFTA.exe "C:\{{ script_location }}\setuserfta.txt"
       SetDefaultBrowser.exe HKLM Firefox-308046B0AF4A39CB
-
-  # TODO: Should this be first?
-  - name: Install all security, critical, and rollup updates without a scheduled task
-    win_updates:
-      category_names:
-        - SecurityUpdates
-        - CriticalUpdates
-        - UpdateRollups
-      reboot: yes

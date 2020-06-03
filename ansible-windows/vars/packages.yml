@@ -10,6 +10,8 @@ standard_packages_to_install:
   - libreoffice-still                   # 6.3.5
   - notepadplusplus                     # 7.8.6
   - procexp                             # 16.32
+  - setuserfta                          # 1.7.1
+  - setdefaultbrowser                   # 1.5.0
   - sdformatter                         # 5.0.1
   - veeam-agent                         # 4.0
   - visualstudiocode-disableautoupdate  # 1.0.0.20180620

@@ -26,21 +26,16 @@ Use a powershell in admin mode to run the commands. Using https://www.howtogeek.
 
 ## TODO:
 
+* Backup choice
 * Per user configuration for powershell (hidden files etc).
-* Remove mention of microsoft edge (shortcuts etc)
-* Custom pin menu?
-  Add explorer to task bar?
-  Add Digikam
+* Windows default file associations ; use setuserfta and file association list
+  * http://kolbi.cz/blog/2017/10/25/setuserfta-userchoice-hash-defeated-set-file-type-associations-per-user/
+* Disable Lock Screen Ads - does this still exist?
+* Disable WebSearch on May 2020 Update
+  * https://www.ghacks.net/2018/04/07/microsoft-breaks-disable-web-search-in-windows-10-version-1803/
 
-* Configure ` Set-MpPreference -PUAProtection 1`
-
+* Custom pin menu - possibly not needed? Can create shortcut on desktop
 * Consider switching digikam to manual install as package 6.1 is older than 7 (in beta)
-* Unpin Play items from start menu - remove Live Tiles?
-* Disable Lock Screen Ads
-* Turn off live tiles
-* Uninstall extra games?
-* Disable Cortana
-  * Potentially _removing_ Cortana can break search (https://superuser.com/questions/977425/uninstall-cortana-windows-10)
 
 #### Notes on todo
 

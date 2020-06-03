@@ -93,6 +93,8 @@
   # misc, music, photo, video, backup [todo]
   # Synology mapped drives : misc, music, photo, video, backup [todo]
   # References: https://www.bloggingforlogging.com/2018/11/22/windows-mapped-drives-what-the-hell-is-going-on
+  #
+  # Strangely win_mapped_drive doesn't seem to work even though the configuration is correct so switched to net use.
   - name: Mapping Drives
     block:
     - name: Save credentials
@@ -137,7 +139,16 @@
       # https://www.tenforums.com/tutorials/32236-enable-disable-windows-defender-pua-protection-windows-10-a.html
       Set-MpPreference -PUAProtection 1
 
+  - name: Fix file associations
+    win_copy:
+      src: files/setuserfta.txt
+      dest: '{{ script_location }}\setuserfta.txt'
+  - name: Run setuserfta/setdefaultbrowser
+    win_shell:
+      SetUserFTA.exe "C:\{{ script_location }}\setuserfta.txt"
+      SetDefaultBrowser.exe HKLM Firefox-308046B0AF4A39CB
 
+  # TODO: Should this be first?
   - name: Install all security, critical, and rollup updates without a scheduled task
     win_updates:
       category_names:

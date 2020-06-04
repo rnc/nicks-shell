@@ -67,27 +67,9 @@
       name: "{{ standard_packages_to_install }}"
       state: latest
 
-  # Use this as choco package is out of date
-  - name: Install Sumatra
-    win_package:
-      path: https://www.sumatrapdfreader.org/dl2/SumatraPDF-3.2-64-install.exe
-      product_id: SumatraPDF
-      arguments:
-      - /with-filter
-      - /with-preview
-      - /d 'C:\Program Files (x86)\SumatraPDF'
-      - /s
-      - /install
-      state: present
-  # Cache/SHA problems (plus out of date) compared to chocolaty
-  - name: Install MediaMonkey
-    win_package:
-      path: https://www.mediamonkey.com/MediaMonkey_Setup.exe
-      product_id: MediaMonkey
-      arguments:
-      - /SILENT
-      creates_path: 'C:\Program Files (x86)\MediaMonkey'
-      state: present
+  - name: Install explicitly managed packages
+    include_role:
+      name: packages
 
   - name: Install self updating packages
     win_chocolatey:
@@ -149,10 +131,12 @@
       # https://www.tenforums.com/tutorials/32236-enable-disable-windows-defender-pua-protection-windows-10-a.html
       Set-MpPreference -PUAProtection 1
 
+  # http://kolbi.cz/blog/2017/10/25/setuserfta-userchoice-hash-defeated-set-file-type-associations-per-user/
   - name: Fix file associations
     win_copy:
       src: files/setuserfta.txt
       dest: '{{ script_location }}\setuserfta.txt'
+  # http://kolbi.cz/blog/2017/11/10/setdefaultbrowser-set-the-default-browser-per-user-on-windows-10-and-server-2016-build-1607/
   - name: Run setuserfta/setdefaultbrowser
     win_shell:
       SetUserFTA.exe "C:\{{ script_location }}\setuserfta.txt"

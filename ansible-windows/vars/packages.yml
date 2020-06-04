@@ -7,20 +7,22 @@ standard_packages_to_install:
   - cdburnerxp                          # 4.5.8.712800
   - digikam                             # 6.1.0
   - handbrake                           # 1.3.2
+  - keepassxc                           # 2.5.4
   - libreoffice-still                   # 6.3.5
   - notepadplusplus                     # 7.8.6
   - procexp                             # 16.32
   - setuserfta                          # 1.7.1
   - setdefaultbrowser                   # 1.5.0
   - sdformatter                         # 5.0.1
-  - veeam-agent                         # 4.0
   - visualstudiocode-disableautoupdate  # 1.0.0.20180620
   - vlc                                 # 3.0.10
   - vscode                              # 1.44.2
   - xnview                              # 2.49.2
+#  - windowsfirewallcontrol                # 6.1.0
 #  - mediamonkey                           # 4.1.27.1897 (5.x in beta)
 
 # These need pinning after as the OS then handles the updates
 self_updating_packages_to_install:
   - firefox
   - googlechrome
+  - reflect-free                        # 7.2.4952 (manual conversion to license version after installation)

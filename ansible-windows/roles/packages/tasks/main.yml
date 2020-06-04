@@ -1,0 +1,81 @@
+---
+
+# Use this as choco package is out of date
+- name: Install Sumatra
+  win_package:
+    path: https://www.sumatrapdfreader.org/dl2/SumatraPDF-3.2-64-install.exe
+    product_id: SumatraPDF
+    arguments:
+    - /with-filter
+    - /with-preview
+    - /d 'C:\Program Files (x86)\SumatraPDF'
+    - /s
+    - /install
+    state: present
+
+# Cache/SHA problems (plus out of date) compared to chocolaty
+- name: Install MediaMonkey
+  win_package:
+    path: https://www.mediamonkey.com/MediaMonkey_Setup.exe
+    creates_path: 'C:\Program Files (x86)\MediaMonkey'
+    product_id: MediaMonkey
+    arguments:
+    - /SILENT
+    state: present
+
+- name: Check if a service is installed
+  win_service:
+    name: 'Apple Mobile Device Service'
+  register: AppleMDS
+- name: ITunes Drivers
+  block:
+  - win_get_url:
+      url: https://www.copytrans.net/download-zip?program=CTDI
+      dest: "{{ script_location }}/CopyTransDriversInstallers.zip"
+      force: true
+  - win_unzip:
+      src: "{{ script_location }}/CopyTransDriversInstallers.zip"
+      dest: "{{ script_location }}"
+      delete_archive: yes
+  - win_shell: |
+      "{{ script_location }}/CopyTransDriversInstaller.exe /install /silent"
+  when: AppleMDS.exists != true
+
+
+# USB Safely Remove
+- name: Verify Installation
+  win_stat:
+    path: 'C:\Program Files (x86)\USB Safely Remove\USBSafelyRemove.exe'
+  register: usbsafelyremove
+- name: USB Safely Remove
+  block:
+  - win_copy:
+      src: files/usbsafelyremove.ini
+      dest: '{{ script_location }}\usbsafelyremove.ini'
+  - win_copy:
+      src: files/usbsafelyremove-private.opt
+      decrypt: yes
+      dest: '{{ script_location }}\usbsafelyremove.opt'
+  - win_package:
+      path: "https://safelyremove.com/startdownload.htm?imm&v=&t"
+      creates_path: 'C:\Program Files (x86)\USB Safely Remove'
+      arguments:
+        - /SILENT /LOADINF="{{ script_location }}\usbsafelyremove.ini"
+      state: present
+  # https://groups.google.com/forum/#!topic/Ansible-project/-Wr2EuHG76M
+  - win_command: '"C:\Program Files (x86)\USB Safely Remove\USBSafelyRemove.exe" /loadsettings "{{ script_location }}\usbsafelyremove.opt"'
+  when: usbsafelyremove.stat.exists == false
+
+
+# TODO : Replace with donation version
+#- name: Install Freefilesync
+#  win_chocolatey:
+#    name: "freefilesync"
+#    state: latest
+
+
+
+- name: cleanup
+  win_file:
+    path: C:\tools
+    state: absent

@@ -30,15 +30,15 @@
 - name: ITunes Drivers
   block:
   - win_get_url:
-      url: https://www.copytrans.net/download-zip?program=CTDI
-      dest: "{{ script_location }}/CopyTransDriversInstallers.zip"
+      url: "{{ copytransurl }}"
+      dest: '{{ script_location }}\CopyTransDriversInstallers.zip'
       force: true
   - win_unzip:
-      src: "{{ script_location }}/CopyTransDriversInstallers.zip"
+      src: '{{ script_location }}\CopyTransDriversInstallers.zip'
       dest: "{{ script_location }}"
       delete_archive: yes
   - win_shell: |
-      "{{ script_location }}/CopyTransDriversInstaller.exe /install /silent"
+      "{{ script_location }}\CopyTransDriversInstaller.exe /install /silent"
   when: AppleMDS.exists != true
 
 
@@ -57,10 +57,10 @@
       decrypt: yes
       dest: '{{ script_location }}\usbsafelyremove.opt'
   - win_package:
-      path: "https://safelyremove.com/startdownload.htm?imm&v=&t"
+      path: "{{ usbsafelyurl }}"
       creates_path: 'C:\Program Files (x86)\USB Safely Remove'
       arguments:
-        - /SILENT /LOADINF="{{ script_location }}\usbsafelyremove.ini"
+        - /SILENT /LOADINF='{{ script_location }}\usbsafelyremove.ini'
       state: present
   # https://groups.google.com/forum/#!topic/Ansible-project/-Wr2EuHG76M
   - win_command: '"C:\Program Files (x86)\USB Safely Remove\USBSafelyRemove.exe" /loadsettings "{{ script_location }}\usbsafelyremove.opt"'
@@ -72,10 +72,3 @@
 #  win_chocolatey:
 #    name: "freefilesync"
 #    state: latest
-
-
-
-- name: cleanup
-  win_file:
-    path: C:\tools
-    state: absent

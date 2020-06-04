@@ -33,6 +33,11 @@
       reboot: yes
     when: do_updates == true
 
+  - name: CreateScriptDir
+    win_file:
+      path: "{{ script_location }}"
+      state: directory
+
   # Install other local users. Don't handle Microsoft account users.
   - name: Create local users
     win_user:

@@ -1,10 +1,5 @@
 ---
 
-- name: CreateScriptDir
-  win_file:
-    path: "{{ script_location }}"
-    state: directory
-
 - name: Retrieve my forked setup
   win_get_url:
     url: https://github.com/rnc/Win10-Initial-Setup-Script/archive/PERSONALCONFIG.zip

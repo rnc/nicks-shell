@@ -72,3 +72,7 @@
 #  win_chocolatey:
 #    name: "freefilesync"
 #    state: latest
+
+- name: Remove Cortana
+  win_shell: |
+    Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage

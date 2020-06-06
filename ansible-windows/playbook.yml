@@ -123,6 +123,14 @@
       type: dword
       data: 1
 
+  - name: Diable Web Search
+    win_regedit:
+      path: HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer
+      name: "DisableEdgeDesktopShortcutCreation"
+      type: dword
+      data: 1
+    register: output
+
   - name: Add Digikam Shortcut to desktop. Delete SDCardFormatter and Edge shortcuts. Enable PUAProtection
     win_shell: |
       $TargetFile = "C:\Program Files\digiKam\digikam.exe"
@@ -142,7 +150,9 @@
       src: files/setuserfta.txt
       dest: '{{ script_location }}\setuserfta.txt'
   # http://kolbi.cz/blog/2017/11/10/setdefaultbrowser-set-the-default-browser-per-user-on-windows-10-and-server-2016-build-1607/
-  - name: Run setuserfta/setdefaultbrowser
+  - name: Run setuserfta
     win_shell:
-      SetUserFTA.exe "C:\{{ script_location }}\setuserfta.txt"
+      SetUserFTA.exe "{{ script_location }}\setuserfta.txt"
+  - name: Run setdefaultbrowser
+    win_shell:
       SetDefaultBrowser.exe HKLM Firefox-308046B0AF4A39CB

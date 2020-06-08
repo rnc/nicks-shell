@@ -5,15 +5,14 @@
 
 <!-- TocDown Begin -->
   * [Introduction](#introduction)
+  * [TO REVIEW](#to-review)
   * [TODO:](#todo)
+    * [Longer term todo:](#longer-term-todo)
   * [Setup](#setup)
     * [WinRM](#winrm)
     * [SSH Setup](#ssh-setup)
   * [Ansible](#ansible)
-  * [Notes](#notes)
-    * [Pinned Package](#pinned-package)
-    * [Comparison of Privacy Tools](#comparison-of-privacy-tools)
-    * [Windows Useful Links](#windows-useful-links)
+  * [Windows Useful Links](#windows-useful-links)
   * [Development](#development)
 <!-- TocDown End -->
 
@@ -24,17 +23,25 @@ This is for Windows 10 (current update version). It will perform various feature
 
 Use a powershell in admin mode to run the commands. Using https://www.howtogeek.com/235101/10-ways-to-open-the-command-prompt-in-windows-10/, one option is `WindowsKey & X`. To copy paths in Explorer press Shift before pressing right click.
 
+## TO REVIEW
+
+* https://www.laptopmag.com/articles/windows-10-settings-to-change
+* https://www.synology.com/en-global/knowledgebase/DSM/tutorial/Management/How_to_add_extra_security_to_your_Synology_NAS#t2
+* https://www.howtogeek.com/197836/8-ways-to-customize-the-windows-10-start-menu/
+*
+
 ## TODO:
 
  * Backup choice
- * Windows default file associations ; use setuserfta and file association list
-     * http://kolbi.cz/blog/2017/10/25/setuserfta-userchoice-hash-defeated-set-file-type-associations-per-user/
-     * File types:
-         * jpg, mp3, txt, html, pdf
- * Disable WebSearch on May 2020 Update
-     * https://www.ghacks.net/2018/04/07/microsoft-breaks-disable-web-search-in-windows-10-version-1803/
+     * Macrium Reflect ?
+         * Move to self updating
+         * Payment
+         * Configuration (export?)
  * Per user configuration for powershell (hidden files etc) and file associations
      * Potentially just run 4 times with `-e ansible_user=xxx` - but what do we do with child accounts?
+ * Disable WebSearch on May 2020 Update
+     * https://github.com/Disassembler0/Win10-Initial-Setup-Script/issues/300
+     * https://www.ghacks.net/2018/04/07/microsoft-breaks-disable-web-search-in-windows-10-version-1803/
 
 ### Longer term todo:
 
@@ -115,18 +122,7 @@ Alternatively, if using KDEWalletManager then as per https://ercpe.de/blog/use-k
 
 
 
-
-## Notes
-
-### Pinned Package
-
-To remove a package that is pinned (so it can be reinstalled), then follow https://github.com/chocolatey/choco/wiki/CommandsPin
-
-### Comparison of Privacy Tools
-
-https://www.ghacks.net/2015/08/14/comparison-of-windows-10-privacy-tools/
-
-### Windows Useful Links
+## Windows Useful Links
 
 | **Description** | **URL** |
 |:-:|:-:|

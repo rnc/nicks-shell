@@ -181,6 +181,7 @@ standard_packages_to_install:
   - redshift # Time of day screen temperature
   - sirikali # Replacement for plasma-vault as provides Wallet integration and auto-start
   # - slack # Commenting this out until we actually have a need for it.
+  - smb4k
   - srcclr
   - subversion
   - texlive-pdfjam # pdfnup etc.

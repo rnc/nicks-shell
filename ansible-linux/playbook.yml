@@ -164,6 +164,11 @@
         - java-openjdk-headless # Old Java 10 installation
     when: ansible_distribution == "Fedora"
 
+  - name: Chrome Policies
+    copy:
+      src: files/rh-policy.json
+      dest: /etc/opt/chrome/policies/managed/
+
   - block:
     - name: Clean bootstrap VPN
       file:

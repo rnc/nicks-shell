@@ -150,6 +150,7 @@ standard_packages_to_install:
   - google-noto-sans-fonts # Basic Noto fonts.
   - gnome-themes-extra # Installs GTK3 Adwaita[-dark] themes
   - gnupg2
+#  - gsmartcontrol # SMART Disk GUI
   - gstreamer1-libav # Gstreamer plugin for mpeg4 decoding.
   - gv # Emacs printing preview
   - gwenview
@@ -233,6 +234,7 @@ development_packages_to_install:
   - python3-colorlog # cekit
   - python3-docker # cekit
   - python3-docker-squash # cekit
+  - python3-gitlab # gitlabber
   - python3-gssapi # linfo
   - python3-jenkins-job-builder
   - python3-jinja2 # cekit

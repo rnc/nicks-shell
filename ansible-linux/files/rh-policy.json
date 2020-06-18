@@ -1,4 +1,5 @@
 {
     "AuthServerWhitelist" : "*.redhat.com",
-    "AuthNegotiateDelegateWhitelist" : "*.redhat.com"
+    "AuthNegotiateDelegateWhitelist" : "*.redhat.com",
+    "DefaultBrowserSettingEnabled" : false
 }

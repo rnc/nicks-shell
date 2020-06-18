@@ -164,6 +164,7 @@
         - java-openjdk-headless # Old Java 10 installation
     when: ansible_distribution == "Fedora"
 
+  # See https://cloud.google.com/docs/chrome-enterprise/policies/
   - name: Chrome Policies
     copy:
       src: files/rh-policy.json

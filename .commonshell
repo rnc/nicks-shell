@@ -1371,7 +1371,6 @@ function fixExifDate()
         ((index+=1))
         printf "$INFO" "Examining: $i"
         local START=($(exiftool -time:all $i))
-        #local END=()
 
         # -time:all should be equivalent to:
         # -FileAccessDate -FileInodeChangeDate -ModifyDate -DateTimeOriginal -CreateDate
@@ -1384,12 +1383,12 @@ function fixExifDate()
             exiftool -a -G0:1 -s -execute -if '$DateTimeOriginal' -common_args -time:all $i > /dev/null 2>&1
             if [ "$?" != 0 ]
             then
-                local localjpg=$(find $(dirname $i) -iname *.jpg | head -1)
-                echo "File $i does not have relevant time information; reverting to touch using $localjpg information"
+                local localjpg=$(find $(dirname $i) -maxdepth 1 -iname *.jpg | head -1)
+                echo "File $i does not have relevant time information; reverting to touch using information from \"$localjpg\""
                 # Attempt to use a sibling JPG file (if it exists) so that we can still set modification date.
                 if [ -z "$localjpg" ]
                 then
-                    printf "$ERROR" "Unable to find sibling jpg to extract date information from"
+                    printf "$ERROR" "Unable to find sibling jpg to extract date information from."
                 else
                     touch -mt $(exiftool -s -s -s -d "%Y%m%d%H%M" -DateTimeOriginal $localjpg) $i
                 fi

@@ -66,6 +66,27 @@
   - win_command: '"C:\Program Files (x86)\USB Safely Remove\USBSafelyRemove.exe" /loadsettings "{{ script_location }}\usbsafelyremove.opt"'
   when: usbsafelyremove.stat.exists == false
 
+# Macrium Reflect
+- name: Verify Reflect Installation
+  win_stat:
+    path: 'C:\Program Files\Macrium\Reflect\Reflect.exe'
+  register: macriumreflect
+- name: Macrium Reflect
+  block:
+    - get_url:
+        url: 'https://api.onedrive.com/v1.0/shares/u!aHR0cHM6Ly8xZHJ2Lm1zL3UvcyFBdDJxTnVNYmpkZVhoc0VQUDJTU2NJMDdWejRINFE_ZT1qRVpwdVI/root/content'
+        dest: '/tmp/reflect_home_setup_x64.exe'
+      delegate_to: localhost
+    - win_copy:
+        src: /tmp/reflect_home_setup_x64.exe
+        dest: '{{ script_location }}\reflect_home_setup_x64.exe'
+        decrypt: yes
+    # Doesn't appear to work with win_package so executing the command directly.
+    - win_command: '"{{ script_location }}\reflect_home_setup_x64.exe" /passive /l {{ script_location }}\log.txt /norestart LICKEY={{ reflectlicense }}'
+  when:
+    - do_reflect != False
+    - macriumreflect.stat.exists == False
+
 
 # TODO : Replace with donation version
 #- name: Install Freefilesync
@@ -73,6 +94,7 @@
 #    name: "freefilesync"
 #    state: latest
 
+# https://winaero.com/blog/uninstall-and-remove-cortana-in-windows-10-version-2004/
 - name: Remove Cortana
   win_shell: |
     Get-AppxPackage -allusers Microsoft.549981C3F5F10 | Remove-AppxPackage

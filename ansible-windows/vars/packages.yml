@@ -25,4 +25,3 @@ standard_packages_to_install:
 self_updating_packages_to_install:
   - firefox
   - googlechrome
-  - reflect-free                        # 7.2.4952 (manual conversion to license version after installation)

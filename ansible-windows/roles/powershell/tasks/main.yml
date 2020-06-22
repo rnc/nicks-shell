@@ -12,6 +12,9 @@
     dest: "{{ script_location }}"
     delete_archive: yes
 
+
+# This uses my personal branch of Win10-Initial-Setup-Script.
+# As of Jun 21 2020 I added https://github.com/Disassembler0/Win10-Initial-Setup-Script/pull/288 to my branch
 - name: Run the powershell
   win_command: >
     powershell.exe
@@ -20,3 +23,49 @@
     -File "{{ script_location }}\Win10-Initial-Setup-Script-PERSONALCONFIG\Win10.ps1"
     -include "{{ script_location }}\Win10-Initial-Setup-Script-PERSONALCONFIG\Win10.psm1"
     -preset "{{ script_location }}\Win10-Initial-Setup-Script-PERSONALCONFIG\Default.preset"
+
+# https://getadmx.com/?Category=Windows_10_2016&Policy=FullArmor.Policies.3B9EA2B5_A1D1_4CD5_9EDE_75B22990BC21::AllowSearchToUseLocation
+- name: Disable AllowSearchToUseLocation
+  win_regedit:
+    path: HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search
+    name: "AllowSearchToUseLocation"
+    type: dword
+    data: 0
+
+# https://www.howtogeek.com/224159/how-to-disable-bing-in-the-windows-10-start-menu/
+- name: Disable Search Suggestions
+  win_regedit:
+    path: HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer
+    name: "DisableSearchBoxSuggestions"
+    type: dword
+    data: 1
+
+- name: Disable Show Cortana Button
+  win_regedit:
+    path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    name: "ShowCortanaButton"
+    type: dword
+    data: 0
+
+- name: Disable Firefox Telemetry
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Mozilla\Firefox
+    name: "DisableTelemetry"
+    type: dword
+    data: 1
+
+# https://www.askvg.com/tip-disable-default-browser-agent-after-installing-mozilla-firefox/
+- name: Disable Firefox DefaultBrowserAgent
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Mozilla\Firefox
+    name: "DisableTelemetry"
+    type: dword
+    data: 1
+
+
+- name: Disable Chrome Metrics
+  win_regedit:
+    path: HKLM:\SOFTWARE\Policies\Google\Chrome
+    name: "MetricsReportingEnabled"
+    type: dword
+    data: 0

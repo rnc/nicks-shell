@@ -5,7 +5,8 @@
   vars:
     - do_vault: true
     - do_updates: true
-    - script_location: C:\PowerShellScripts
+    - do_reflect: False
+    - script_location: C:\Ansible
 
   tasks:
   # Useful for debugging priviledge https://docs.ansible.com/ansible/latest/user_guide/become.html#become-and-windows
@@ -123,13 +124,12 @@
       type: dword
       data: 1
 
-  - name: Diable Web Search
+  - name: Prevent Edge Desktop Shortcut
     win_regedit:
       path: HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer
       name: "DisableEdgeDesktopShortcutCreation"
       type: dword
       data: 1
-    register: output
 
   - name: Add Digikam Shortcut to desktop. Delete SDCardFormatter and Edge shortcuts. Enable PUAProtection
     win_shell: |
@@ -140,7 +140,9 @@
       $Shortcut.TargetPath = $TargetFile
       $Shortcut.Save()
       Remove-Item 'C:\Users\Public\Desktop\SD Card Formatter.lnk' -ErrorAction Ignore
-      Remove-Item 'C:\Users\rnc\Desktop\Microsoft Edge.lnk' -ErrorAction Ignore
+      Remove-Item 'C:\Users\{{ ansible_user }}\Desktop\Microsoft Edge.lnk' -ErrorAction Ignore
+      # Install options should not produce this but occasionally still see desktop icons.
+      Remove-Item 'C:\Users\{{ ansible_user }}\Desktop\USB Safely Remove.lnk' -ErrorAction Ignore
       # https://www.tenforums.com/tutorials/32236-enable-disable-windows-defender-pua-protection-windows-10-a.html
       Set-MpPreference -PUAProtection 1
 

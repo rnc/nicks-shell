@@ -1411,3 +1411,10 @@ function fixExifDate()
     cd $NOCHPWD $cwd
     trap - 2 3 15
 }
+
+# https://stackoverflow.com/questions/37951114/direct-download-link-to-onedrive-file
+# Minor fixes to base64/echo statements.
+function onelink()
+{
+    echo "$1" | base64 -w 0 | sed "s/=$//;s/\//\_/g;s/\+/\-/g;s/^/https:\/\/api\.onedrive\.com\/v1\.0\/shares\/u\!/;s/$/\/root\/content/";
+}

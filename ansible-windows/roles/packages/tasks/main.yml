@@ -23,6 +23,7 @@
     - /SILENT
     state: present
 
+# https://www.copytrans.net/support/how-to-install-ios-drivers-without-itunes-via-command-prompt/
 - name: Check if a service is installed
   win_service:
     name: 'Apple Mobile Device Service'
@@ -37,13 +38,12 @@
       src: '{{ script_location }}\CopyTransDriversInstallers.zip'
       dest: "{{ script_location }}"
       delete_archive: yes
-  - win_shell: |
-      "{{ script_location }}\CopyTransDriversInstaller.exe /install /silent"
+  - win_command: '"{{ script_location }}\CopyTransDriversInstaller.exe" /install /musicsupport /silent /quit'
   when: AppleMDS.exists != true
 
 
 # USB Safely Remove
-- name: Verify Installation
+- name: Verify USB Installation
   win_stat:
     path: 'C:\Program Files (x86)\USB Safely Remove\USBSafelyRemove.exe'
   register: usbsafelyremove

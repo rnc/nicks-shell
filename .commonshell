@@ -1418,3 +1418,53 @@ function onelink()
 {
     echo "$1" | base64 -w 0 | sed "s/=$//;s/\//\_/g;s/\+/\-/g;s/^/https:\/\/api\.onedrive\.com\/v1\.0\/shares\/u\!/;s/$/\/root\/content/";
 }
+
+
+#
+# Takes two arguments which may be either two directories or two files. In the former case it will examine all files
+# within those respective directories.
+function compareImageFiles()
+{
+    which identify >& /dev/null
+    [[ "$?" != 0 ]] && printf "$ERROR" "Install identify" && return 1
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+    [[ "$1" == "-d" ]] && shift && local DRYRUN=true
+    [[ -z "$1" || -z "$2" ]] && echo "Must pass in two parameters" && return 1
+
+    local cwd=$PWD
+    local IFS=$'\n'
+
+    # Any ctrl-c breaks the loop and resets the directory.
+    trap "cd $NOCHPWD $cwd && trap - 2 3 15" 2 3 15
+
+    cd $NOCHPWD "$1"
+    local basepath=$PWD
+
+    #set -x
+    for i in $(find $basepath -type f)
+    do
+        local targetFile=${i#$basepath}
+
+        printf "$INFO" "Examining: $i"
+
+        if [ ! -f $2/$targetFile ]
+        then
+            printf "$ERROR" "No file for $2/$targetFile"
+        else
+            diff <(md5sum $i | awk '{print $1}') <(md5sum $2/$targetFile | awk '{print $1}') > /dev/null
+            if [ $? != 0 ]
+            then
+                diff <(identify -format "%#\n" $i) <(identify -format "%#\n" $2/$targetFile)
+                if [ $? != 0 ]
+                then
+                    printf "$ERROR" "Image and metadata do not match for $targetFile"
+                else
+                    echo "Image matches but not metadata for $targetFile"
+                fi
+            fi
+        fi
+    done
+
+    cd $NOCHPWD $cwd
+    trap - 2 3 15
+}

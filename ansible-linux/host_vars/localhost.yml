@@ -156,6 +156,7 @@ standard_packages_to_install:
   - gwenview
   - hplip
   - httpie
+  - ImageMagick # Image analysis/conversion tools
   - kaccounts-providers # Google authentication
   - kcron
   - kde-connect
@@ -211,6 +212,7 @@ development_packages_to_install:
   - expect # Adds unbuffer command for piping with colours
   - fedpkg # Working with Fedora packages (implicitly pulls in python3-click which is needed by cekit)
   - gcc-c++ # C++ Compiler
+  - genisoimage # Use to create bootable USB images
   - glide # Go dependency manager
   - golang # Go language
   - golang-bin

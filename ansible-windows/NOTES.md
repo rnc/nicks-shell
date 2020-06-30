@@ -32,6 +32,7 @@ https://www.ghacks.net/2015/08/14/comparison-of-windows-10-privacy-tools/
     * https://community.synology.com/enu/forum/17/post/70808?page=3&sort=oldest
 * https://unix.stackexchange.com/questions/198590/what-is-a-bind-mount
 * https://www.albertogonzalez.net/how-to-create-a-symbolic-link-to-a-folder-on-a-synology-nas/
+* https://synoguide.com/2019/04/12/synology-2019-configuration-guide-part-4-security-settings/
 
 
 ## Mounting SMB on Linux

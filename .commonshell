@@ -654,11 +654,21 @@ function maven-3.6.2()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.6.3()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.6.3
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 function _gradle_daemon_workaround()
 {
     PROMPT_SYMBOL="$"
     PROMPT_HAT=""
-    gitprompt_secondary() { }
+    function gitprompt_secondary()
+    {
+        :
+    }
     echo "Unsetting PROMPT_HAT/SYMBOL to workaround Gradle daemon issues"
 }
 

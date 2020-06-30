@@ -84,9 +84,10 @@ packages_to_remove:
   - perl-Math-Complex
   - pidgin # SparkyLinux
   - qlipper # SparkyLinux clipboard
-  - qt # QT 4.x libraries
-  - qt-common # QT 4.x libraries
-  - qt-x11 # QT 4.x libraries
+# Required by DigiKam
+#  - qt # QT 4.x libraries
+#  - qt-common # QT 4.x libraries
+#  - qt-x11 # QT 4.x libraries
   - qt5-qdbusviewer
   - radiotray # SparkyLinux radio
   - speech-dispatcher
@@ -123,15 +124,9 @@ standard_packages_to_install:
   - android-tools # ADB Bridge
   - aria2 # Download accelerator
   - backintime-qt # Backup
-  - bolt # Connection to Thunderbolt dock
-  - cherrytree #
-               # This brings in:
-               # python2-2.7.16-2.fc30.x86_64
-               # python2-cairo-1.18.1-1.fc30.x86_64
-               # python2-dbus-1.2.8-5.fc30.x86_64
-               # python2-libs-2.7.16-2.fc30.x86_64
-               # python2-enchant-2.0.0-7.fc30.noarch
-               # python2-appindicator-12.10.0-24.fc30.x86_64
+  - birdtray # Dock for Thunderbird
+  - bolt # Connection to Thenderbolt dock
+  - cherrytree-future
   - cryfs # Encrypted file system for dropbox
   - colordiff
   - comps-extras # Extra images for dnfdragora

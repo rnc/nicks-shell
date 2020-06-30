@@ -1,7 +1,7 @@
 
 # Setup my Fedora KDE Spin Workstation.
 
-* Tested on F30/F31
+* Tested on F31/F32
 
 Relies on python3 being available and uses local connection to setup the machine.
 
@@ -90,7 +90,7 @@ Normally Anaconda creates a user of ID 1000. As the existing backup of `/home/..
 Then add (without overwriting the home directories) the existing users e.g.
 
 ```
-    useradd -U -u <existing-uid> -C "Human Name" <username>
+    useradd -U -u <existing-uid> -c "Human Name" <username>
     usermod -a -G wheel <username>
     passwd <id>
 ```

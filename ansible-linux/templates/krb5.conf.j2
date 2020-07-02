@@ -5,31 +5,34 @@
 
 includedir /etc/krb5.conf.d/
 
-[logging]
-    default = FILE:/var/log/krb5libs.log
-    kdc = FILE:/var/log/krb5kdc.log
-    admin_server = FILE:/var/log/kadmind.log
-
 [libdefaults]
-    dns_lookup_realm = false
-    ticket_lifetime = 24h
-    renew_lifetime = 7d
-    forwardable = true
-    rdns = false
-    pkinit_anchors = /etc/pki/tls/certs/ca-bundle.crt
-    spake_preauth_groups = edwards25519
-    default_realm = {{ kerberos_domain2 }}
-    default_ccache_name = KEYRING:persistent:%{uid}
+  default_realm = {{ kerberos_ipa1 }}
+  dns_lookup_realm = true
+  dns_lookup_kdc = true
+  rdns = false
+  dns_canonicalize_hostname = true
+  ticket_lifetime = 24h
+  forwardable = true
+  udp_preference_limit = 0
+  default_ccache_name = KEYRING:persistent:%{uid}
 
 [realms]
-    {{ kerberos_domain2 }} = {
-        kdc = {{ kerberos_kdc1 }}
-        kdc = {{ kerberos_kdc2 }}
-        kdc = {{ kerberos_kdc3 }}
-        admin_server = {{ kerberos_server }}
-        master_kdc = {{ kerberos_server }}
-        }
 
-[domain_realm]
-   .{{ kerberos_domain1 }} = {{ kerberos_domain2 }}
-   {{ kerberos_domain1 }} = {{ kerberos_domain2 }}
+    {{ kerberos_domain1 }} = {
+        default_domain = {{ kerberos_domain2 }}
+        dns_lookup_kdc = true
+        master_kdc =  {{ kerberos_kdc }}
+        admin_server = {{ kerberos_kdc }}
+    }
+
+    {{ kerberos_ipa1 }} = {
+       pkinit_anchors = FILE:/etc/ipa/ca.crt
+       pkinit_pool = FILE:/etc/ipa/ca.crt
+       default_domain = {{ kerberos_ipa2 }}
+       dns_lookup_kdc = true
+       # Trust tickets issued by legacy realm on this host
+       auth_to_local = {{ kerberos_auth }}
+       auth_to_local = DEFAULT
+    }
+
+# DO NOT ADD A [domain_realms] section

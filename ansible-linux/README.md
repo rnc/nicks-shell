@@ -36,12 +36,12 @@ A private variable file needs to contain
   * csb_repo: "..."
   * vpn_username: "..."
   * vpn_connection: "..." # Name of the VPN connection
-  * kerberos_kdc1: "..."
-  * kerberos_kdc2: "..."
-  * kerberos_kdc3: "..."
+  * kerberos_ipa1: "..."
+  * kerberos_ipa2: "..."
   * kerberos_domain1: "..."
   * kerberos_domain2: "..."
-  * kerberos_server: "..."
+  * kerberos_kdc: "..."
+  * kerberos_auth: "..."
   * hostname: "..."
   * user_account: "..."
 

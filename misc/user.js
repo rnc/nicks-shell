@@ -10,7 +10,6 @@ user_pref("browser.aboutConfig.showWarning", false); // for the new HTML version
 
 // https://github.com/Aris-t2/CustomCSSforFx
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-user_pref("browser.urlbar.oneOffSearches", false);
 user_pref("extensions.pocket.enabled", false);
 
 // https://support.mozilla.org/bm/questions/1241129
@@ -35,6 +34,9 @@ user_pref("privacy.donottrackheader.enabled", true);
 
 // Ensure tab on toolbar goes to next text field and not to buttons
 user_pref("browser.toolbars.keyboard_navigation", false);
+
+// Disable Pocket on newtabpage
+user_pref("browser.newtabpage.activity-stream.feeds.system.topstories", false);
 
 /* 0105a: disable Activity Stream telemetry ***/
 user_pref("browser.newtabpage.activity-stream.feeds.telemetry", false);

@@ -99,7 +99,6 @@ packages_to_remove:
 base_packages_to_install:
   - ansible
   - curl
-  - dropbox
   - emacs
   - firefox
   - git
@@ -125,9 +124,9 @@ standard_packages_to_install:
   - aria2 # Download accelerator
   - backintime-qt # Backup
   - birdtray # Dock for Thunderbird
-  - bolt # Connection to Thenderbolt dock
+  - bolt # Connection to thunderbolt dock
   - cherrytree-future
-  - cryfs # Encrypted file system for dropbox
+  - cryfs # Encrypted file system for cloud storage
   - colordiff
   - comps-extras # Extra images for dnfdragora
   - digikam
@@ -244,6 +243,7 @@ development_packages_to_install:
   - python3-pyyaml # cekit
 #  - python3-sphinx # cekit (sphinx) RETIRED BY FEDORA
 #  - python-sphinx-autobuild # cekit (sphinx) RETIRED BY FEDORA
+  - python3-tomlkit # commitizen
   - python3-tox # cekit
   - python3-virtualenv
   - qemu-kvm # Virtualisation
@@ -255,3 +255,5 @@ development_packages_to_install:
   - texlive-latex
   - virt-install
   - virt-manager # Virtual machine manager (alternative : qt-virt-manager)
+  - VirtualBox # Virtual machine manager
+  - kmod-VirtualBox

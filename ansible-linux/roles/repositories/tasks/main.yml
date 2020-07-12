@@ -18,18 +18,6 @@
       enabled: yes
       gpgkey: https://download.sourceclear.com/redhat/SRCCLR-GPG-KEY
 
-
-  # RPMFusion ships dropbox so this is unnecessary. Further the RPMFusion
-  # version is improved as it has minimal dependencies.
-  # - name : Repository - Dropbox
-  #   yum_repository:
-  #     name: dropbox
-  #     description: Dropbox YUM Repository
-  #     baseurl: http://linux.dropbox.com/fedora/$releasever/
-  #     gpgcheck: yes
-  #     enabled: yes
-  #     gpgkey: http://linux.dropbox.com/fedora/rpm-public-key.asc
-
   - name: Install RPMFusion Free
     dnf:
       name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"

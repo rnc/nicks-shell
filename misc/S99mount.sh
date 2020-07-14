@@ -8,13 +8,16 @@
 #  https://www.synology-wiki.de/index.php/Mount_Bind
 #  https://forum.synology.com/enu/viewtopic.php?f=90&t=126899
 
+
+# Key is location in synology shared drive to onedrive cloud storage location
 declare -A mappings
 mappings=(
-    ["Photographs"]="nick/Photographs/"
-    ["NicksPictures"]="nick/Pictures/"
-    ["SoniaPictures"]="sonia/Pictures/"
-    ["MiaPictures"]="mia/Pictures/"
-    ["EthanPictures"]="ethan/Pictures/"
+    ["photo/Photographs"]="nick/Photographs/"
+    ["photo/NicksPictures"]="nick/Pictures/"
+    ["photo/SoniaPictures"]="sonia/Pictures/"
+    ["photo/MiaPictures"]="mia/Pictures/"
+    ["photo/EthanPictures"]="ethan/Pictures/"
+    ["music/Music"]="nick/Music/"
     )
 
 case "$1" in
@@ -23,17 +26,17 @@ case "$1" in
     for i in "${!mappings[@]}"
     do
         # Can't use findmnt on synology devices
-        if [ -z "$(mount -l -t btrfs | grep /volume1/photo/$i)" ]
+        if [ -z "$(mount -l -t btrfs | grep /volume1/$i)" ]
         then
-            mkdir -p /volume1/photo/$i
-            mount --bind /volume1/onedrive/${mappings[$i]} /volume1/photo/$i
+            mkdir -p /volume1/$i
+            mount --bind /volume1/onedrive/${mappings[$i]} /volume1/$i
         fi
     done
     ;;
   stop)
     for i in "${!mappings[@]}"
     do
-        umount /volume1/photo/$i
+        umount -q /volume1/$i
     done
     ;;
   *)

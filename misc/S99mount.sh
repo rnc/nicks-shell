@@ -17,7 +17,8 @@ mappings=(
     ["photo/SoniaPictures"]="sonia/Pictures/"
     ["photo/MiaPictures"]="mia/Pictures/"
     ["photo/EthanPictures"]="ethan/Pictures/"
-    ["music/Music"]="nick/Music/"
+    ["music"]="nick/Music/"
+    ["video"]="nick/Films/"
     )
 
 case "$1" in
@@ -36,7 +37,7 @@ case "$1" in
   stop)
     for i in "${!mappings[@]}"
     do
-        umount -q /volume1/$i
+        umount -v /volume1/$i
     done
     ;;
   *)

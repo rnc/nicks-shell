@@ -5,6 +5,7 @@
 ## Table of Contents
 
 <!-- TocDown Begin -->
+  * [Installing Windows](#installing-windows)
   * [Pinned Package](#pinned-package)
   * [Comparison of Privacy Tools](#comparison-of-privacy-tools)
   * [Synology](#synology)
@@ -16,6 +17,26 @@
 <!-- TocDown End -->
 
 Helpful background links.
+
+
+## Installing Windows
+
+MS now doesn't allow a local account option to be selected unless the Ethenet connection is physically disabled:
+
+https://www.ghacks.net/2019/09/30/how-to-create-a-local-account-in-windows-10-1909-if-the-option-is-not-available/
+
+If you have multple disks in your machine, the advanced selection on lists 'disk 0/1' without identifying manufacturer
+information. Press Shift-F10 to get a command prompt, use diskpart to display detail about the disk
+
+```
+    list disk
+    select disk 1
+    detail disk
+```
+
+https://neosmart.net/wiki/diskpart/
+https://windowsreport.com/windows-10-cannot-be-installed-to-this-disk/
+
 
 ## Pinned Package
 

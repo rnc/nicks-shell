@@ -40,12 +40,12 @@
     type: dword
     data: 1
 
-- name: Disable Show Cortana Button
+- name: Disable Thumbs.db
   win_regedit:
-    path: HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
-    name: "ShowCortanaButton"
+    path: HKCU:\Software\Microsoft\Windows\CurrentVersion\ Explorer\Advanced
+    name: "DisableThumbnailCache"
     type: dword
-    data: 0
+    data: 1
 
 - name: Disable Firefox Telemetry
   win_regedit:

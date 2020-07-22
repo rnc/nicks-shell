@@ -1,5 +1,6 @@
 ---
 
+
 # Use this as choco package is out of date
 - name: Install Sumatra
   win_package:
@@ -12,6 +13,17 @@
     - /s
     - /install
     state: present
+
+- name: Install Digikam
+  win_package:
+    # Stable is http://www.mirrorservice.org/sites/download.kde.org/stable/digikam/6.4.0/digiKam-6.4.0-Win64.exe
+    path: https://download.kde.org/unstable/digikam/digiKam-7.0.0-rc-Win64.exe
+    product_id: DigiKam
+    arguments:
+    - /S
+    creates_path: 'C:\Program Files\DigiKam'
+    state: present
+
 
 # Cache/SHA problems (plus out of date) compared to chocolaty
 - name: Install MediaMonkey

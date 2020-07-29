@@ -84,3 +84,9 @@ https://www.ghacks.net/2015/08/14/comparison-of-windows-10-privacy-tools/
 * https://www.techpowerup.com/forums/threads/editing-windows-10-start-menu.258193/
 * https://www.makeuseof.com/tag/windows-start-menu-alternatives/
 * https://www.stardock.com/products/start10/
+
+## OneDrive
+
+https://support.microsoft.com/en-us/office/change-the-location-of-your-onedrive-folder-f386fb81-1461-40a7-be2c-712676b2c4ae
+
+Moved to 'D:' to avoid filling up C: drive. Excluded certain folders from my sync.

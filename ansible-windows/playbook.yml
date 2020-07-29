@@ -106,9 +106,8 @@
 
     - name: run net use to setup mapped drives
       win_shell: |
-        if (!(Test-Path M:)) { NET USE M: \\192.168.0.168\music /PERSISTENT:YES }
-        if (!(Test-Path P:)) { NET USE P: \\192.168.0.168\photo /PERSISTENT:YES }
         if (!(Test-Path V:)) { NET USE V: \\192.168.0.168\video /PERSISTENT:YES }
+        if (!(Test-Path M:)) { NET USE M: \\192.168.0.168\music /PERSISTENT:YES }
 
     become: yes
     become_method: runas

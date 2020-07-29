@@ -748,6 +748,12 @@ function gradle-6.3()
     echo "Gradle executable is `which gradle`"
 }
 
+function gradle-6.5.1()
+{
+    PATH=$SW_PREFIX/gradle-6.5.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+
 function groovy-2.5.4()
 {
     PATH=$SW_PREFIX/groovy-2.5.4/bin:$PATH

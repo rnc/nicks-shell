@@ -99,7 +99,7 @@
 
   - name: Download GPG Key
     get_url:
-      url: http://{{ csb_repo }}/rhel7-csb-stage/RPM-GPG-KEY-helpdesk
+      url: http://{{ csb_repo }}/rhel8-csb/RPM-GPG-KEY-helpdesk
       dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
     when: not stat_gpg_result.stat.exists and ansible_distribution == "Fedora" and do_vault == true
 

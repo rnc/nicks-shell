@@ -37,6 +37,8 @@ information. Press Shift-F10 to get a command prompt, use diskpart to display de
 https://neosmart.net/wiki/diskpart/
 https://windowsreport.com/windows-10-cannot-be-installed-to-this-disk/
 
+Note: To enter the bios on MSI machines press `del` on boot. See https://www.tomshardware.com/uk/reviews/bios-keys-to-access-your-firmware,5732.html for potential shortcuts.
+
 
 ## Pinned Package
 

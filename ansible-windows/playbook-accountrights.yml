@@ -1,0 +1,35 @@
+---
+
+# Playbook to detect the current account level for two specified child accounts and swap it i.e. if they are currently
+# non-admin running it would make them admin and vice-versa. This means this playbook can be used to give them rights in
+# order to allow the other playbook to be run successfully.
+
+- name: swap account rights
+  hosts: windows
+  vars:
+    - child1: "miaab"
+    - child2: "ethan"
+
+  tasks:
+  - name: Get members of admin group
+    win_shell: |
+      if (Get-LocalGroupMember -Group "Administrators" | Select-String -SimpleMatch {{ child1 }} )
+      {
+        echo "Removing admin permission for Mia"
+        Remove-LocalGroupMember -Group "Administrators" -Member "miaab"
+      }
+      else
+      {
+         echo "Adding admin permission for Mia"
+         Add-LocalGroupMember -Group "Administrators" -Member "miaab"
+      }
+      if (Get-LocalGroupMember -Group "Administrators" | Select-String -SimpleMatch {{ child2 }} )
+      {
+        echo "Removing admin permission for Ethan"
+        Remove-LocalGroupMember -Group "Administrators" -Member "Ethan"
+      }
+      else
+      {
+         echo "Adding admin permission for Ethan"
+         Add-LocalGroupMember -Group "Administrators" -Member "Ethan"
+      }

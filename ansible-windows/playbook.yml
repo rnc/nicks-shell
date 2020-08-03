@@ -131,7 +131,7 @@
       type: dword
       data: 1
 
-  - name: Add Digikam Shortcut to desktop. Delete SDCardFormatter and Edge shortcuts. Enable PUAProtection
+  - name: Add Digikam Shortcut to desktop. Delete SDCardFormatter and Edge shortcuts. Enable PUAProtection. Set sleep
     win_shell: |
       $TargetFile = "C:\Program Files\digiKam\digikam.exe"
       $ShortcutFile = "$env:Public\Desktop\Digikam.lnk"
@@ -145,6 +145,8 @@
       Remove-Item 'C:\Users\{{ ansible_user }}\Desktop\USB Safely Remove.lnk' -ErrorAction Ignore
       # https://www.tenforums.com/tutorials/32236-enable-disable-windows-defender-pua-protection-windows-10-a.html
       Set-MpPreference -PUAProtection 1
+      # Sleep after 4 hours. See https://ss64.com/nt/powercfg.html
+      powercfg.exe -x -standby-timeout-ac 240
 
   # http://kolbi.cz/blog/2017/10/25/setuserfta-userchoice-hash-defeated-set-file-type-associations-per-user/
   - name: Fix file associations

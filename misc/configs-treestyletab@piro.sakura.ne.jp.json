@@ -2,23 +2,17 @@
   "autoCollapseExpandSubtreeOnAttach": false,
   "autoCollapseExpandSubtreeOnSelect": false,
   "closeParentBehaviorMode": 1,
-  "configsVersion": 9,
+  "configsVersion": 11,
   "context_reloadTree": false,
   "insertNewChildAt": -1,
   "lastConfirmedToCloseTabs": 1584095997087,
   "lastDraggedTabs": {
     "tabIds": [
-      247
+      159
     ],
-    "urlsDigest": "3bfaed3e36bd5b771e3f0f05b8eb969024579868"
+    "urlsDigest": "436dade24ba8b47e9342343204195bd58c67f3ce"
   },
-  "migratedBookmarkUrls": [
-    "moz-extension://3b948974-02d0-48de-85ce-f1cfb6d775b8/resources/group-tab.html",
-    "moz-extension://3b948974-02d0-48de-85ce-f1cfb6d775b8/options/options.html",
-    "moz-extension://3b948974-02d0-48de-85ce-f1cfb6d775b8/resources/startup.html",
-    "moz-extension://3b948974-02d0-48de-85ce-f1cfb6d775b8/tests/runner.html"
-  ],
-  "notifiedFeaturesVersion": 4,
+  "notifiedFeaturesVersion": 5,
   "optionsExpandedSections": [
     "section-appearance",
     "section-contextMenu",
@@ -30,10 +24,10 @@
     "section-shortcuts",
     "section-advanced"
   ],
-  "style": "plain-dark",
+  "style": "plain",
   "tabDragBehaviorShift": 5,
   "treeDoubleClickBehavior": 1,
-  "userStyleRules": "/* Change styling of pending (unloaded) tabs */\ntab-item.discarded {\n  opacity: 0.75;\n}\n\n/* Change styling of the favicon of pending (unloaded) tabs */\ntab-item.discarded tab-favicon {\n  display: none\n}\n\n\n\n/* Tab close button on hover */\n.tab:not(:hover) .closebox {\n  display: none;\n}\n\n/* Hide tab button */\n.newtab-button-box {\n  display: none;\n}\n\n#tabbar {\n  bottom: 0 !important; /* Eliminate dead space on bottom */\n}\n\n\n/* regular width scrollbar */\n#tabbar { scrollbar-width: auto; }\n\n/* put scrollbar rightside */\n:root.left #tabbar { direction: ltr; }\n\n/** Colour background of tabs for different domains */\ntab-item[data-current-uri*=\"redhat.com\"] {\n  background-color: #ee0000 !important;\n/*  background-color: #cc0000 !important; */\n}\ntab-item[data-current-uri*=\"google.com\"] {\n  background-color: #4285F4 !important;\n}\n\n",
+  "userStyleRules": "/* Change styling of pending (unloaded) tabs */\ntab-item.discarded {\n  opacity: 0.75;\n}\n\n/* Change styling of the favicon of pending (unloaded) tabs */\ntab-item.discarded tab-favicon {\n  display: none\n}\n\n\n\n/* Tab close button on hover */\n.tab:not(:hover) .closebox {\n  display: none;\n}\n\n/* Hide tab button */\n.newtab-button-box {\n  display: none;\n}\n\n#tabbar {\n  bottom: 0 !important; /* Eliminate dead space on bottom */\n}\n\n\n/* regular width scrollbar */\n#tabbar { scrollbar-width: auto; }\n\n/* put scrollbar rightside */\n:root.left #tabbar { direction: ltr; }\n\n/** Colour background of tabs for different domains */\ntab-item[data-current-uri*=\"redhat.com\"] {\n  background-color: #ee0000 !important;\n/*  background-color: #cc0000 !important; */\n}\ntab-item[data-current-uri*=\"google.com\"] {\n  background-color: #4285F4 !important;\n}\n\n\n\n:root,\n:root[color-scheme=\"system-color\"] {\n  --in-content-page-background: #2A2A2E /* rgb(42, 42, 46) */;\n  --in-content-page-color: rgb(249, 249, 250);\n  --in-content-text-color: var(--in-content-page-color);\n  --in-content-deemphasized-text: var(--grey-40);\n  --in-content-box-background: #202023;\n  --in-content-box-background-hover: /* rgba(249,249,250,0.15) */ rgb(calc((42 * 0.8) + (249 * 0.2)), calc((42 * 0.8) + (249 * 0.2)), calc((46 * 0.8) + (250 * 0.2)));\n  --in-content-box-background-active: rgba(249,249,250,0.2);\n  --in-content-box-background-odd: rgba(249,249,250,0.05);\n  --in-content-box-info-background: rgba(249,249,250,0.15);\n\n  --in-content-border-color: rgba(249,249,250,0.2);\n  --in-content-border-color-mixed: rgb(calc((42 * 0.8) + (249 * 0.2)), calc((42 * 0.8) + (249 * 0.2)), calc((46 * 0.8) + (250 * 0.2)));\n  --in-content-border-hover: rgba(249,249,250,0.3);\n  --in-content-border-hover-mixed: rgb(calc((42 * 0.7) + (249 * 0.3)), calc((42 * 0.7) + (249 * 0.3)), calc((46 * 0.7) + (250 * 0.3)));\n  --in-content-box-border-color: rgba(249,249,250,0.2);\n  --in-content-box-border-color-mixed: rgb(calc((42 * 0.8) + (249 * 0.2)), calc((42 * 0.8) + (249 * 0.2)), calc((46 * 0.8) + (250 * 0.2)));\n\n  --in-content-button-background: rgba(249,249,250,0.1);\n  --in-content-button-background-mixed: rgb(calc((42 * 0.9) + (249 * 0.1)), calc((42 * 0.9) + (249 * 0.1)), calc((46 * 0.9) + (250 * 0.1)));\n  --in-content-button-background-hover: rgba(249,249,250,0.15);\n  --in-content-button-background-hover-mixed: rgb(calc((42 * 0.85) + (249 * 0.15)), calc((42 * 0.85) + (249 * 0.15)), calc((46 * 0.85) + (250 * 0.15)));\n  --in-content-button-background-active: rgba(249,249,250,0.2);\n  --in-content-button-background-active-mixed: rgb(calc((42 * 0.8) + (249 * 0.2)), calc((42 * 0.8) + (249 * 0.2)), calc((46 * 0.8) + (250 * 0.2)));\n\n  --tab-highlighter: var(--dark-tab-line);\n  --tab-highlighted-highlight: white;\n  --tabbar-bg: var(--dark-frame);\n\n  --tab-like-surface: var(--toolbar-non-lwt-bgcolor);\n  --tab-surface-regular: var(--tab-like-surface);\n  --tab-text-regular: var(--toolbar-non-lwt-textcolor);\n  --tab-text-inverted: var(--toolbar-non-lwt-bgcolor);\n  --tab-text-active: var(--tab-text-regular);\n  --tab-text-active-inverted: var(--toolbar-non-lwt-bgcolor);\n  --tab-border: var(--in-content-box-border-color-mixed);\n  --tab-surface-hover: var(--in-content-box-background-hover);\n  --tab-surface-active: var(--in-content-button-background-mixed);\n  --tab-surface-active-hover: var(--in-content-button-background-active-mixed);\n  --tab-dropmarker: var(--toolbar-non-lwt-textcolor);\n\n  --tab-highlighter-inactive: var(--grey-10-a20);\n}\n\n/* Firefox applies dark colors to scrollbars in its in-content UI, when a\n   Dark theme is applied by the platform. To imitate such appearance we need\n   to specify dark colors manually. See also:\n   https://github.com/piroor/treestyletab/issues/2373 */\n#tabbar {\n  scrollbar-color: var(--in-content-button-background-active-mixed) var(--in-content-box-background);\n}\n\n:root[color-scheme=\"system-color\"] #background::after {\n  content: none;\n}\n\n:root,\n#background {\n  background-image: none;\n}",
   "warnOnCloseTabs": false,
   "warnOnCloseTabsByClosebox": false
 }

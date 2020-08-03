@@ -252,6 +252,7 @@ development_packages_to_install:
   - rubygem-jekyll # jekyll site generator (PME)
   - rubygem-minitest
   - source-to-image # cekit
+  - sqllitebrowser # Browse and modify SQLLite DB (e.g. for DigiKam)
   - texlive-bibtex
   - texlive-latex
   - virt-install

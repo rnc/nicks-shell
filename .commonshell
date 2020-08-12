@@ -1510,6 +1510,7 @@ searchForMatchingFiles()
     for i in $(find $1 -type f)
     do
         local result=""
+        local partialresult=""
         local filename=$(basename "$i")
         local extension="${filename##*.}"
 
@@ -1527,12 +1528,21 @@ searchForMatchingFiles()
                 result=$j
                 break
             fi
+            exiftool -filename -if "\$createdate eq \"$(exiftool -s -s -s -CreateDate $i)\"" -ext jpg $j > /dev/null
+            if [ $? == 0 ]
+            then
+                partialresult=$j
+                break
+            fi
         done
-        if [ -z "$result" ]
+        if [ -n "$partialresult" ]
         then
-            echo "Did not find matching file for $i"
-        else
+            echo "Found partial $partialresult for $i"
+        elif [ -n "$result" ]
+        then
             echo "Found $result for $i"
+        else
+            echo "Did not find matching file for $i"
         fi
     done
 

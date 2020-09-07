@@ -36,6 +36,7 @@ autoload -U add-zsh-hook
 # https://beamtic.com/kde-huge-cursor-size
 [[ -n "$XCURSOR_THEME" ]] && export XCURSOR_SIZE=24
 
+
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen-256color" ]
 then
     # ZSH-Syntax-Highlighting
@@ -433,14 +434,14 @@ NO_BG_NICE \
 NO_BRACE_CCL \
 NO_BSD_ECHO \
 NO_CDABLE_VARS \
-CHASE_DOTS \
+NO_CHASE_DOTS \
 NO_CHASE_LINKS \
 CHECK_JOBS \
 NO_CLOBBER \
 NO_COMPLETE_ALIASES \
 COMPLETE_IN_WORD \
 CORRECT \
-CORRECT_ALL \
+NO_CORRECT_ALL \
 NO_CSH_JUNKIE_HISTORY \
 NO_CSH_JUNKIE_LOOPS \
 NO_CSH_JUNKIE_QUOTES \

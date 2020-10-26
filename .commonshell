@@ -1133,12 +1133,12 @@ function mergePullRequest()
 
 resetFeatureBranch ()
 {
-    local master=""
+    local primary=""
     local upstream=""
     for i in $(git trackbranch | egrep '.* <- .+' | sed 's/\(.*\) <-.*/\1/g')
     do
-        master=$i
-        local r="$(git b | grep remotes | grep upstream/$i | cut -f 3 -d ' ')"
+        primary=$i
+        local r="$(git branch -a | grep remotes | grep upstream/$i | head -1 | cut -f 3 -d ' ')"
         if [ -n "$r" ]
         then
             upstream="${r#remotes/}"
@@ -1148,19 +1148,19 @@ resetFeatureBranch ()
     local currentBranch=$(git symbolic-ref --short HEAD)
     [[ "$?" != "0" ]] && printf "$ERROR" "Error establishing current branch; aborting..." && return 1
     [[ -z "$currentBranch" ]] && printf "$ERROR" "Current branch not set" && return 1
-    [[ -z "$master" ]] && printf "$ERROR" "Master branch not set" && return 1
+    [[ -z "$primary" ]] && printf "$ERROR" "Master branch not set" && return 1
     git llg5
     printf "$INFO" "Current branch is $currentBranch"
-    printf "$INFO" "Known 'master' is $master"
+    printf "$INFO" "Known 'primary' is $primary"
     if [ -z "$upstream" ]
     then
         echo "No upstream configured ; assuming local PR and merge..."
     else
-        printf "$INFO" "Upstream 'master' $upstream"
+        printf "$INFO" "Upstream 'primary' $upstream"
     fi
     echo ""
-    [[ "$currentBranch" = "$master" ]] && printf "$ERROR" "Current equals master; aborting..." && return 1
-    git checkout $master
+    [[ "$currentBranch" = "$primary" ]] && printf "$ERROR" "Current equals primary; aborting..." && return 1
+    git checkout $primary
     [[ "$?" != 0 ]] && printf "$ERROR" "Unable to switch branch" && return 1
     echo "Deleting current and remote feature branch"
     git branch -D $currentBranch
@@ -1507,7 +1507,7 @@ searchForMatchingFiles()
     trap "cd $NOCHPWD $cwd && trap - 2 3 15" 2 3 15
 
     #set -x
-    for i in $(find $1 -type f)
+    for i in $(find $1 -iname "*.jpg")
     do
         local result=""
         local partialresult=""
@@ -1549,8 +1549,66 @@ searchForMatchingFiles()
     trap - 2 3 15
 }
 
-searchForMatchingExifDate()
+searchForMatchingUsingExifDate()
 {
-    printf "$INFO" "Examining: $i"
-    exiftool -filename -if "\$createdate eq \"$(exiftool -s -s -s -CreateDate $1)\"" -ext jpg Pictures/Camera\ Roll
+    which identify >& /dev/null
+    [[ "$?" != 0 ]] && printf "$ERROR" "Install identify" && return 1
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+    [[ "$1" == "-d" ]] && shift && local DRYRUN=true
+    [[ -z "$1" || -z "$2" ]] && echo "Must pass in two parameters" && return 1
+
+    local cwd=$PWD
+    local IFS=$'\n'
+
+    # Any ctrl-c breaks the loop and resets the directory.
+    trap "cd $NOCHPWD $cwd && trap - 2 3 15" 2 3 15
+
+    #set -x
+    for i in $(find $1 -type f) # -iname "*.jpg")
+    do
+        local result=""
+        local partialresult=""
+        local filename=$(basename "$i")
+        local extension="${filename##*.}"
+
+        printf "$INFO" "Examining: $i (extension $extension)"
+
+        local j="Pictures/Camera Roll/$(exiftool -s -s -s -d "%Y%m%d_%H%M%S" -CreateDate $i).$extension"
+        if [ ! -f "$j" ]
+        then
+            j=`/bin/ls -1 "Pictures/Camera Roll/$(exiftool -s -s -s -d "%Y%m%d_%H%M%S" -CreateDate $i)"* | tail -1` 2> /dev/null
+        fi
+
+        if [ ! -f "$j" ]
+        then
+            echo "Did not find matching file for $i"
+        else
+            diff <(md5sum $i | awk '{print $1}') <(md5sum $j | awk '{print $1}') > /dev/null
+            if [ $? == 0 ]
+            then
+                result=$j
+            else
+                diff <(identify -format "%#\n" $i 2> /dev/null) <(identify -format "%#\n" $j 2> /dev/null) > /dev/null
+                if [ $? == 0 ]
+                then
+                    result=$j
+                else
+                    exiftool -filename -if "\$createdate eq \"$(exiftool -s -s -s -CreateDate $i)\"" -ext jpg $j > /dev/null
+                    if [ $? == 0 ]
+                    then
+                        partialresult=$j
+                    fi
+                fi
+            fi
+            if [ -n "$partialresult" ]
+            then
+                echo "Found partial $partialresult for $i"
+            elif [ -n "$result" ]
+            then
+                echo "Found $result for $i"
+            else
+                echo "Did not find matching file for $i"
+            fi
+        fi
+    done
 }

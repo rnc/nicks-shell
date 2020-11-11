@@ -11,7 +11,7 @@ else
     WALLET=" "
 fi
 
-EXTRA="$WALLET $@"
+EXTRA="$WALLET"
 
 $PKGQ ansible git > /dev/null
 if [ "$?" != "0" ]
@@ -29,5 +29,5 @@ else
         echo "Run from ansible directory"
         exit 1
     fi
-    ansible-playbook -v playbook.yml -e $EXTRA
+    ansible-playbook -v playbook.yml -e $EXTRA "$@"
 fi

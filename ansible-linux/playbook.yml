@@ -157,13 +157,6 @@
         state: present
     when: '"zoom" not in ansible_facts.packages and ansible_distribution == "Fedora"'
 
-  # If development packages affect original install list.
-  - name: Final software cleanup
-    package:
-      name:
-        - java-openjdk-headless # Old Java 10 installation
-    when: ansible_distribution == "Fedora"
-
   # See https://cloud.google.com/docs/chrome-enterprise/policies/
   - name: Chrome Policies
     copy:
@@ -220,3 +213,10 @@
   - name: Add HTTPIE-Kerberos Python
     pip:
       name: httpie-negotiate
+
+  # https://www.redhat.com/en/blog/be-careful-when-pulling-images-short-name
+  - name: Update registries
+    replace:
+      path: /etc/containers/registries.conf
+      regexp: "'registry.fedoraproject.org"
+      replace: "'registry.redhat.io', 'quay.io', 'registry.fedoraproject.org"

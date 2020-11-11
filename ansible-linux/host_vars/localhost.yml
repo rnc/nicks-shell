@@ -15,6 +15,7 @@ packages_to_remove:
   - espeak-ng
   - falkon
   - florence # SparkyLinux keyboard
+  - flatpak
   - fprintd # Fingerprint daemon
   - google-noto-emoji-color-fonts # Don't need these fonts.
   - google-noto-sans-gurmukhi-fonts # Don't need these fonts.
@@ -22,7 +23,6 @@ packages_to_remove:
   - google-noto-sans-sinhala-vf-fonts # Don't need these fonts.
   - hexchat # SparkyLinux chat
   - initial-setup
-  - java-openjdk-headless # Remove Java 12 rolling release. Use specified JDK versions
   - jemalloc
   - juk
   - k3b
@@ -111,7 +111,8 @@ base_packages_to_install:
   - keepassxc
   - pwgen
   - libreoffice-calc
-  - libreoffice-kde5
+# Not in F33?
+#  - libreoffice-kde5
   - libreoffice-draw
   - libreoffice-impress
   - libreoffice-writer
@@ -202,7 +203,6 @@ development_packages_to_install:
   - code # Visual Studio Code
   - cpio # RPM
   - dmidecode
-  - docker
   - expect # Adds unbuffer command for piping with colours
   - fedpkg # Working with Fedora packages (implicitly pulls in python3-click which is needed by cekit)
   - fdupes # Find duplicate files
@@ -211,14 +211,16 @@ development_packages_to_install:
   - glide # Go dependency manager
   - golang # Go language
   - golang-bin
-  - java-1.8.0-openjdk-devel # Explicitly install Java 8 (later Fedora use Java 10)
-  - java-1.8.0-openjdk-src # Explicitly install Java 8 src (later Fedora use Java 10)
+  - java-11-openjdk-devel
+  - java-11-openjdk-src
   - krdc # Remote desktop
+  - krb5-devel # cekit
   - libvirt # Virtualisation
   - lm_sensors
   - make
   - mock
   - odcs-client # cekit
+  - pipenv
   - plasma-sdk # For plasmoidviewer
   - podman
   - poetry # Python3 Dependency Mgmt System
@@ -226,6 +228,7 @@ development_packages_to_install:
 # Comment out ready for F31
 #  - python2-pytest # Fedpkg building python rpms
 #  - python2-pytz # For IP_TOOLING.
+  - python3-autopep8 # cekit
   - python3-ansi2html # Convert console output (e.g. build logs) to HTML
   - python3-behave # cekit
   - python3-colorlog # cekit
@@ -260,5 +263,6 @@ development_packages_to_install:
   - texlive-latex
   - virt-install
   - virt-manager # Virtual machine manager (alternative : qt-virt-manager)
-  - VirtualBox # Virtual machine manager
-  - kmod-VirtualBox
+# Removing till we actually need it.
+#  - VirtualBox # Virtual machine manager
+#  - kmod-VirtualBox

@@ -38,6 +38,7 @@ then
 fi
 
 export PATH EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY QUOTING_STYLE QT_LOGGING_RULES
+export JAVA_HOME=`dirname $(dirname $(readlink -f $(which java)))`
 
 # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 # https://misc.flogisoft.com/bash/tip_colors_and_formatting
@@ -751,6 +752,12 @@ function gradle-6.3()
 function gradle-6.5.1()
 {
     PATH=$SW_PREFIX/gradle-6.5.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+
+function gradle-6.7()
+{
+    PATH=$SW_PREFIX/gradle-6.7/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 

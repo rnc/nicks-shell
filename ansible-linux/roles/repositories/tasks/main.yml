@@ -18,6 +18,7 @@
       enabled: yes
       gpgkey: https://download.sourceclear.com/redhat/SRCCLR-GPG-KEY
 
+  # https://docs.fedoraproject.org/en-US/quick-docs/setup_rpmfusion/
   - name: Install RPMFusion Free
     dnf:
       name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"
@@ -26,6 +27,7 @@
 
   - name: Install RPMFusion NonFree
     dnf:
+      disable_gpg_check: "{{ disable_gpg_check }}"
       name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"
       state: present
     when:  '"rpmfusion-nonfree-release" not in ansible_facts.packages'

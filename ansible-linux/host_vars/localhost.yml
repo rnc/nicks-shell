@@ -106,7 +106,7 @@ base_packages_to_install:
   - highlight
   - htop # Process viewer
   - insync
-  - insync-dolphin
+#  - insync-dolphin # Manual install only
   - jq
   - keepassxc
   - pwgen
@@ -120,7 +120,6 @@ base_packages_to_install:
   - zsh
 
 standard_packages_to_install:
-  - CPUFreqUtility
   - android-tools # ADB Bridge
   - aria2 # Download accelerator
   - backintime-qt # Backup
@@ -175,7 +174,7 @@ standard_packages_to_install:
   - python3-urlgrabber # Used by mead-load-build-dependencies
   - python3-keyring
   - python3-qt5
-  - redshift # Time of day screen temperature
+  # - redshift # Time of day screen temperature
   - sirikali # Replacement for plasma-vault as provides Wallet integration and auto-start
   # - slack # Commenting this out until we actually have a need for it.
   - smb4k
@@ -256,7 +255,7 @@ development_packages_to_install:
   - rubygem-jekyll # jekyll site generator (PME)
   - rubygem-minitest
   - source-to-image # cekit
-  - sqllitebrowser # Browse and modify SQLLite DB (e.g. for DigiKam)
+  - sqlitebrowser # Browse and modify SQLLite DB (e.g. for DigiKam)
   - texlive-a4wide # JacORB
   - texlive-ulem # JacORB
   - texlive-bibtex

@@ -6,6 +6,7 @@
     - vpn_bootstrap: false
     - do_vault: true
     - do_minishift: false
+   - disable_gpg_check: yes
   vars_prompt:
   - name: "vpn_password"
     prompt: "Enter VPN password (NOT kerberos)"
@@ -112,6 +113,7 @@
       dnf:
         name: /tmp/spider.rpm
         state: present
+        disable_gpg_check: "{{ disable_gpg_check }}"
     when: '"SpiderOak" not in ansible_facts.packages and ansible_distribution == "Fedora"'
 
   - name: Install base required software
@@ -155,7 +157,8 @@
       dnf:
         name: /tmp/zoom_x86_64.rpm
         state: present
-    when: '"zoom" not in ansible_facts.packages and ansible_distribution == "Fedora"'
+        disable_gpg_check: "{{ disable_gpg_check }}"
+      when: '"zoom" not in ansible_facts.packages and ansible_distribution == "Fedora"'
 
   # See https://cloud.google.com/docs/chrome-enterprise/policies/
   - name: Chrome Policies

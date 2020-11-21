@@ -21,7 +21,8 @@ then
     [[ "$?" == 1 ]] && exit 1
     git clone https://github.com/rnc/nicks-shell.git /tmp/nicks-shell
     cd /tmp/nicks-shell/ansible-linux
-    ansible-playbook -v playbook.yml --ask-become-pass -e do_vault=false -e user_account=$USER
+    ansible-playbook -v playbook.yml --ask-become-pass --ask-vault-pass -e user_account=$USER
+#    ansible-playbook -v playbook.yml --ask-become-pass -e do_vault=false -e user_account=$USER
 else
     echo -e "\033[49;32;1mBootstrap already performed ; executing ansible using vault method...\033[0m"
     if [ "`basename $(pwd)`" != "ansible-linux" ]

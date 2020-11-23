@@ -1627,3 +1627,21 @@ searchForMatchingUsingExifDate()
         fi
     done
 }
+
+#
+# https://docs.docker.com/engine/install/fedora/
+# https://dev.to/yzwdroid/fedora-33-docker-445k
+# https://nts.strzibny.name/how-to-set-up-shared-folders-in-virt-manager/
+# https://jfearn.fedorapeople.org/fdocs/en-US/Fedora/20/html/Security_Guide/sec-Security-Enhanced_Linux-sVirt_Labeling.html
+function cekitVMMount()
+{
+    sudo mkdir -p /opt/cekit
+    sudo mount -t 9p -o trans=virtio,version=9p2000.L,rw /mnt/cekit /opt/cekit
+}
+function cekitUpdate()
+{
+    cd /opt/cekit
+    find . -name "*.yaml" | cpio -pdmu /home/rnc/Work/cekit
+    find . -name "*.py" | cpio -pdmu /home/rnc/Work/cekit
+    popd
+}

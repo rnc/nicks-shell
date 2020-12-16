@@ -6,7 +6,7 @@
     - vpn_bootstrap: false
     - do_vault: true
     - do_minishift: false
-   - disable_gpg_check: yes
+    - disable_gpg_check: yes
   vars_prompt:
   - name: "vpn_password"
     prompt: "Enter VPN password (NOT kerberos)"

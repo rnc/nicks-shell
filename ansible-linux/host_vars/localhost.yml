@@ -9,6 +9,7 @@ packages_to_remove:
   - akonadi-import-wizard
   - akregator
   - calligra-core
+  - calligra-karbon
   - camorama # SparkyLinux webcam
   - cdrskin # No CD drive in current laptop.
   - dragon
@@ -82,7 +83,8 @@ packages_to_remove:
   - perl-DBI
   - perl-Math-BigInt
   - perl-Math-Complex
-  - pidgin # SparkyLinux
+  - pidgin
+  - python2
   - qlipper # SparkyLinux clipboard
 # Required by DigiKam
 #  - qt # QT 4.x libraries
@@ -111,8 +113,6 @@ base_packages_to_install:
   - keepassxc
   - pwgen
   - libreoffice-calc
-# Not in F33?
-#  - libreoffice-kde5
   - libreoffice-draw
   - libreoffice-impress
   - libreoffice-writer
@@ -224,9 +224,6 @@ development_packages_to_install:
   - podman
   - poetry # Python3 Dependency Mgmt System
   - pylint # Check python code
-# Comment out ready for F31
-#  - python2-pytest # Fedpkg building python rpms
-#  - python2-pytz # For IP_TOOLING.
   - python3-autopep8 # cekit
   - python3-ansi2html # Convert console output (e.g. build logs) to HTML
   - python3-behave # cekit
@@ -244,7 +241,7 @@ development_packages_to_install:
   - python3-pytest # cekit
   - python3-pytest-mock # cekit
   - python3-pyyaml # cekit
-#  - python3-sphinx # cekit (sphinx) RETIRED BY FEDORA
+  - python3-sphinx # cekit (sphinx)
 #  - python-sphinx-autobuild # cekit (sphinx) RETIRED BY FEDORA
   - python3-tomlkit # commitizen
   - python3-tox # cekit

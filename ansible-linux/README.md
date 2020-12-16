@@ -1,7 +1,7 @@
 
 # Setup my Fedora KDE Spin Workstation.
 
-* Tested on F31/F32
+* Tested on F33
 
 Relies on python3 being available and uses local connection to setup the machine.
 

@@ -108,7 +108,7 @@ base_packages_to_install:
   - highlight
   - htop # Process viewer
   - insync
-#  - insync-dolphin # Manual install only
+  - insync-dolphin
   - jq
   - keepassxc
   - pwgen

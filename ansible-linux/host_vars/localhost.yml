@@ -151,6 +151,7 @@ standard_packages_to_install:
   - hplip
   - httpie
   - ImageMagick # Image analysis/conversion tools
+  - jpegoptim # Resize JPEG images
   - kaccounts-providers # Google authentication
   - kcron
   - kde-connect
@@ -210,6 +211,7 @@ development_packages_to_install:
   - glide # Go dependency manager
   - golang # Go language
   - golang-bin
+  - hugo # CEKit Site Generator
   - java-11-openjdk-devel
   - java-11-openjdk-src
   - krdc # Remote desktop
@@ -249,6 +251,7 @@ development_packages_to_install:
   - qemu-kvm # Virtualisation
   - qgit # Visual git viewer
   - rhpkg
+  - rubygem-asciidoctor # CEKit
   - rubygem-jekyll # jekyll site generator (PME)
   - rubygem-minitest
   - source-to-image # cekit

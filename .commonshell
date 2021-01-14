@@ -775,6 +775,11 @@ function groovy-2.5.4()
     echo "Groovy executable is `which groovy`"
 }
 
+function sbt-1.4.5()
+{
+    PATH=$SW_PREFIX/sbt/bin:$PATH
+}
+
 function unsignjar()
 {
     [[ -z "$@" ]] && echo "Usage: unsignjar <jar> <jar>...." && return
@@ -1641,20 +1646,26 @@ function cekitVMMount()
 }
 function cekitUpdate()
 {
+    setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
+
+    local cwd=$PWD
+
     # If we are on the host copy TO the selinux enabled mount point
     if [ "`systemd-detect-virt`" = "none" ]
     then
         cd /home/rnc/Work/CEKit/GitHub/cekit
         find . -name "*.yaml" | cpio -pdmu /opt/cekit
         find . -name "*.py" | cpio -pdmu /opt/cekit
+        find . -name "*.txt" | cpio -pdmu /opt/cekit
         find . -name "*.jinja" | cpio -pdmu /opt/cekit
-        popd
+        cd $cwd
     # Otherwise on the guest copy FROM the mounted point
     else
         cd /opt/cekit
         find . -name "*.yaml" | cpio -pdmu /home/rnc/Work/cekit
         find . -name "*.py" | cpio -pdmu /home/rnc/Work/cekit
+        find . -name "*.txt" | cpio -pdmu /home/rnc/Work/cekit
         find . -name "*.jinja" | cpio -pdmu /home/rnc/Work/cekit
-        popd
+        cd $cwd
     fi
 }

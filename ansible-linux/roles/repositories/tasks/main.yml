@@ -65,3 +65,8 @@
     command: "dnf copr enable -y bcotton/cherrytree"
     args:
       creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:bcotton:cherrytree.repo
+
+  - name: Enable Fedora Copr for Tekton CLI
+    command: "dnf copr enable -y chmouel/tektoncd-cli"
+    args:
+      creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:chmouel:tektoncd-cli.repo

@@ -62,6 +62,8 @@ then
     # Python handling
     if [ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]
     then
+        export WORKON_HOME=$HOME/.virtualenvs
+        export PIPENV_SITE_PACKAGES=true
         source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
 
         # Add an implicit conftest.py enabling pytest to recognise app modules without
@@ -80,6 +82,11 @@ then
             $functions[_autoswitch_message]
             echo \"${GREEN}Use disable_autoswitch_virtualenv to deactivate${NORMAL}\"
             }"
+        eval "function rmvenv() {
+             rm -f Pipfile.lock
+             $functions[rmvenv]
+             }"
+
     fi
     RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)%{"$'\e[00m%}'" ${PROMPT_TIME}"
 
@@ -390,7 +397,7 @@ unset -f is-at-least
 ### rhpkg ###
 #############
 
-rpm -q rhpkg > /dev/null
+rpm -q rhpkg > /dev/null 2>&1
 if [ "$?" = 0 ]
 then
     if [ `bc<<<"$(rpm -q --queryformat '%{VERSION}\n' rhpkg)>=1.31"` = "1" ]
@@ -596,3 +603,12 @@ zstyle ':completion:newest-files:*' matcher-list 'b:=*' # important
 compdef _make makemead
 # For rgit git completion
 compdef '_dispatch git git' rgit
+
+if type kubectl > /dev/null
+then
+    source <(kubectl completion zsh)
+fi
+if type tkn > /dev/null
+then
+    source <(tkn completion zsh)
+fi

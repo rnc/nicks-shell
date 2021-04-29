@@ -670,6 +670,13 @@ function maven-3.6.3()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.8.1()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.8.1
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 function _gradle_daemon_workaround()
 {
     PROMPT_SYMBOL="$"
@@ -766,6 +773,12 @@ function gradle-6.5.1()
 function gradle-6.7()
 {
     PATH=$SW_PREFIX/gradle-6.7/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+
+function gradle-6.8.3()
+{
+    PATH=$SW_PREFIX/gradle-6.8.3/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 

@@ -35,6 +35,9 @@ user_pref("privacy.donottrackheader.enabled", true);
 // Ensure tab on toolbar goes to next text field and not to buttons
 user_pref("browser.toolbars.keyboard_navigation", false);
 
+// Always show tabmanager
+user_pref("browser.tabs.tabmanager.enabled", true);
+
 // Disable Pocket on newtabpage
 user_pref("browser.newtabpage.activity-stream.feeds.system.topstories", false);
 

@@ -24,8 +24,12 @@
     background: #841ebe !important;
 }
 
-/* Always display the list all tabs button */
-#tabbrowser-tabs ~ #alltabs-button {visibility:visible!important}
+/* Always display the list all tabs button
+
+Replace with browser.tabs.tabmanager.enabled
+
+#tabbrowser-tabs ~ #alltabs-button {visibility: visible !important}
+*/
 
 /* Remove back button circle */
 /* https://www.reddit.com/r/FirefoxCSS/comments/8nhq6b/back_button_circle_still_does_not_go_away/ */
@@ -53,6 +57,7 @@
 }
 /* Close Tabs to End */
 *[id^="treestyletab_piro_sakura_ne_jp-menuitem-_context_closeTabsToTheEnd"],
+*[id^="treestyletab_piro_sakura_ne_jp-menuitem-_context_closeMultipleTabs"],
 /* Close Other Tabs */
 *[id^="treestyletab_piro_sakura_ne_jp-menuitem-_context_closeOtherTabs"] {
   display: none;

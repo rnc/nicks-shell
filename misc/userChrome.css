@@ -1,3 +1,32 @@
+
+/* https://www.userchrome.org/firefox-89-styling-proton-ui.html */
+/* Tighten up drop-down/context/popup menu spacing */
+menupopup > menuitem, menupopup > menu {
+  padding-block: 4px !important;
+}
+:root {
+  --arrowpanel-menuitem-padding: 4px 8px !important;
+}
+
+/* Proton Tabs Tweaks */
+/* Adjust tab corner shape, optionally remove space below tabs */
+#tabbrowser-tabs {
+    --user-tab-rounding: 0px;
+}
+@media (-moz-proton) {
+    .tab-background {
+        border-radius: var(--user-tab-rounding) !important;
+    }
+}
+/* Inactive tabs: Shadow style */
+@media (-moz-proton) {
+    .tabbrowser-tab:not([selected=true]):not([multiselected=true]) .tab-background {
+        background-color: color-mix(in srgb, currentColor 8%, transparent);
+    }
+}
+
+/* Tweak Options as of 6/12/2021; Generated Wed Jun 23 2021 12:27:39 GMT+0100 (British Summer Time) */
+
 /* Some interesting references in https://github.com/Aris-t2/CustomCSSforFx */
 
 /* This section is to move the button from right to left */

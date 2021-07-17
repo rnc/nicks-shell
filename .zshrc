@@ -63,7 +63,9 @@ then
     if [ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]
     then
         export WORKON_HOME=$HOME/.virtualenvs
-        export PIPENV_SITE_PACKAGES=true
+        export POETRY_VIRTUALENVS_PATH=$WORKON_HOME
+        # Causes problems due to https://github.com/pypa/pipenv/issues/4537
+        # export PIPENV_SITE_PACKAGES=true
         source $NS_PREFIX/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
 
         # Add an implicit conftest.py enabling pytest to recognise app modules without
@@ -85,6 +87,14 @@ then
         eval "function rmvenv() {
              rm -f Pipfile.lock
              $functions[rmvenv]
+             }"
+        eval "function mkvenv() {
+             # https://github.com/pypa/pip/issues/8090
+             echo 'Skipping keyring'
+             export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
+             echo 'Skipping lock via PIPENV_SKIP_LOCK'
+             export PIPENV_SKIP_LOCK=1
+             $functions[mkvenv]
              }"
 
     fi

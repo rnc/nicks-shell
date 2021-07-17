@@ -16,6 +16,7 @@ standard_packages_to_install:
   - setuserfta                          # 1.7.1
   - setdefaultbrowser                   # 1.5.0
   - sdformatter                         # 5.0.1
+  - steam                               # 3.0.1.20190215
   - tightvnc                            # 2.8.27
 # Using my install so that it installs to ProgramFiles.
 #  - sumatrapdf.install                  # 3.2

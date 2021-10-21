@@ -16,6 +16,9 @@ then
     # Force location on machines without persistent cache for Kerberos cache. Useful to workaround problems with puddle generation.
     KRB5CCNAME=/tmp/"$USER"_ccache
 fi
+# Ensure any Python virtualenv that installs certifi doesn't clash and we use the system certificates
+REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt
+
 
 # https://github.com/keybase/keybase-issues/issues/2798 ; https://issues.apache.org/jira/browse/MGPG-59
 GPG_TTY=$(tty)
@@ -414,6 +417,8 @@ function _java_prompt_()
     local oraclejava9=$SW_PREFIX/jdk-9
     local openjdk11=$SW_PREFIX/jdk-11
     local openjdk12=$SW_PREFIX/jdk-12.0.2+10
+    local openjdk12=$SW_PREFIX/jdk-12.0.2+10
+    local openjdk17=$SW_PREFIX/jdk-17+35
     local ibmjava6=$SW_PREFIX/ibm-jdk1.6.0
     local ibmjava7=$SW_PREFIX/ibm-jdk1.7.0
     local i
@@ -445,6 +450,9 @@ function _java_prompt_()
         ;;
       "openjdk12")
         export JAVA_HOME=$openjdk12
+        ;;
+      "openjdk17")
+        export JAVA_HOME=$openjdk17
         ;;
       "ibmjava6")
         export JAVA_HOME=$ibmjava6
@@ -504,6 +512,13 @@ function openjdk12()
     _java_prompt_ openjdk12
 
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA12)%{"$'\e[00m''%}'
+}
+
+function openjdk17()
+{
+    _java_prompt_ openjdk17
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA17)%{"$'\e[00m''%}'
 }
 
 function ibmjava6()
@@ -779,6 +794,18 @@ function gradle-6.7()
 function gradle-6.8.3()
 {
     PATH=$SW_PREFIX/gradle-6.8.3/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+
+function gradle-7.1()
+{
+    PATH=$SW_PREFIX/gradle-7.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+
+function gradle-7.2()
+{
+    PATH=$SW_PREFIX/gradle-7.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
@@ -1323,22 +1350,6 @@ function blt()
     brew list-tag-inheritance $1 | sed -e 's/  │          .*/  │       [...tag continues...]/g' -e 's/              .*/              [...tag continues...]/g' | uniq | egrep '...tag continues...|$'
 }
 
-function patchContraService()
-{
-    local currentlocation=`basename $PWD`
-    local cwd=$PWD
-
-    [[ "$currentlocation" != "service" ]] && printf "$ERROR" "Run from service repository" && return 1
-    [[ ! -d  "$cwd/../productization" ]] && printf "$ERROR" "Ensure productization repository is checked out as a sibling" && return 1
-    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
-
-    mkdir -p src/com/redhat/contra
-    cd $NOCHPWD src/com/redhat/contra
-    [[ ! -L productization ]] && ln -s $cwd/../productization/src/com/redhat/contra/productization .
-
-    cd $NOCHPWD $cwd
-}
-
 
 # Token should be stored in $HOME/.travis/config.yml under a field of ' access_token: <id> '
 # The Job ID is displayed in the build log after expanding "Build system information".
@@ -1525,6 +1536,40 @@ function compareImageFiles()
 }
 
 
+searchForMissingModel()
+{
+    which identify >& /dev/null
+    [[ "$?" != 0 ]] && printf "$ERROR" "Install identify" && return 1
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+    [[ "$1" == "-d" ]] && shift && local DRYRUN=true
+#    [[ -z "$1" || -z "$2" ]] && echo "Must pass in two parameters" && return 1
+
+    local cwd=$PWD
+    local IFS=$'\n'
+
+    # Any ctrl-c breaks the loop and resets the directory.
+    trap "echo Exited!; return" 2 3 15
+    #trap "cd $NOCHPWD $cwd && trap - 2 3 15" 2 3 15
+
+    # set -x
+    for i in $(find $1 -iname "IMG-*.jpg")
+    do
+        local result=""
+        local partialresult=""
+        local filename=$(basename "$i")
+        local extension="${filename##*.}"
+
+        if [ ! -n "$(exiftool -Model $i)" ]
+        then
+            echo "No model found for $i"
+            mv $i WhatsApp
+        fi
+    done
+
+    #trap - 2 3 15
+}
+
+
 searchForMatchingFiles()
 {
     which identify >& /dev/null
@@ -1537,7 +1582,7 @@ searchForMatchingFiles()
     local IFS=$'\n'
 
     # Any ctrl-c breaks the loop and resets the directory.
-    trap "cd $NOCHPWD $cwd && trap - 2 3 15" 2 3 15
+    trap "cd $NOCHPWD $cwd ; return" 2 3 15
 
     #set -x
     for i in $(find $1 -iname "*.jpg")
@@ -1546,6 +1591,7 @@ searchForMatchingFiles()
         local partialresult=""
         local filename=$(basename "$i")
         local extension="${filename##*.}"
+        echo "Looking at $i and $j"
 
         for j in $(find $2 -iname "*.$extension")
         do
@@ -1594,7 +1640,7 @@ searchForMatchingUsingExifDate()
     local IFS=$'\n'
 
     # Any ctrl-c breaks the loop and resets the directory.
-    trap "cd $NOCHPWD $cwd && trap - 2 3 15" 2 3 15
+    trap "cd $NOCHPWD $cwd && trap - 2 3 15 && return" 2 3 15
 
     #set -x
     for i in $(find $1 -type f) # -iname "*.jpg")

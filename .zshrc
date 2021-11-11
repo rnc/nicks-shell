@@ -54,6 +54,9 @@ then
         ZSH_HIGHLIGHT_STYLES[globbing]='fg=045'
     fi
 
+    # ZSH AutoSuggestions
+     source $NS_PREFIX/zsh-autosuggestions/zsh-autosuggestions.zsh
+
     : ${PROMPT_SYMBOL:="❯"}
     # https://jmtd.net/log/multi-coloured_fedoras (\u!F3A9).
     : ${PROMPT_HAT:="%F{red}🎩%f"}

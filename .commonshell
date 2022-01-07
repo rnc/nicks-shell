@@ -1193,12 +1193,11 @@ function mergePullRequest()
 
 resetFeatureBranch ()
 {
-    local primary=""
+    local primary="$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')"
     local upstream=""
     for i in $(git trackbranch | egrep '.* <- .+' | sed 's/\(.*\) <-.*/\1/g')
     do
-        primary=$i
-        local r="$(git branch -a | grep remotes | grep upstream/$i | head -1 | cut -f 3 -d ' ')"
+        local r="`git branch -a | grep remotes | grep -v HEAD | egrep \"(upstream/$i|origin/$i)\" | head -1 | cut -f 3 -d ' '`"
         if [ -n "$r" ]
         then
             upstream="${r#remotes/}"
@@ -1208,7 +1207,7 @@ resetFeatureBranch ()
     local currentBranch=$(git symbolic-ref --short HEAD)
     [[ "$?" != "0" ]] && printf "$ERROR" "Error establishing current branch; aborting..." && return 1
     [[ -z "$currentBranch" ]] && printf "$ERROR" "Current branch not set" && return 1
-    [[ -z "$primary" ]] && printf "$ERROR" "Master branch not set" && return 1
+    [[ -z "$primary" ]] && printf "$ERROR" "Primary branch not set" && return 1
     git llg5
     printf "$INFO" "Current branch is $currentBranch"
     printf "$INFO" "Known 'primary' is $primary"

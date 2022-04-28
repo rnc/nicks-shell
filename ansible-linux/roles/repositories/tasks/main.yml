@@ -9,15 +9,6 @@
       enabled: yes
       gpgkey: https://dl.google.com/linux/linux_signing_key.pub
 
-  - name : Repository - SourceClear
-    yum_repository:
-      name: sourceclear
-      description: SourceClear YUM Repository
-      baseurl: https://download.sourceclear.com/redhat/noarch/
-      gpgcheck: yes
-      enabled: yes
-      gpgkey: https://download.sourceclear.com/redhat/SRCCLR-GPG-KEY
-
   # https://docs.fedoraproject.org/en-US/quick-docs/setup_rpmfusion/
   - name: Install RPMFusion Free
     dnf:

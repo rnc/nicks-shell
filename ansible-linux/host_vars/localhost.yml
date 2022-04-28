@@ -197,6 +197,7 @@ internal_packages_to_install:
   - subscription-manager
 
 development_packages_to_install:
+  - buildah
   - brewkoji
   - cabextract # Extract MS CAB files (https://www.cabextract.org.uk)
   - cmake
@@ -236,13 +237,16 @@ development_packages_to_install:
   - python3-gssapi # linfo
   - python3-jenkins-job-builder
   - python3-jinja2 # cekit
+  - python3-kubernetes # cpaas
   - python3-ldap # cekit
   - python3-lxml # cekit
   - python3-mock # cekit
+  - python3-openshift # cpaas
   - python3-pykwalify # cekit
   - python3-pytest # cekit
   - python3-pytest-mock # cekit
   - python3-pyyaml # cekit
+  - python3-requests-oauthlib # cpaas
   - python3-sphinx # cekit (sphinx)
 #  - python-sphinx-autobuild # cekit (sphinx) RETIRED BY FEDORA
   - python3-tomlkit # commitizen
@@ -254,8 +258,10 @@ development_packages_to_install:
   - rubygem-asciidoctor # CEKit
   - rubygem-jekyll # jekyll site generator (PME)
   - rubygem-minitest
+  - skopeo
   - source-to-image # cekit
   - sqlitebrowser # Browse and modify SQLLite DB (e.g. for DigiKam)
+  - tektoncd-cli # https://github.com/tektoncd/cli
   - texlive-a4wide # JacORB
   - texlive-ulem # JacORB
   - texlive-bibtex

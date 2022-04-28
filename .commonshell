@@ -809,6 +809,17 @@ function gradle-7.2()
     echo "Gradle executable is `which gradle`"
 }
 
+function gradle-7.3.3()
+{
+    PATH=$SW_PREFIX/gradle-7.3.3/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+function gradle-7.4.1()
+{
+    PATH=$SW_PREFIX/gradle-7.4.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+
 function groovy-2.5.4()
 {
     PATH=$SW_PREFIX/groovy-2.5.4/bin:$PATH
@@ -1193,29 +1204,47 @@ function mergePullRequest()
 
 resetFeatureBranch ()
 {
-    local primary="$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')"
+    local currentBranch=$(git symbolic-ref --short HEAD)
+    local primary="$(git remote show origin | sed -n '/HEAD branch/s/.*: //p' | xargs)"
     local upstream=""
+    if [ -z "$(git for-each-ref --format='%(refname:short)' refs/heads/ | grep $primary)" ]
+    then
+        # Assumption : current primary is a lower cased branch configured for push that doesn't match current branch.
+        primary=$(git remote show origin | grep pushes | egrep '^\s*[a-z]+.*' | sed -E 's/(\s*)([a-z].*)(.*pushes.*)/\2/' | xargs)
+        # for branch in $(git for-each-ref --format='%(refname:short)' refs/heads)
+        # do
+        #     if [ "$branch" != "$currentBranch" ]
+        #     then
+        #        primary=$branch
+        #        break
+        #     fi
+        # done
+    fi
     for i in $(git trackbranch | egrep '.* <- .+' | sed 's/\(.*\) <-.*/\1/g')
     do
-        local r="`git branch -a | grep remotes | grep -v HEAD | egrep \"(upstream/$i|origin/$i)\" | head -1 | cut -f 3 -d ' '`"
+        if [ "1" == $(git remote | wc -l) ]
+        then
+            local r="`git branch -a | grep remotes | grep -v HEAD | egrep \"(upstream/$i|origin/$i)\" | head -1 | cut -f 3 -d ' '`"
+        else
+            local r="`git branch -a | grep remotes | grep -v HEAD | egrep \"(upstream/$i)\" | head -1 | cut -f 3 -d ' '`"
+        fi
         if [ -n "$r" ]
         then
             upstream="${r#remotes/}"
             break
         fi
     done
-    local currentBranch=$(git symbolic-ref --short HEAD)
     [[ "$?" != "0" ]] && printf "$ERROR" "Error establishing current branch; aborting..." && return 1
     [[ -z "$currentBranch" ]] && printf "$ERROR" "Current branch not set" && return 1
     [[ -z "$primary" ]] && printf "$ERROR" "Primary branch not set" && return 1
     git llg5
-    printf "$INFO" "Current branch is $currentBranch"
-    printf "$INFO" "Known 'primary' is $primary"
+    printf "$INFO" "Current branch is \"$currentBranch\""
+    printf "$INFO" "Known 'primary' is \"$primary\""
     if [ -z "$upstream" ]
     then
         echo "No upstream configured ; assuming local PR and merge..."
     else
-        printf "$INFO" "Upstream 'primary' $upstream"
+        printf "$INFO" "Upstream 'primary' \"$upstream\""
     fi
     echo ""
     [[ "$currentBranch" = "$primary" ]] && printf "$ERROR" "Current equals primary; aborting..." && return 1

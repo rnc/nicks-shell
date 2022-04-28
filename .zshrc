@@ -625,3 +625,7 @@ if type tkn > /dev/null
 then
     source <(tkn completion zsh)
 fi
+if type oc > /dev/null
+then
+    source <(oc completion zsh)
+fi

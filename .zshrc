@@ -40,9 +40,9 @@ autoload -U add-zsh-hook
 if [ "$TERM" = "xterm" ] || [ "$TERM" = "linux" ] || [ "$TERM" = "aixterm" ] || [ "$TERM" = "rxvt" ] || [ "$TERM" = "xterm-256color" ] || [ "$TERM" = "screen-256color" ]
 then
     # ZSH-Syntax-Highlighting
-    if [ -d $NS_PREFIX/fast-syntax-highlighting ]
+    if [ -d $NS_PREFIX/F-Sy-H ]
     then
-        source $NS_PREFIX/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+        source $NS_PREFIX/F-Sy-H/F-Sy-H.plugin.zsh
     elif [ -d $NS_PREFIX/zsh-syntax-highlighting ]
     then
         ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
@@ -57,10 +57,12 @@ then
     # ZSH AutoSuggestions
      source $NS_PREFIX/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+    # https://stackoverflow.com/questions/7444504/explanation-of-colon-operator-in-foo-value
     : ${PROMPT_SYMBOL:="❯"}
     # https://jmtd.net/log/multi-coloured_fedoras (\u!F3A9).
     : ${PROMPT_HAT:="%F{red}🎩%f"}
     : ${PROMPT_TIME:="%T"}
+    export PROMPT_SYMBOL PROMPT_HAT PROMPT_TIME
 
     # Python handling
     if [ -d $NS_PREFIX/zsh-autoswitch-virtualenv ]

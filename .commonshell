@@ -418,7 +418,8 @@ function _java_prompt_()
     local openjdk11=$SW_PREFIX/jdk-11
     local openjdk12=$SW_PREFIX/jdk-12.0.2+10
     local openjdk12=$SW_PREFIX/jdk-12.0.2+10
-    local openjdk17=$SW_PREFIX/jdk-17+35
+    local openjdk17=$SW_PREFIX/jdk-17
+    local openjdk18=$SW_PREFIX/jdk-18.0.1+10/
     local ibmjava6=$SW_PREFIX/ibm-jdk1.6.0
     local ibmjava7=$SW_PREFIX/ibm-jdk1.7.0
     local i
@@ -453,6 +454,9 @@ function _java_prompt_()
         ;;
       "openjdk17")
         export JAVA_HOME=$openjdk17
+        ;;
+      "openjdk18")
+        export JAVA_HOME=$openjdk18
         ;;
       "ibmjava6")
         export JAVA_HOME=$ibmjava6
@@ -517,6 +521,13 @@ function openjdk12()
 function openjdk17()
 {
     _java_prompt_ openjdk17
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA17)%{"$'\e[00m''%}'
+}
+
+function openjdk18()
+{
+    _java_prompt_ openjdk18
 
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA17)%{"$'\e[00m''%}'
 }
@@ -692,6 +703,13 @@ function maven-3.8.1()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.8.5()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.8.5
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 function _gradle_daemon_workaround()
 {
     PROMPT_SYMBOL="$"
@@ -817,6 +835,11 @@ function gradle-7.3.3()
 function gradle-7.4.1()
 {
     PATH=$SW_PREFIX/gradle-7.4.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+function gradle-7.5()
+{
+    PATH=$SW_PREFIX/gradle-7.5/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 

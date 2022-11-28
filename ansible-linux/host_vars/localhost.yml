@@ -258,7 +258,6 @@ development_packages_to_install:
   - skopeo
   - source-to-image # cekit
   - sqlitebrowser # Browse and modify SQLLite DB (e.g. for DigiKam)
-  - tektoncd-cli # https://github.com/tektoncd/cli
   - texlive-a4wide # JacORB
   - texlive-ulem # JacORB
   - texlive-bibtex

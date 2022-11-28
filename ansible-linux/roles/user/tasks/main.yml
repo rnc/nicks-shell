@@ -38,4 +38,4 @@
       uid: 1000
       shell: /bin/zsh
       groups: "{{ user_account }},wheel,libvirt,docker,wireshark"
-      password: "{{ user_password }}"
+      password: "{{ user_password | password_hash('sha512')}}"

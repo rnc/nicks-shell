@@ -11,6 +11,9 @@
   - name: "vpn_password"
     prompt: "Enter VPN (with TOTP) password (NOT kerberos)"
     private: yes
+  - name: "user_password"
+    prompt: "Enter password for user creation"
+    private: yes
 
   tasks:
   - debug:

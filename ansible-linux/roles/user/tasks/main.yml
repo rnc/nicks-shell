@@ -27,8 +27,14 @@
       msg={{ docker_warning.split('\n') }}
 
 
+  - name: Configure user group
+    group:
+      name: "{{ user_account }}"
+      gid: 1000
+
   - name: Configure user shell account
     user:
       name: "{{ user_account }}"
+      uid: 1000
       shell: /bin/zsh
-      groups: "{{ user_account }},wheel,libvirt,docker"
+      groups: "{{ user_account }},wheel,libvirt,docker,wireshark"

@@ -186,8 +186,6 @@ standard_packages_to_install:
   - vlc
   - wireshark
   - xclip
-  - xorg-x11-server-utils
-  - yarock
 
 internal_packages_to_install:
   - redhat-internal-NetworkManager-openvpn-profiles-non-gnome

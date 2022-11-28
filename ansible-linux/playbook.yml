@@ -65,7 +65,9 @@
           vpn.secrets.password: "{{ vpn_password }}"
       register: command_result
       # Handle double connection
-      failed_when: '"is already active" not in command_result.stdout'
+      failed_when:
+        - command_result.rc != 0
+        - '"is already active" not in command_result.stdout'
       changed_when: False
     - debug:
         msg="Verifying VPN connection exists...( if not activate vpn connection by running nmcli -a connection up {{ vpn_connection }} )"

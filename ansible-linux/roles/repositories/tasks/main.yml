@@ -1,5 +1,12 @@
 ---
 
+  - name: Install GPG Keys
+    package:
+      name:
+        - distribution-gpg-keys
+      state: present
+    when: ansible_distribution != "Fedora"
+
   - name: Repository - Google Chrome
     yum_repository:
       name: google-chrome
@@ -18,7 +25,6 @@
 
   - name: Install RPMFusion NonFree
     dnf:
-      disable_gpg_check: "{{ disable_gpg_check }}"
       name: "https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_facts.distribution_major_version}}.noarch.rpm"
       state: present
     when:  '"rpmfusion-nonfree-release" not in ansible_facts.packages'

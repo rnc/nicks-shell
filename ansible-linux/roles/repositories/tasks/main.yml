@@ -1,10 +1,19 @@
 ---
 
-  - name: Install GPG Keys
-    package:
-      name:
-        - distribution-gpg-keys
-      state: present
+  - block:
+    - name: Install GPG Keys
+      package:
+        name:
+          - distribution-gpg-keys
+          state: present
+    - name: Import Key 1
+      ansible.builtin.rpm_key:
+        state: present
+        key: "/usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-free-fedora-{{ ansible_facts.distribution_major_version}}"
+    - name: Import Key 2
+      ansible.builtin.rpm_key:
+        state: present
+        key: "/usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-nonfree-fedora-{{ ansible_facts.distribution_major_version}}"
     when: ansible_distribution == "Fedora"
 
   - name: Repository - Google Chrome

@@ -5,7 +5,7 @@
       package:
         name:
           - distribution-gpg-keys
-          state: present
+        state: present
     - name: Import Key 1
       ansible.builtin.rpm_key:
         state: present

@@ -9,7 +9,7 @@
     - disable_gpg_check: yes
   vars_prompt:
   - name: "vpn_password"
-    prompt: "Enter VPN password (NOT kerberos)"
+    prompt: "Enter VPN (with TOTP) password (NOT kerberos)"
     private: yes
 
   tasks:

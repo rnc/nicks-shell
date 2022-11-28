@@ -5,7 +5,7 @@
       name:
         - distribution-gpg-keys
       state: present
-    when: ansible_distribution != "Fedora"
+    when: ansible_distribution == "Fedora"
 
   - name: Repository - Google Chrome
     yum_repository:

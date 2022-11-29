@@ -18,6 +18,10 @@ packages_to_remove:
   - florence # SparkyLinux keyboard
   - flatpak
   - fprintd # Fingerprint daemon
+  - gnome-desktop3
+  - gnome-keyring
+  - gnome-desktop4
+  - gnome-themes-extra
   - google-noto-emoji-color-fonts # Don't need these fonts.
   - google-noto-sans-gurmukhi-fonts # Don't need these fonts.
   - google-noto-cjk-fonts-common # Don't need these fonts.

@@ -42,6 +42,7 @@ fi
 
 export PATH EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY QUOTING_STYLE QT_LOGGING_RULES
 export JAVA_HOME=`dirname $(dirname $(readlink -f $(which java)))`
+export QUAY_USERNAME=ncross
 
 # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 # https://misc.flogisoft.com/bash/tip_colors_and_formatting
@@ -583,13 +584,6 @@ function maven-3.0.5()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
-function maven-3.0.5-prod()
-{
-    M2_HOME=$SW_PREFIX/apache-maven-3.0.5-prod
-    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
-    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
-}
-
 function maven-3.1.1()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.1.1
@@ -597,16 +591,9 @@ function maven-3.1.1()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
-function maven-3.1.1-prod()
+function maven-3.2.3()
 {
-    M2_HOME=$SW_PREFIX/apache-maven-3.1.1-prod
-    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
-    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
-}
-
-function maven-3.2.3-prod()
-{
-    M2_HOME=$SW_PREFIX/apache-maven-3.2.3-prod
+    M2_HOME=$SW_PREFIX/apache-maven-3.2.3
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -618,37 +605,9 @@ function maven-3.2.5()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
-function maven-3.2.5-prod()
-{
-    M2_HOME=$SW_PREFIX/apache-maven-3.2.5-prod
-    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
-    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
-}
-
 function maven-3.3.3()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.3.3
-    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
-    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
-}
-
-function maven-3.3.3-prod()
-{
-    M2_HOME=$SW_PREFIX/apache-maven-3.3.3-prod
-    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
-    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
-}
-
-function maven-3.3.9-prod()
-{
-    M2_HOME=$SW_PREFIX/apache-maven-3.3.9-prod
-    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
-    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
-}
-
-function maven-3.5.0-prod()
-{
-    M2_HOME=$SW_PREFIX/apache-maven-3.5.0-prod
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -706,6 +665,20 @@ function maven-3.8.1()
 function maven-3.8.5()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.8.5
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function maven-3.8.7()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.8.7
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function maven-3.9.0()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.9.0
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }

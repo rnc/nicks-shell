@@ -198,6 +198,7 @@ internal_packages_to_install:
   - subscription-manager
 
 development_packages_to_install:
+  - awscli
   - buildah
   - brewkoji
   - cabextract # Extract MS CAB files (https://www.cabextract.org.uk)
@@ -214,8 +215,8 @@ development_packages_to_install:
   - golang # Go language
   - golang-bin
   - hugo # CEKit Site Generator
-  - java-17-openjdk-devel
-  - java-17-openjdk-src
+  - java-11-openjdk-devel
+  - java-11-openjdk-src
   - krdc # Remote desktop
   - krb5-devel # cekit
   - libvirt # Virtualisation
@@ -243,6 +244,7 @@ development_packages_to_install:
   - python3-lxml # cekit
   - python3-mock # cekit
   - python3-openshift # cpaas
+  - python3-openstackclient # openstack
   - python3-pykwalify # cekit
   - python3-pytest # cekit
   - python3-pytest-mock # cekit

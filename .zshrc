@@ -292,8 +292,8 @@ unlimit
 #################################
 
 HISTFILE=$HOME/.history
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=10000  # Max per session
+SAVEHIST=100000 # Max per file
 
 #################
 ### Functions ###
@@ -433,11 +433,13 @@ fi
 #### Set various options. ##########
 ####################################
 
+
+# History commands configured as per https://unix.stackexchange.com/questions/669971/zsh-can-i-have-a-combined-history-for-all-of-my-shells
 setopt \
 ALL_EXPORT \
 ALWAYS_TO_END \
 ALWAYS_LAST_PROMPT \
-APPEND_HISTORY \
+NO_APPEND_HISTORY \
 AUTO_CD \
 NO_AUTO_LIST \
 AUTO_MENU \
@@ -500,7 +502,7 @@ NO_HIST_VERIFY \
 NO_HUP \
 NO_IGNORE_BRACES \
 IGNORE_EOF \
-INC_APPEND_HISTORY \
+NO_INC_APPEND_HISTORY \
 INTERACTIVE_COMMENTS \
 NO_KSH_ARRAYS \
 NO_KSH_AUTOLOAD \

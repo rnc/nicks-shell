@@ -17,7 +17,7 @@ then
     KRB5CCNAME=/tmp/"$USER"_ccache
 fi
 # Ensure any Python virtualenv that installs certifi doesn't clash and we use the system certificates
-REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt
+export REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt
 
 
 # https://github.com/keybase/keybase-issues/issues/2798 ; https://issues.apache.org/jira/browse/MGPG-59
@@ -813,6 +813,16 @@ function gradle-7.4.1()
 function gradle-7.5()
 {
     PATH=$SW_PREFIX/gradle-7.5/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+function gradle-7.6.1()
+{
+    PATH=$SW_PREFIX/gradle-7.6.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+function gradle-8.2()
+{
+    PATH=$SW_PREFIX/gradle-8.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 

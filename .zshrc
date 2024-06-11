@@ -129,6 +129,10 @@ then
             PROMPT="$(gitprompt)$PROMPT_JAVA$PROMPT_EXTRA $PROMPT_HAT%(?.%B%F{magenta}.%F{red})${PROMPT_SYMBOL}%f%b "
             RPROMPT="%{"$'\e[0;35m'"%}$((( ${+VIRTUAL_ENV} )) && basename $VIRTUAL_ENV)$(gitprompt_secondary)%{"$'\e[00m%}'" ${PROMPT_TIME}"
         }
+        # Prevent trailing inverse %
+        # https://www.reddit.com/r/zsh/comments/er6fok/getting_sign_in_output/
+        # https://unix.stackexchange.com/questions/167582/why-zsh-ends-a-line-with-a-highlighted-percent-symbol
+        PROMPT_EOL_MARK='%K{red} %k'
         add-zsh-hook precmd prompt_updater
     # https://github.com/yonchu/zsh-vcs-prompt/
     elif [ -d $NS_PREFIX/zsh-vcs-prompt ]

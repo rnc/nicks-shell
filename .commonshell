@@ -141,7 +141,7 @@ function f()
         if [[ "$h" = "# -*- sh -*-" ]] || [[ "$h" = "# -*- bash -*-" ]] || [[ "$h" = "# -*- zsh -*-" ]]
         then
             SYNTAX="--syntax=sh"
-        elif [[ ! $extension =~ ^($(highlight --list-scripts=langs | egrep -v /usr/share | tr -d '()'| egrep '.*[a-zA-Z]+.*:.*[a-zA-Z]+.*' | cut -f2 -d':' | tr -s [:space:] '|'))$ ]]
+        elif [[ ! $extension =~ ^($(highlight --list-scripts=langs | grep -E -v /usr/share | tr -d '()'| grep -E '.*[a-zA-Z]+.*:.*[a-zA-Z]+.*' | cut -f2 -d':' | tr -s [:space:] '|'))$ ]]
         then
             # Complete fallback to text
             SYNTAX="--syntax=txt"
@@ -381,7 +381,7 @@ function svnl()
     else
         local subrange=`echo $revcheck | sed 's/\([0-9]*\).*/\1/'`
     fi
-    local EXTERNALS=`svn propget svn:externals -R | egrep '^[a-zA-Z]+' | head -1 | awk '{print $1"/"$3}'`
+    local EXTERNALS=`svn propget svn:externals -R | grep -E '^[a-zA-Z]+' | head -1 | awk '{print $1"/"$3}'`
 
     if [ $subrange != $lastremoterev ]
     then
@@ -416,11 +416,12 @@ function _java_prompt_()
     local oraclejava7=$SW_PREFIX/jdk1.7.0
     local oraclejava8=$SW_PREFIX/jdk1.8.0
     local oraclejava9=$SW_PREFIX/jdk-9
+    local openjdk8=$SW_PREFIX/jdk8u392-b08
     local openjdk11=$SW_PREFIX/jdk-11
-    local openjdk12=$SW_PREFIX/jdk-12.0.2+10
     local openjdk12=$SW_PREFIX/jdk-12.0.2+10
     local openjdk17=$SW_PREFIX/jdk-17
     local openjdk18=$SW_PREFIX/jdk-18.0.1+10/
+    local openjdk21=$SW_PREFIX/jdk-21.0.3+9
     local ibmjava6=$SW_PREFIX/ibm-jdk1.6.0
     local ibmjava7=$SW_PREFIX/ibm-jdk1.7.0
     local i
@@ -447,6 +448,9 @@ function _java_prompt_()
       "oraclejava9")
         export JAVA_HOME=$oraclejava9
         ;;
+      "openjdk8")
+        export JAVA_HOME=$openjdk8
+        ;;
       "openjdk11")
         export JAVA_HOME=$openjdk11
         ;;
@@ -458,6 +462,9 @@ function _java_prompt_()
         ;;
       "openjdk18")
         export JAVA_HOME=$openjdk18
+        ;;
+      "openjdk21")
+        export JAVA_HOME=$openjdk21
         ;;
       "ibmjava6")
         export JAVA_HOME=$ibmjava6
@@ -505,6 +512,13 @@ function oraclejava9()
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE9)%{"$'\e[00m''%}'
 }
 
+function openjdk8()
+{
+    _java_prompt_ openjdk8
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA8)%{"$'\e[00m''%}'
+}
+
 function openjdk11()
 {
     _java_prompt_ openjdk11
@@ -530,7 +544,14 @@ function openjdk18()
 {
     _java_prompt_ openjdk18
 
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA17)%{"$'\e[00m''%}'
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA18)%{"$'\e[00m''%}'
+}
+
+function openjdk21()
+{
+    _java_prompt_ openjdk21
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA21)%{"$'\e[00m''%}'
 }
 
 function ibmjava6()
@@ -682,7 +703,14 @@ function maven-3.9.0()
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
+function maven-3.9.5()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.9.5
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
 
+# https://github.com/gradle/gradle/issues/3117
 function _gradle_daemon_workaround()
 {
     PROMPT_SYMBOL="$"
@@ -820,9 +848,24 @@ function gradle-7.6.1()
     PATH=$SW_PREFIX/gradle-7.6.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
+function gradle-8.1()
+{
+    PATH=$SW_PREFIX/gradle-8.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
 function gradle-8.2()
 {
     PATH=$SW_PREFIX/gradle-8.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+function gradle-8.3()
+{
+    PATH=$SW_PREFIX/gradle-8.3/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+function gradle-8.5()
+{
+    PATH=$SW_PREFIX/gradle-8.5/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
@@ -911,18 +954,18 @@ function searchJars()
     do
         if $(zipinfo $i > /dev/null 2>&1) && [ -f $i ]
         then
-            if [ -n "`jar tf $i | egrep \"$pattern\"`" ]
+            if [ -n "`jar tf $i | grep -E \"$pattern\"`" ]
             then
                 echo "$INDENT""\033[49;32;1mFound pattern $pattern in $i\033[0m"
                 if [ "$VERBOSE" = "true" ]
                 then
-                    echo "`jar vtf $i | egrep $1 | sed 's/^/\t\t/g'`"
+                    echo "`jar vtf $i | grep -E $1 | sed 's/^/\t\t/g'`"
                 fi
             elif [ "$VERBOSE" = "true" ]
             then
                 echo "$INDENT""\033[49;35;1mDid not find pattern $pattern in $i\033[0m"
             fi
-            if [ -n "`jar tf $i | egrep '\.(war|jar)'`" ]
+            if [ -n "`jar tf $i | grep -E '\.(war|jar)'`" ]
             then
                 # Jar/war containing jar/war
                 echo "$INDENT""Searching inside $i ..."
@@ -1216,7 +1259,7 @@ resetFeatureBranch ()
     if [ -z "$(git for-each-ref --format='%(refname:short)' refs/heads/ | grep $primary)" ]
     then
         # Assumption : current primary is a lower cased branch configured for push that doesn't match current branch.
-        primary=$(git remote show origin | grep pushes | egrep '^\s*[a-z]+.*' | sed -E 's/(\s*)([a-z].*)(.*pushes.*)/\2/' | xargs)
+        primary=$(git remote show origin | grep pushes | grep -E '^\s*[a-z]+.*' | sed -E 's/(\s*)([a-z].*)(.*pushes.*)/\2/' | xargs)
         # for branch in $(git for-each-ref --format='%(refname:short)' refs/heads)
         # do
         #     if [ "$branch" != "$currentBranch" ]
@@ -1226,13 +1269,13 @@ resetFeatureBranch ()
         #     fi
         # done
     fi
-    for i in $(git trackbranch | egrep '.* <- .+' | sed 's/\(.*\) <-.*/\1/g')
+    for i in $(git trackbranch | grep -E '.* <- .+' | sed 's/\(.*\) <-.*/\1/g')
     do
         if [ "1" == $(git remote | wc -l) ]
         then
-            local r="`git branch -a | grep remotes | grep -v HEAD | egrep \"(upstream/$i|origin/$i)\" | head -1 | cut -f 3 -d ' '`"
+            local r="`git branch -a | grep remotes | grep -v HEAD | grep -E \"(upstream/$i|origin/$i)\" | head -1 | cut -f 3 -d ' '`"
         else
-            local r="`git branch -a | grep remotes | grep -v HEAD | egrep \"(upstream/$i)\" | head -1 | cut -f 3 -d ' '`"
+            local r="`git branch -a | grep remotes | grep -v HEAD | grep -E \"(upstream/$i)\" | head -1 | cut -f 3 -d ' '`"
         fi
         if [ -n "$r" ]
         then
@@ -1363,7 +1406,7 @@ function printBOMGAs
     echo "Renaming effective.pom -> pom.xml and running analysis..."
     curl -s -o`echo $PME | sed 's/.*\///g'` $PME
     /bin/rm -f allgavs.log allnonrhga.log
-    java -jar `echo $PME | sed 's/.*\///g'` -p | egrep -v '(Maven-Manipulation-Extension|Found the following dependencies)' > allgavs.log 2>&1
+    java -jar `echo $PME | sed 's/.*\///g'` -p | grep -E -v '(Maven-Manipulation-Extension|Found the following dependencies)' > allgavs.log 2>&1
 
 
     echo "GAV count is `cat allgavs.log | wc -l`"
@@ -1371,7 +1414,7 @@ function printBOMGAs
     cat allgavs.log | grep -v redhat | awk '{print $1}' | sed -E 's/(.*):[a-z]+:[0-9]+.*/\1/g' | sort | uniq > allnonrhga.log
     echo "Non redhat GA count is `cat allnonrhga.log | wc -l`"
 
-    # java -jar /home/rnc/Work/PME/pom-manipulation-ext/cli/target/pom-manipulation-cli-1.8-SNAPSHOT.jar -p | egrep -v redhat | awk '{print $1}' | sed -E 's/(.*):[a-z]+:[0-9]+.*/\1/g' | sort | uniq > fabric8nonrhga.log
+    # java -jar /home/rnc/Work/PME/pom-manipulation-ext/cli/target/pom-manipulation-cli-1.8-SNAPSHOT.jar -p | grep -E -v redhat | awk '{print $1}' | sed -E 's/(.*):[a-z]+:[0-9]+.*/\1/g' | sort | uniq > fabric8nonrhga.log
     # awk 'NR==FNR{a[$0];next} !($0 in a)' /tmp/fusenonrhga.log fabricnonrhga
     #cd ..
     #rm -rf $WORKDIR
@@ -1381,7 +1424,7 @@ function printBOMGAs
 # Same as list-tag-inheritance but trim off excess depth.
 function blt()
 {
-    brew list-tag-inheritance $1 | sed -e 's/  │          .*/  │       [...tag continues...]/g' -e 's/              .*/              [...tag continues...]/g' | uniq | egrep '...tag continues...|$'
+    brew list-tag-inheritance $1 | sed -e 's/  │          .*/  │       [...tag continues...]/g' -e 's/              .*/              [...tag continues...]/g' | uniq | grep -E '...tag continues...|$'
 }
 
 
@@ -1781,4 +1824,23 @@ function collateDocuments()
     pdfunite S* "$name".pdf
     mkdir $folder
     mv S* $folder
+}
+
+
+
+function rhtapStaging()
+{
+    export KUBECONFIG=$HOME/Work/JBS/kube-config
+}
+
+
+# Doesn't appear to work quite right - ripgrep seems a better option.
+#function allgrep()
+#{
+#    grep -Ini "$@" (^(target|vendor|.quinoa|.cache|node_modules)/)##*(.)
+#}
+
+function rg()
+{
+    /usr/bin/rg --sort path "$@"
 }

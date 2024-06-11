@@ -39,7 +39,7 @@
         trackbranch = for-each-ref --format='%(refname:short) <- %(upstream:short)' refs/heads
 
         # Interactive stash
-        interactivestash = stash save --patch
+        interactivestash = stash push --patch
 
         # Stash listing
         sl=stash list --pretty=format:'%C(yellow)%gd(%cr)%Creset: %gs'
@@ -47,7 +47,8 @@
         # Short git remote / status / branch
         s = status -sb
         r = remote -v
-        b = branch -av
+        b = branch -v
+        bb = branch -av
 
         # Show the commit a tag is pointing at.
         tagcommit = "!f() { git rev-parse --verify $1^{commit}; }; f"

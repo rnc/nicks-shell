@@ -411,10 +411,7 @@ function _java_prompt_()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    local oraclejava5=$SW_PREFIX/jdk1.5.0
-    local oraclejava6=$SW_PREFIX/jdk1.6.0
     local oraclejava7=$SW_PREFIX/jdk1.7.0
-    local oraclejava8=$SW_PREFIX/jdk1.8.0
     local oraclejava9=$SW_PREFIX/jdk-9
     local openjdk8=$SW_PREFIX/jdk8u392-b08
     local openjdk11=$SW_PREFIX/jdk-11
@@ -422,23 +419,15 @@ function _java_prompt_()
     local openjdk17=$SW_PREFIX/jdk-17
     local openjdk18=$SW_PREFIX/jdk-18.0.1+10/
     local openjdk21=$SW_PREFIX/jdk-21.0.3+9
-    local ibmjava6=$SW_PREFIX/ibm-jdk1.6.0
-    local ibmjava7=$SW_PREFIX/ibm-jdk1.7.0
     local i
 
-    for i in $oraclejava5 $oraclejava6 $oraclejava7 $oraclejava8 $oraclejava9 $ibmjava6 $ibmjava7 $openjdk11 $openjdk12
+    for i in $oraclejava7 $oraclejava9 $ibmjava6 $ibmjava7 $openjdk8 $$openjdk11 $openjdk12 $openjdk17 $openjdk18 $openjdk21
     do
         local replace="$i/bin:"
         PATH=`echo ${PATH//$replace/}`
     done
 
     case $1 in
-      "oraclejava5")
-        export JAVA_HOME=$oraclejava5
-        ;;
-      "oraclejava6")
-        export JAVA_HOME=$oraclejava6
-        ;;
       "oraclejava7")
         export JAVA_HOME=$oraclejava7
         ;;
@@ -466,29 +455,9 @@ function _java_prompt_()
       "openjdk21")
         export JAVA_HOME=$openjdk21
         ;;
-      "ibmjava6")
-        export JAVA_HOME=$ibmjava6
-        ;;
-      "ibmjava7")
-        export JAVA_HOME=$ibmjava7
-        ;;
     esac
 
     export PATH=$JAVA_HOME/bin:$PATH
-}
-
-function oraclejava5()
-{
-    _java_prompt_ oraclejava5
-
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE5)%{"$'\e[00m''%}'
-}
-
-function oraclejava6()
-{
-    _java_prompt_ oraclejava6
-
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE6)%{"$'\e[00m''%}'
 }
 
 function oraclejava7()
@@ -496,13 +465,6 @@ function oraclejava7()
     _java_prompt_ oraclejava7
 
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE7)%{"$'\e[00m''%}'
-}
-
-function oraclejava8()
-{
-    _java_prompt_ oraclejava8
-
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE8)%{"$'\e[00m''%}'
 }
 
 function oraclejava9()
@@ -552,20 +514,6 @@ function openjdk21()
     _java_prompt_ openjdk21
 
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA21)%{"$'\e[00m''%}'
-}
-
-function ibmjava6()
-{
-    _java_prompt_ ibmjava6
-
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(IBM6)%{"$'\e[00m''%}'
-}
-
-function ibmjava7()
-{
-    _java_prompt_ ibmjava7
-
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(IBM7)%{"$'\e[00m''%}'
 }
 
 function ant17()
@@ -1842,5 +1790,9 @@ function rhtapStaging()
 
 function rg()
 {
-    /usr/bin/rg --sort path "$@"
+    # Could add these to $HOME/.ripgreprc but this consolidates into my version control while keeping a record.
+    #
+    # Search hidden files (but not .git) by default: https://github.com/BurntSushi/ripgrep/issues/623
+    # Sort output by path. Slightly slower as disable parallelism
+    /usr/bin/rg --hidden --sort path --glob '!.git' "$@"
 }

@@ -79,3 +79,12 @@ user_pref("browser.ping-centre.telemetry", false);
  * [2] https://github.com/mozilla/normandy ***/
 user_pref("app.normandy.enabled", false);
 user_pref("app.normandy.api_url", "");
+
+
+/* https://community.kde.org/Distributions/Packaging_Recommendations */
+user_pref("widget.use-xdg-desktop-portal.file-picke", "1");
+user_pref("media.hardwaremediakeys.enabled", true);
+
+
+/* HTTPS Only Mode */
+user_pref("dom.security.https_only_mode", true);

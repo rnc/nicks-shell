@@ -89,9 +89,11 @@ git -c core.pager="less" >& /dev/null
 
 # Translates a group:artifact:id to a format that httpie / DA accepts
 # Use with http e.g.
-# http POST http://<url>/da/rest/v-1/reports/lookup/gavs
-#   [ versionSuffix=temporary-redhat repositoryGroup=DA-temporary-builds ]
-#   "gavs:=$(gav com.fasterxml.jackson.core:jackson-databind:2.9.9)" | jq ".[].bestMatchVersion"
+# http POST http://<url>/da/rest/v-1/reports/lookup/maven
+#   mode=PERSISTENT
+#   "artifacts:=$(gav com.fasterxml.jackson.core:jackson-databind:2.9.9)" | jq ".[].bestMatchVersion"
+#
+# lookup/gavs is deprecated and required repositoryGroup, versionSuffix and mode
 function gav()
 {
     [[ -z "$1" ]] && printf "$ERROR" "Specify-the-gav" && return 1
@@ -592,6 +594,7 @@ function maven-3.3.9()
 function maven-3.5.0()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.5.0
+    MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -599,6 +602,7 @@ function maven-3.5.0()
 function maven-3.6.0()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.6.0
+    MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -606,6 +610,7 @@ function maven-3.6.0()
 function maven-3.6.1()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.6.1
+    MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -613,6 +618,7 @@ function maven-3.6.1()
 function maven-3.6.2()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.6.2
+    MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -620,6 +626,7 @@ function maven-3.6.2()
 function maven-3.6.3()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.6.3
+    MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -627,6 +634,7 @@ function maven-3.6.3()
 function maven-3.8.1()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.8.1
+    MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -634,6 +642,7 @@ function maven-3.8.1()
 function maven-3.8.5()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.8.5
+    MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -641,6 +650,7 @@ function maven-3.8.5()
 function maven-3.8.7()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.8.7
+    MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -648,12 +658,14 @@ function maven-3.8.7()
 function maven-3.9.0()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.9.0
+    MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 function maven-3.9.5()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.9.5
+    MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
@@ -1794,5 +1806,19 @@ function rg()
     #
     # Search hidden files (but not .git) by default: https://github.com/BurntSushi/ripgrep/issues/623
     # Sort output by path. Slightly slower as disable parallelism
-    /usr/bin/rg --hidden --sort path --glob '!.git' "$@"
+    # Also exclude files like ./target/quinoa/build/main.bundle.js.map
+    /usr/bin/rg --hidden --sort path --glob '!.git' --glob '!target/quinoa/build/*bundle.js*' "$@"
+}
+
+
+function retrieveOCI()
+{
+    RESULT=$(mktemp -d)
+    echo "Using directory $RESULT"
+
+    if [[ -z "$1" || -z "$2" ]]; then
+        echo "Usage: $0 <quayRepository> <SHA>"
+        return 1
+    fi
+    use-oci.sh oci:$1@`oras manifest fetch $1@sha256:$2 | jq --raw-output '.layers[0].digest'`=$RESULT
 }

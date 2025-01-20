@@ -828,6 +828,11 @@ function gradle-8.5()
     PATH=$SW_PREFIX/gradle-8.5/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
+function gradle-8.10.2()
+{
+    PATH=$SW_PREFIX/gradle-8.10.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
 
 function groovy-2.5.4()
 {

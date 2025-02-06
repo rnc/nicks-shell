@@ -413,8 +413,6 @@ function _java_prompt_()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
-    local oraclejava7=$SW_PREFIX/jdk1.7.0
-    local oraclejava9=$SW_PREFIX/jdk-9
     local openjdk8=$SW_PREFIX/jdk8u392-b08
     local openjdk11=$SW_PREFIX/jdk-11
     local openjdk12=$SW_PREFIX/jdk-12.0.2+10
@@ -423,22 +421,13 @@ function _java_prompt_()
     local openjdk21=$SW_PREFIX/jdk-21.0.3+9
     local i
 
-    for i in $oraclejava7 $oraclejava9 $ibmjava6 $ibmjava7 $openjdk8 $$openjdk11 $openjdk12 $openjdk17 $openjdk18 $openjdk21
+    for i in $ibmjava6 $ibmjava7 $openjdk8 $$openjdk11 $openjdk12 $openjdk17 $openjdk18 $openjdk21
     do
         local replace="$i/bin:"
         PATH=`echo ${PATH//$replace/}`
     done
 
     case $1 in
-      "oraclejava7")
-        export JAVA_HOME=$oraclejava7
-        ;;
-      "oraclejava8")
-        export JAVA_HOME=$oraclejava8
-        ;;
-      "oraclejava9")
-        export JAVA_HOME=$oraclejava9
-        ;;
       "openjdk8")
         export JAVA_HOME=$openjdk8
         ;;
@@ -460,20 +449,6 @@ function _java_prompt_()
     esac
 
     export PATH=$JAVA_HOME/bin:$PATH
-}
-
-function oraclejava7()
-{
-    _java_prompt_ oraclejava7
-
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE7)%{"$'\e[00m''%}'
-}
-
-function oraclejava9()
-{
-    _java_prompt_ oraclejava9
-
-    PROMPT_JAVA="%{"$'\e[22;36m'"%}(ORACLE9)%{"$'\e[00m''%}'
 }
 
 function openjdk8()

@@ -88,3 +88,6 @@ user_pref("media.hardwaremediakeys.enabled", true);
 
 /* HTTPS Only Mode */
 user_pref("dom.security.https_only_mode", true);
+
+/* Kerberos configuration for RH */
+user_pref("network.negotiate-auth.trusted-uris", ".redhat.com");

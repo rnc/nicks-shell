@@ -10,7 +10,9 @@ includedir /etc/krb5.conf.d/
   dns_lookup_realm = true
   dns_lookup_kdc = true
   rdns = false
-  dns_canonicalize_hostname = fallback # ITIAM-3826
+  # https://source.redhat.com/departments/it/identityaccessmanagement/identity__access_management_blog/kerberos_client_config_changing_to_dns_canonicalize_hostname__false_chg0048363
+  # fallback = Try “false” first.  Then try “true”.
+  dns_canonicalize_hostname = fallback
   ticket_lifetime = 24h
   forwardable = true
   udp_preference_limit = 0

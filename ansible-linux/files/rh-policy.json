@@ -1,5 +1,6 @@
 {
     "AuthServerWhitelist" : "*.redhat.com",
     "AuthServerAllowlist": "*.redhat.com",
+    "DisableAuthNegotiateCnameLookup" : true,
     "DefaultBrowserSettingEnabled" : false
 }

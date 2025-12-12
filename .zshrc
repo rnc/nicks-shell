@@ -94,6 +94,12 @@ then
              $functions[rmvenv]
              }"
         eval "function mkvenv() {
+             local params
+             params=(\"${@[@]}\")
+             echo 'Configuring params to pass --editable . for pipenv for development'
+             params+=(\"--editable .\")
+             echo 'Not setting PIPENV_SITE_PACKAGES=true (which would use the site packages)'
+             # export PIPENV_SITE_PACKAGES=true
              # https://github.com/pypa/pip/issues/8090
              echo 'Skipping keyring'
              export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring

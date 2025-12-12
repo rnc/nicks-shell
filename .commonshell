@@ -419,6 +419,7 @@ function _java_prompt_()
     local openjdk17=$SW_PREFIX/jdk-17
     local openjdk18=$SW_PREFIX/jdk-18.0.1+10/
     local openjdk21=$SW_PREFIX/jdk-21.0.3+9
+    local openjdk24=$SW_PREFIX/jdk-24+36
     local i
 
     for i in $ibmjava6 $ibmjava7 $openjdk8 $$openjdk11 $openjdk12 $openjdk17 $openjdk18 $openjdk21
@@ -445,6 +446,9 @@ function _java_prompt_()
         ;;
       "openjdk21")
         export JAVA_HOME=$openjdk21
+        ;;
+      "openjdk24")
+        export JAVA_HOME=$openjdk24
         ;;
     esac
 
@@ -491,6 +495,13 @@ function openjdk21()
     _java_prompt_ openjdk21
 
     PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA21)%{"$'\e[00m''%}'
+}
+
+function openjdk24()
+{
+    _java_prompt_ openjdk24
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA24)%{"$'\e[00m''%}'
 }
 
 function ant17()
@@ -637,9 +648,26 @@ function maven-3.9.0()
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
+
 function maven-3.9.5()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.9.5
+    MAVEN_HOME=$M2_HOME
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function maven-3.9.9()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.9.9
+    MAVEN_HOME=$M2_HOME
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function maven-3.9.11()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.9.11
     MAVEN_HOME=$M2_HOME
     PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
@@ -685,10 +713,18 @@ function gradle-4.10.2()
     _gradle_daemon_workaround
 }
 
+function gradle-4.10.3()
+{
+    PATH=$SW_PREFIX/gradle-4.10.3/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+    _gradle_daemon_workaround
+}
+
 function gradle-5.1.1()
 {
     PATH=$SW_PREFIX/gradle-5.1.1/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
+    _gradle_daemon_workaround
 }
 
 function gradle-5.3.1()
@@ -806,6 +842,16 @@ function gradle-8.5()
 function gradle-8.10.2()
 {
     PATH=$SW_PREFIX/gradle-8.10.2/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+function gradle-8.14.3()
+{
+    PATH=$SW_PREFIX/gradle-8.14.3/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
+    echo "Gradle executable is `which gradle`"
+}
+function gradle-9.0.0()
+{
+    PATH=$SW_PREFIX/gradle-9.0.0/bin:`echo $PATH | awk -v RS=: -v ORS=: '/gradle-/ {next} {print}'`
     echo "Gradle executable is `which gradle`"
 }
 
@@ -1209,7 +1255,8 @@ resetFeatureBranch ()
         #     fi
         # done
     fi
-    for i in $(git trackbranch | grep -E '.* <- .+' | sed 's/\(.*\) <-.*/\1/g')
+    # While inserting the primary (via the final sed) can lead to duplicates we want to search the primary first
+    for i in $(git trackbranch | grep -E '.* <- .+' | sed 's/\(.*\) <-.*/\1/g' | sed "1i$primary")
     do
         if [ "1" == $(git remote | wc -l) ]
         then
@@ -1528,16 +1575,16 @@ function compareImageFiles()
     do
         local targetFile=${i#$basepath}
 
-        printf "$INFO" "Examining: $i"
+        printf "$INFO" "Examining: $i (to $2/$targetFile)"
 
-        if [ ! -f $2/$targetFile ]
+        if [ ! -f "$2/$targetFile" ]
         then
-            printf "$ERROR" "No file for $2/$targetFile"
+            printf "$ERROR" "No file for $2 / $targetFile"
         else
-            diff <(md5sum $i | awk '{print $1}') <(md5sum $2/$targetFile | awk '{print $1}') > /dev/null
+            diff <(md5sum $i | awk '{print $1}') <(md5sum "$2/$targetFile" | awk '{print $1}') > /dev/null
             if [ $? != 0 ]
             then
-                diff <(identify -format "%#\n" $i) <(identify -format "%#\n" $2/$targetFile)
+                diff <(identify -format "%#\n" $i) <(identify -format "%#\n" "$2/$targetFile")
                 if [ $? != 0 ]
                 then
                     printf "$ERROR" "Image and metadata do not match for $targetFile"
@@ -1602,7 +1649,7 @@ searchForMatchingFiles()
     trap "cd $NOCHPWD $cwd ; return" 2 3 15
 
     #set -x
-    for i in $(find $1 -iname "*.jpg")
+    for i in $(find "$1" -iname "*.jpg")
     do
         local result=""
         local partialresult=""
@@ -1610,7 +1657,7 @@ searchForMatchingFiles()
         local extension="${filename##*.}"
         echo "Looking at $i and $j"
 
-        for j in $(find $2 -iname "*.$extension")
+        for j in $(find "$2" -iname "*.$extension")
         do
             diff <(md5sum $i | awk '{print $1}') <(md5sum $j | awk '{print $1}') > /dev/null
             if [ $? == 0 ]
@@ -1644,6 +1691,158 @@ searchForMatchingFiles()
 
     trap - 2 3 15
 }
+
+
+#
+# https://stackoverflow.com/questions/17338863/split-a-string-stored-in-a-variable-into-multiple-words-using-spaces-but-not-t
+#
+# cat ~/tmp/s2.txt | grep -E "^'.*iOS\s[0-9].jpg'\s[a-zA-Z]\S+$" | while read i ; do
+# echo "Found : $i : "
+# eval "arr=($i)"
+# echo "array $arr[1]"
+# echo "array $arr[2]"
+# fixupInageFiles "$arr[1]" "$arr[2]"
+# done
+#
+fixupImageFiles()
+{
+    which identify >& /dev/null
+    [[ "$?" != 0 ]] && printf "$ERROR" "Install identify" && return 1
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+    [[ "$1" == "-d" ]] && shift && echo "Using dryrun" && local DRYRUN=true
+    [[ "$1" == "-q" ]] && shift && echo "Using query" && local QUERY=true
+    [[ -z "$1" || -z "$2" ]] && echo "Must pass in two parameters" && return 1
+    [[ "$SHELL" != "/bin/zsh" ]] && echo "Only compatible with ZSH" && return 1
+
+    # if [[ "$1" != *"iOS"* ]]
+    # then
+    #     printf "$ERROR" "iOS photo should be first" && return 1
+    # elif [[ "$2" == *"iOS"* ]]
+    # then
+    #     printf "$ERROR" "iOS photo should be first" && return 1
+    # fi
+
+    #local IFS=$'\n'
+
+    echo "\nExamining $1 versus $2\n"
+    if [[ ! -f "$1" ]] || [[ ! -f "$2" ]]
+    then
+        echo "File $1 or $2 does not exist"
+        return
+    fi
+    diff <(md5sum "$1") <(md5sum "$2") > /dev/null
+    if [ $? == 0 ]
+    then
+        printf "$ERROR" "Image and metadata match for $1 and $2"
+        return
+    fi
+    diff <(identify -format "%#\n" "$1") <(identify -format "%#\n" "$2")
+    if [ $? != 0 ]
+    then
+        printf "$ERROR" "Image and metadata do not match for $1 and $2"
+        return
+    else
+        echo "Image matches but not metadata for $1 :: $2"
+    fi
+    echo "Dates:"
+    exiftool -time:all "$1" "$2"
+
+    if [ "$QUERY" == true ]
+    then
+        read "REPLY?Are you sure? [Y/n]"
+        if [[ ! "$REPLY" =~ ^[Nn]$ ]]
+        then
+            DRYRUN=true
+        fi
+    fi
+    if [ "$DRYRUN" == true ]
+    then
+        echo "Would then run:\n\texiftool -overwrite_original_in_place \"-OriginalFileName=$2\" $1\n\trm -f $2"
+    else
+        exiftool -overwrite_original_in_place "-OriginalFileName=$2" "$1"
+        /bin/rm -f "$2"
+    fi
+}
+
+searchForMatchingFilesInSameDirectory()
+{
+    which identify >& /dev/null
+    [[ "$?" != 0 ]] && printf "$ERROR" "Install identify" && return 1
+    [[ -n $ZSH_VERSION ]] && local NOCHPWD="-q"
+    [[ -z "$1" ]] && echo "Must pass in directory" && return 1
+
+    local cwd=$PWD
+    local IFS=$'\n'
+
+    # Any ctrl-c breaks the loop and resets the directory.
+    # trap "cd $NOCHPWD $cwd ; return" 2 3 15
+
+    #set -x
+    for i in $(find "$1" -iname "*.jpg")
+    do
+        local result=""
+        local partialresult=""
+
+        local filename=$(basename "$i")
+        local extension="${filename##*.}"
+        local md5hash=$(exiftool -all= -o - $filename 2>&- | md5sum | awk '{print $1}')
+
+        printf "$INFO" "$filename (hash: $md5hash)"
+        counter=0
+        message=100
+
+        for j in $(find "." -iname "*.$extension")
+        do
+            local loop=$(basename "$j")
+            if [ "$filename" == "$loop" ]
+            then
+                continue
+            fi
+            #echo "Comparing $filename with $loop"
+            # diff <(md5sum $filename | awk '{print $1}') <(md5sum $loop | awk '{print $1}') > /dev/null
+            # if [ $? == 0 ]
+            # then
+            #     result=$loop
+            #     break
+            # fi
+            # diff <(identify -format "%#\n" $filename 2> /dev/null) <(identify -format "%#\n" $loop 2> /dev/null) > /dev/null
+            # if [ $? == 0 ]
+            # then
+            #     result=$loop
+            #     break
+            # fi
+#            exiftool -filename -if "\$createdate eq \"$(exiftool -s -s -s -CreateDate $filename)\"" -ext jpg $loop > /dev/null
+#            if [ $? == 0 ]
+#            then
+#                partialresult=$loop
+#                break
+#            fi
+            counter=$((counter+1))
+            local md5newhash=$(exiftool -all= -o - $loop 2>&- | md5sum | awk '{print $1}')
+            if [ "$mdhash" == "$md5newhash" ]
+            then
+                result=$loop
+                break
+            elif [[ "$counter" -eq "$message" ]]
+            then
+                echo "compared $message files (now $loop with hash $md5newhash)"
+                message=$(($message+100))
+            fi
+        done
+        if [ -n "$partialresult" ]
+        then
+            echo "Found partial $partialresult for $filename"
+        elif [ -n "$result" ]
+        then
+            printf "$INFO" "MATCH: $result with $filename"
+        else
+            printf "$ERROR" "Did not find matching file for $filename"
+        fi
+    done
+
+    trap - 2 3 15
+}
+
 
 searchForMatchingUsingExifDate()
 {

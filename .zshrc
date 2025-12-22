@@ -94,10 +94,7 @@ then
              $functions[rmvenv]
              }"
         eval "function mkvenv() {
-             local params
-             params=(\"${@[@]}\")
-             echo 'Configuring params to pass --editable . for pipenv for development'
-             params+=(\"--editable .\")
+             echo 'Not setting AUTOSWITCH_PIPINSTALL=FULL (so we use editable mode)'
              echo 'Not setting PIPENV_SITE_PACKAGES=true (which would use the site packages)'
              # export PIPENV_SITE_PACKAGES=true
              # https://github.com/pypa/pip/issues/8090
@@ -289,7 +286,10 @@ fi
 #### File system options ################
 #########################################
 
-umask 002
+# umask was set to 002 (which gives -rw-rw-r--.) but /etc/login.defs is 022
+# which gives -rw-r--r--. Something has perhaps changed over the years but
+# it seems simpler to remove this override.
+# umask 002
 
 #################################
 #### remove shell limits ########

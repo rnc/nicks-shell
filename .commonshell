@@ -657,6 +657,28 @@ function maven-3.9.5()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.9.6()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.9.6
+    MAVEN_HOME=$M2_HOME
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
+function maven-3.9.7()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.9.7
+    MAVEN_HOME=$M2_HOME
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+function maven-3.9.8()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.9.8
+    MAVEN_HOME=$M2_HOME
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
 function maven-3.9.9()
 {
     M2_HOME=$SW_PREFIX/apache-maven-3.9.9
@@ -2000,4 +2022,44 @@ function retrieveOCI()
         return 1
     fi
     use-oci.sh oci:$1@`oras manifest fetch $1@sha256:$2 | jq --raw-output '.layers[0].digest'`=$RESULT
+}
+
+
+function createPNCImageBody()
+{
+    # Takes:
+    # JDK, RHEL, MAVEN, GRADLE
+    JDK=$1
+    RHEL=$2
+    MAVEN=$3
+    GRADLE=$4
+    if [ $? != 4 ]
+    then
+        echo "Specify jdk rhel maven gradle e.g. $0 25 8 3.9.12 9.2.1"
+        return
+    fi
+    echo "JDK: $JDK ; RHEL $RHEL ; MAVEN $MAVEN GRADLE $GRADLE"
+    echo "{
+      \"name\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN; Gradle $GRADLE\",
+      \"description\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN; Gradle $GRADLE [builder-rhel-9-j25-mvn$MAVEN-gradle$GRADLE:1.0.0]\",
+      \"systemImageRepositoryUrl\": \"quay.io/rh-newcastle\",
+      \"systemImageId\": \"builder-rhel-8-j25-mvn$MAVEN-gradle$GRADLE:1.0.0\",
+      \"attributes\": {
+        \"JDK\": \"$JDK\",
+        \"MAVEN\": \"$MAVEN\",
+        \"GRADLE\": \"$GRADLE\",
+        \"OS\": \"Linux\"
+      },
+      \"systemImageType\": \"DOCKER_IMAGE\",
+      \"deprecated\": false,
+      \"hidden\": false
+}"
+}
+
+function catall() {
+    if [[ -z "$1" ]]; then
+        echo "Usage: $0 <files...>"
+        return 1
+    fi
+    tail -n +1 $* | awk ' /==>/ {print "\033[32m" $0 "\033[39m" ; next } 1{print} '
 }

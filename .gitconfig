@@ -1,0 +1,28 @@
+[user]
+	email = ncross@redhat.com
+	name = Nick Cross
+	username = rnc
+[core]
+	editor = emacs -nw --no-init-file --no-site-file
+[push]
+	default = upstream
+[http]
+	sslVerify = false
+[transfer]
+	fsckObjects = false
+[receive]
+	fsckObjects = false
+[fetch]
+        fsckobjects = false
+[color]
+	ui = true
+[tag]
+	sort = version:refname
+[diff]
+	algorithm = histogram
+[init]
+	templateDir = /home/rnc/.git-template
+	defaultBranch = main
+[rh-pre-commit]
+	enableLocalConfig = false
+	checkSecrets = true

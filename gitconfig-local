@@ -1,0 +1,16 @@
+# Used for $HOME/.gitconfig
+
+[user]
+	email = ncross@redhat.com
+	name = Nick Cross
+	username = rnc
+[push]
+	default = upstream
+[http]
+	sslVerify = false
+[init]
+	templateDir = /home/rnc/.git-template
+	defaultBranch = main
+[rh-pre-commit]
+	enableLocalConfig = false
+	checkSecrets = true

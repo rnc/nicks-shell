@@ -1,11 +1,21 @@
 # Global config suitable for /etc/gitconfig
 
+[color]
+	ui = true
+
+[core]
+	editor = emacs -nw --no-init-file --no-site-file
+
+[diff]
+	algorithm = histogram
+        # https://github.com/git/git/blob/e5272d304af3528163cd5faa822f88086448ae57/Documentation/diff-options.txt#L311-L312
+	wsErrorHighlight = all
+
 [pull]
         rebase = true
 
-[diff]
-        # https://github.com/git/git/blob/e5272d304af3528163cd5faa822f88086448ae57/Documentation/diff-options.txt#L311-L312
-	wsErrorHighlight = all
+[tag]
+	sort = version:refname
 
 [alias]
         # Log aliases

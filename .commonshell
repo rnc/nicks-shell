@@ -2053,7 +2053,6 @@ function createPNCImageBody()
     MAVEN=$3
     GRADLE=""
     SUFFIX=""
-    echo "### DEBUG: Count is $# and params are $1 : $2 : $3 : $4 : $5"
     if [ $# -lt 3 ]
     then
         echo "Specify jdk rhel maven (optionally: gradle)  e.g. $0 25 8 3.9.12 9.2.1"
@@ -2069,12 +2068,18 @@ function createPNCImageBody()
         if [ "$5" == "gettext-jss" ]
         then
             SUFFIXCOMMENT="; Gettext; JSS"
+        elif [ "$5" == "rpmbuild-eap" ]
+        then
+            SUFFIXCOMMENT="; rpmbuild - EAP"
+        else
+            # Fallback
+            SUFFIXCOMMENT=$5
         fi
         SUFFIX="-$5"
     fi
     IMAGETAG=$(oras repo tags quay.io/rh-newcastle/builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX | tail -2 | head -1)
     DIGEST=$(oras resolve quay.io/rh-newcastle/builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:$IMAGETAG)
-    echo "IMAGETAG: $IMAGETAG JDK: $JDK ; RHEL $RHEL ; MAVEN $MAVEN GRADLE $GRADLE"
+    echo "IMAGETAG: $IMAGETAG JDK: $JDK ; RHEL $RHEL ; MAVEN $MAVEN GRADLE $4 SUFFIX $5"
     echo "{
       \"name\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN$GRADLECOMMENT$SUFFIXCOMMENT\",
       \"description\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN$GRADLECOMMENT$SUFFIXCOMMENT [builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:$IMAGETAG]\",

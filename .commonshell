@@ -706,6 +706,14 @@ function maven-3.9.11()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.9.12()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.9.12
+    MAVEN_HOME=$M2_HOME
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 # https://github.com/gradle/gradle/issues/3117
 function _gradle_daemon_workaround()
 {
@@ -2064,17 +2072,20 @@ function createPNCImageBody()
         fi
         SUFFIX="-$5"
     fi
-    echo "JDK: $JDK ; RHEL $RHEL ; MAVEN $MAVEN GRADLE $GRADLE"
+    IMAGETAG=$(oras repo tags quay.io/rh-newcastle/builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX | tail -2 | head -1)
+    DIGEST=$(oras resolve quay.io/rh-newcastle/builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:$IMAGETAG)
+    echo "IMAGETAG: $IMAGETAG JDK: $JDK ; RHEL $RHEL ; MAVEN $MAVEN GRADLE $GRADLE"
     echo "{
       \"name\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN$GRADLECOMMENT$SUFFIXCOMMENT\",
-      \"description\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN$GRADLECOMMENT$SUFFIXCOMMENT [builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:1.0.0]\",
+      \"description\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN$GRADLECOMMENT$SUFFIXCOMMENT [builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:$IMAGETAG]\",
       \"systemImageRepositoryUrl\": \"quay.io/rh-newcastle\",
-      \"systemImageId\": \"builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:1.0.0\",
+      \"systemImageId\": \"builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:$IMAGETAG\",
       \"attributes\": {
         \"JDK\": \"$JDK\",
         \"MAVEN\": \"$MAVEN\",
         \"GRADLE\": \"$4\",
-        \"OS\": \"Linux\"
+        \"OS\": \"Linux\",
+        \"IMAGE_DIGEST_REF\": \"$DIGEST\"
       },
       \"systemImageType\": \"DOCKER_IMAGE\",
       \"deprecated\": false,

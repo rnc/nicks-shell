@@ -17,7 +17,8 @@ then
     KRB5CCNAME=/tmp/"$USER"_ccache
 fi
 # Ensure any Python virtualenv that installs certifi doesn't clash and we use the system certificates
-export REQUESTS_CA_BUNDLE=/etc/pki/tls/certs/ca-bundle.crt
+# Note: F43 and below is /etc/pki/tls/certs/ca-bundle.crt
+export REQUESTS_CA_BUNDLE=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
 
 
 # https://github.com/keybase/keybase-issues/issues/2798 ; https://issues.apache.org/jira/browse/MGPG-59
@@ -41,7 +42,7 @@ then
 fi
 
 export PATH EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY QUOTING_STYLE QT_LOGGING_RULES
-export JAVA_HOME=`dirname $(dirname $(readlink -f $(which java)))`
+#export JAVA_HOME=`dirname $(dirname $(readlink -f $(which java)))`
 export QUAY_USERNAME=ncross
 
 # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
@@ -77,9 +78,9 @@ INFO="${BOLD}${GREEN}%s${OFF}\n"
 if [ "$SHELL" = "/bin/bash" ] || [ "$SHELL" = "/usr/bin/bash" ]
 then
     # If we are a bash shell define noop function to work around zsh specific calls.
-    function setopt ()
-    {
-        :
+    # Seems to cause "(eval):1: no matches found: *:globbed-files" if my shell isn't zsh
+    function setopt () {
+       :
     }
 fi
 git -c core.pager="less" >& /dev/null

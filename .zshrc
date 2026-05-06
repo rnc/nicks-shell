@@ -12,6 +12,9 @@
 # Prefix where useful things are stored in the users file system
 # NS_PREFIX=xxx
 
+# Profiling
+# zmodload zsh/zprof
+
 # Any other functions etc can also be put in here.
 [[ -f $HOME/.shell-configuration ]] && source $HOME/.shell-configuration
 
@@ -55,7 +58,7 @@ then
     fi
 
     # ZSH AutoSuggestions
-     source $NS_PREFIX/zsh-autosuggestions/zsh-autosuggestions.zsh
+    source $NS_PREFIX/zsh-autosuggestions/zsh-autosuggestions.zsh
 
     # https://stackoverflow.com/questions/7444504/explanation-of-colon-operator-in-foo-value
     : ${PROMPT_SYMBOL:="❯"}
@@ -411,7 +414,7 @@ _git-tagcommit () { _git-rev-parse "$@" }
 #
 if is-at-least 5.0.5
 then
-    source $HOME/.commonshell
+     source $HOME/.commonshell
 fi
 [[ -f $HOME/.aliases ]] && source $HOME/.aliases
 [[ -f $HOME/.corbashell ]] && source $HOME/.corbashell
@@ -530,8 +533,8 @@ MARK_DIRS \
 NO_MENU_COMPLETE \
 MONITOR \
 MULTIOS \
-NO_NOMATCH \
 NOTIFY \
+NO_NOMATCH \
 NO_NULL_GLOB \
 NO_NUMERIC_GLOB_SORT \
 NO_OCTAL_ZEROES \
@@ -643,3 +646,6 @@ if type oc > /dev/null
 then
     source <(oc completion zsh)
 fi
+
+# Profiling
+# zprof

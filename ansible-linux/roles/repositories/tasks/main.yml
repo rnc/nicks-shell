@@ -47,33 +47,33 @@
       enabled: yes
       gpgkey: https://packages.microsoft.com/keys/microsoft.asc
 
-  - name : InSyncHQ
-    yum_repository:
-      name: isynchq
-      description: InSyncHQ
-      baseurl: http://yum.insync.io/fedora/$releasever/
-      gpgcheck: yes
-      enabled: yes
-      gpgkey: https://d2t3ff60b2tol4.cloudfront.net/repomd.xml.key
+  # - name : InSyncHQ
+  #   yum_repository:
+  #     name: isynchq
+  #     description: InSyncHQ
+  #     baseurl: http://yum.insync.io/fedora/$releasever/
+  #     gpgcheck: yes
+  #     enabled: yes
+  #     gpgkey: https://d2t3ff60b2tol4.cloudfront.net/repomd.xml.key
 
 
-  - name: Enable Fedora Copr for LXD
-    command: "dnf copr enable -y rnc/cryfs"
-    args:
-      creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:rnc:cryfs.repo
+  # - name: Enable Fedora Copr for LXD
+  #   command: "dnf copr enable -y rnc/cryfs"
+  #   args:
+  #     creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:rnc:cryfs.repo
 
-  - name: Enable Fedora Copr for Birdtray
-    command: "dnf copr enable -y rnc/Birdtray"
-    args:
-      creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:rnc:Birdtray.repo
+  # - name: Enable Fedora Copr for Birdtray
+  #   command: "dnf copr enable -y rnc/Birdtray"
+  #   args:
+  #     creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:rnc:Birdtray.repo
 
   - name: Enable Fedora Copr for CherryTree
     command: "dnf copr enable -y bcotton/cherrytree"
     args:
       creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:bcotton:cherrytree.repo
 
-  # No Fedora 37 support
-  # - name: Enable Fedora Copr for Tekton CLI
-  #   command: "dnf copr enable -y chmouel/tektoncd-cli"
-  #   args:
-  #     creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:chmouel:tektoncd-cli.repo
+  - name: Enable GH-CLI
+    shell:
+        cmd: dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo && dnf install gh --repo gh-cli
+    args:
+      creates: /etc/yum.repos.d/gh-cli.repo

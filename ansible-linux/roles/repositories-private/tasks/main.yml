@@ -8,13 +8,13 @@
       gpgcheck: no
       enabled: yes
 
-  - name : Repository - CSB
-    yum_repository:
-      name: rhel8
-      description: RHEL8 CSB packages
-      baseurl: http://{{ csb_repo }}/rhel8-csb
-      gpgcheck: yes
-      enabled: yes
-      priority: "2"
-      includepkgs: redhat*,slack,bluejeans
-      gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
+  # - name : Repository - CSB
+  #   yum_repository:
+  #     name: rhel8
+  #     description: RHEL8 CSB packages
+  #     baseurl: http://{{ csb_repo }}/rhel8-csb
+  #     gpgcheck: yes
+  #     enabled: yes
+  #     priority: "2"
+  #     includepkgs: redhat*
+  #     gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk

@@ -3,10 +3,10 @@
 - name: run the playbook tasks on the localhost
   hosts: localhost
   vars:
-    - vpn_bootstrap: false
-    - do_vault: true
-    - do_minishift: false
-    - disable_gpg_check: yes
+    vpn_bootstrap: false
+    do_vault: true
+    do_minishift: false
+    disable_gpg_check: yes
   vars_prompt:
   - name: "vpn_password"
     prompt: "Enter VPN (with TOTP) password (NOT kerberos)"
@@ -42,42 +42,42 @@
       manager: auto
     no_log: True
 
-  - block:
-    - name: Install bootstrap VPN
-      unarchive:
-        decrypt: yes
-        src: "{{ bootstrap_vpn }}"
-        dest: /
-    - name: Activate network for bootstrap VPN
-      command: nmcli connection reload
-    - name: Establish temporary vpn filename
-      shell: basename $(ls /etc/NetworkManager/system-connections/* )
-      register: vpn_filename
-    - name: Note this action.
-      set_fact:
-        vpn_bootstrap: True
-    when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages and ansible_distribution == "Fedora" and do_vault == true'
+  # - block:
+  #   - name: Install bootstrap VPN
+  #     unarchive:
+  #       decrypt: yes
+  #       src: "{{ bootstrap_vpn }}"
+  #       dest: /
+  #   - name: Activate network for bootstrap VPN
+  #     command: nmcli connection reload
+  #   - name: Establish temporary vpn filename
+  #     shell: basename $(ls /etc/NetworkManager/system-connections/* )
+  #     register: vpn_filename
+  #   - name: Note this action.
+  #     set_fact:
+  #       vpn_bootstrap: True
+  #   when: '"redhat-internal-NetworkManager-openvpn-profiles-non-gnome" not in ansible_facts.packages and ansible_distribution == "Fedora" and do_vault == true'
 
 
-  - block:
-    - name: Connect to VPN
-      expect:
-        command: nmcli -a connection up '{{ vpn_connection }}'
-        echo: yes
-        responses:
-          vpn.secrets.password: "{{ vpn_password }}"
-      register: command_result
-      # Handle double connection
-      failed_when:
-        - command_result.rc != 0
-        - '"is already active" not in command_result.stdout'
-      changed_when: False
-    - debug:
-        msg="Verifying VPN connection exists...( if not activate vpn connection by running nmcli -a connection up {{ vpn_connection }} )"
-    - name: Check bootstrap VPN exists
-      command: ip link show tun0 up
-      changed_when: False
-    when: ansible_distribution == "Fedora" and do_vault == true
+  # - block:
+  #   - name: Connect to VPN
+  #     expect:
+  #       command: nmcli -a connection up '{{ vpn_connection }}'
+  #       echo: yes
+  #       responses:
+  #         vpn.secrets.password: "{{ vpn_password }}"
+  #     register: command_result
+  #     # Handle double connection
+  #     failed_when:
+  #       - command_result.rc != 0
+  #       - '"is already active" not in command_result.stdout'
+  #     changed_when: False
+  #   - debug:
+  #       msg="Verifying VPN connection exists...( if not activate vpn connection by running nmcli -a connection up {{ vpn_connection }} )"
+  #   - name: Check bootstrap VPN exists
+  #     command: ip link show tun0 up
+  #     changed_when: False
+  #   when: ansible_distribution == "Fedora" and do_vault == true
 
   - name: Install all package upgrades
     package: name=* state=latest
@@ -103,23 +103,11 @@
     register: stat_gpg_result
     no_log: True
 
-  - name: Download GPG Key
-    get_url:
-      url: http://{{ csb_repo }}/rhel8-csb/RPM-GPG-KEY-helpdesk
-      dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
-    when: not stat_gpg_result.stat.exists and ansible_distribution == "Fedora" and do_vault == true
-
-  - block:
-    - name: Download SpiderOAK
-      get_url:
-        url: https://spideroak.com/release/spideroak/rpm_x64
-        dest: /tmp/spider.rpm
-    - name: Install SpiderOAK
-      dnf:
-        name: /tmp/spider.rpm
-        state: present
-        disable_gpg_check: "{{ disable_gpg_check }}"
-    when: '"SpiderOak" not in ansible_facts.packages and ansible_distribution == "Fedora"'
+#  - name: Download GPG Key
+#    get_url:
+#      url: http://{{ csb_repo }}/rhel8-csb/RPM-GPG-KEY-helpdesk
+#      dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-helpdesk
+#    when: not stat_gpg_result.stat.exists and ansible_distribution == "Fedora" and do_vault == true
 
   - name: Install base required software
     package:
@@ -129,9 +117,7 @@
   - name: Install base non fedora required software
     package:
       name:
-        - libreoffice-l10n-en-gb
-        - python-gpg
-        - spideroakone
+        - python3-gpg
       state: present
     when: ansible_distribution != "Fedora"
 
@@ -152,18 +138,6 @@
       name: "{{ development_packages_to_install }}"
       state: present
     when: ansible_distribution == "Fedora"
-
-  - block:
-    - name: Download ZOOM
-      get_url:
-        url: https://zoom.us/client/latest/zoom_x86_64.rpm
-        dest: /tmp/zoom_x86_64.rpm
-    - name: Install ZOOM
-      dnf:
-        name: /tmp/zoom_x86_64.rpm
-        state: present
-        disable_gpg_check: "{{ disable_gpg_check }}"
-      when: '"zoom" not in ansible_facts.packages and ansible_distribution == "Fedora"'
 
   # See https://cloud.google.com/docs/chrome-enterprise/policies/
   - name: Chrome Policies
@@ -192,7 +166,7 @@
 
   # JacORB MIOP test needs 1234/udp
   - name: Allow port ranges for KDEConnect / JacORB
-    firewalld:
+    ansible.posix.firewalld:
       immediate: yes
       permanent: true
       state: enabled
@@ -213,18 +187,24 @@
     include_role:
       name: user
 
-  - name: Install minishift
-    include_role:
-      name: minishift
-    when: ansible_distribution == "Fedora" and do_minishift == "true"
+  - name: Enable GH-CLI
+    shell:
+        cmd: dnf config-manager addrepo --from-repofile=https://cli.github.com/packages/rpm/gh-cli.repo && dnf install gh --repo gh-cli
+    args:
+      creates: /etc/yum.repos.d/gh-cli.repo
 
-  - name: Add HTTPIE-Kerberos Python
-    pip:
-      name: httpie-negotiate
+  # - name: Install minishift
+  #   include_role:
+  #     name: minishift
+  #   when: ansible_distribution == "Fedora" and do_minishift == "true"
+
+#  - name: Add HTTPIE-Kerberos Python
+#    pip:
+#      name: httpie-negotiate
 
   # https://www.redhat.com/en/blog/be-careful-when-pulling-images-short-name
-  - name: Update registries
-    replace:
-      path: /etc/containers/registries.conf
-      regexp: "'registry.fedoraproject.org"
-      replace: "'registry.redhat.io', 'quay.io', 'registry.fedoraproject.org"
+ # - name: Update registries
+ #   replace:
+ #     path: /etc/containers/registries.conf
+ #     regexp: "'registry.fedoraproject.org"
+ #     replace: "'registry.redhat.io', 'quay.io', 'registry.fedoraproject.org"

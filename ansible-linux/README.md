@@ -55,7 +55,7 @@ A tar file containing VPN bootstrap information - this needs to contain:
 By default this will use `files/bootstrapvpn.tar` ; pass `-e bootstrap_vpn=<my-bootstrap-file.tar>` to override.
 To view this private file use:
 
-    ansible-vault --vault-id ./vault.sh view vars/private.yml
+    ansible-vault view --vault-id $(./vault.sh) vars/private.yml
 
 # Thunderbolt Connection Information
 

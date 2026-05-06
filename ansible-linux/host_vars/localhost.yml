@@ -7,33 +7,32 @@ bootstrap_vpn: "files/bootstrapvpn.tar"
 packages_to_remove:
   - akonadi
   - akonadi-import-wizard
-  - akregator
+  - akregator*
   - calligra-core
   - calligra-karbon
   - camorama # SparkyLinux webcam
   - cdrskin # No CD drive in current laptop.
   - dragon
-  - espeak-ng
+#  - espeak-ng
   - falkon
   - florence # SparkyLinux keyboard
-  - flatpak
-  - fprintd # Fingerprint daemon
+#  - flatpak
   - gnome-desktop3
   - gnome-keyring
   - gnome-desktop4
   - gnome-themes-extra
-  - google-noto-emoji-color-fonts # Don't need these fonts.
+#  - google-noto-emoji-color-fonts # Don't need these fonts.
   - google-noto-sans-gurmukhi-fonts # Don't need these fonts.
-  - google-noto-cjk-fonts-common # Don't need these fonts.
-  - google-noto-sans-sinhala-vf-fonts # Don't need these fonts.
+#  - google-noto-cjk-fonts-common # Don't need these fonts.
+#  - google-noto-sans-sinhala-vf-fonts # Don't need these fonts.
   - hexchat # SparkyLinux chat
   - initial-setup
   - jemalloc
   - juk
   - k3b
-  - kaddressbooklibs
-  - kdepim-apps-libs
-  - kdepim-runtime
+  - kaddressbook*
+#  - kdepim-apps-libs
+  - kdepim-*
   - kf5-akonadi-mime
   - kf5-akonadi-notes
   - kf5-akonadi-server-mysql
@@ -57,36 +56,42 @@ packages_to_remove:
   - kget
   - kleopatra
   - kmag
-  - kmail
+  - kmail*
   - kmines
   - kmouth
-  - kolourpaint
-  - korganizer
+  - kolourpaint*
+  - korganizer*
+  - kontact*
+  - pim-*
+  - messagelib
+  - grantlee-editor
   - kpat
-  - krfb
+#  - krfb
   - kruler
   - krusader
   - ktnef
   - ktorrent
-  - libburn # No CD drive in current laptop.
-  - libkmahjongg
-  - libkmahjongg-data
-  - mariadb
+#  - libburn # No CD drive in current laptop.
+  - kmahjongg
+  - libkmahjongg*
+#  - mariadb
   - mariadb-backup
-  - mariadb-common
+  - mariadb-client-utils
+#  - mariadb-common
   - mariadb-cracklib-password-check
   - mariadb-embedded
-  - mariadb-errmsg
+#  - mariadb-errmsg
   - mariadb-gssapi-server
   - mariadb-rocksdb-engine
-  - mariadb-server
+#  - mariadb-server
   - mariadb-server-utils
   - mariadb-tokudb-engine
-  - open-vm-tools
+  - open-vm-tools*
   - perl-DBD-MySQL
   - perl-DBI
-  - perl-Math-BigInt
-  - perl-Math-Complex
+  - perl-DBD-MariaDB
+#  - perl-Math-BigInt
+#  - perl-Math-Complex
   - pidgin
   - python2
   - qlipper # SparkyLinux clipboard
@@ -96,7 +101,7 @@ packages_to_remove:
 #  - qt-x11 # QT 4.x libraries
   - qt5-qdbusviewer
   - radiotray # SparkyLinux radio
-  - speech-dispatcher
+#  - speech-dispatcher
   - uget # SparkyLinux
   - virtualbox-guest-additions
   - vokoscreen # Sparkylinux webcast
@@ -111,8 +116,9 @@ base_packages_to_install:
   - google-chrome-stable
   - highlight
   - htop # Process viewer
-  - insync
-  - insync-dolphin
+  - onedrive
+#  - insync
+#  - insync-dolphin
   - jq
   - keepassxc
   - pwgen
@@ -127,13 +133,13 @@ standard_packages_to_install:
   - android-tools # ADB Bridge
   - aria2 # Download accelerator
   - backintime-qt # Backup
-  - birdtray # Dock for Thunderbird
+#  - birdtray # Dock for Thunderbird
   - bolt # Connection to thunderbolt dock
   - cherrytree-future
-  - cryfs # Encrypted file system for cloud storage
+#  - cryfs # Encrypted file system for cloud storage
   - colordiff
   - comps-extras # Extra images for dnfdragora
-  - digikam
+#  - digikam
   - dolphin
   - emacs-auctex
   - emacs-color-theme
@@ -144,12 +150,13 @@ standard_packages_to_install:
   - emacs-json-snatcher
   - emacs-rpm-spec-mode
   - emacs-yaml-mode
-  - fuse-exfat # Mounting exfat filesystems
+  - fprintd # Fingerprint daemon
+#  - fuse-exfat # Mounting exfat filesystems
   - google-noto-sans-fonts # Basic Noto fonts.
-  - gnome-themes-extra # Installs GTK3 Adwaita[-dark] themes
+#  - gnome-themes-extra # Installs GTK3 Adwaita[-dark] themes
   - gnupg2
 #  - gsmartcontrol # SMART Disk GUI
-  - gstreamer1-libav # Gstreamer plugin for mpeg4 decoding.
+#  - gstreamer1-libav # Gstreamer plugin for mpeg4 decoding.
   - gv # Emacs printing preview
   - gwenview
   - hplip
@@ -160,12 +167,11 @@ standard_packages_to_install:
   - kcron
   - kde-connect
   - kdesu
-  - kio-gdrive # Google Drive integration
+#  - kio-gdrive # Google Drive integration
   - kgpg
   - konversation
   - krb5-workstation
-  - ksysguard
-  - kwalletmanager
+  - kwalletmanager5
   - libva-intel-driver # HW video decode support for Intel integrated graphics
   - libnotify
   - libreoffice-langpack-en
@@ -194,13 +200,13 @@ standard_packages_to_install:
 internal_packages_to_install:
   - redhat-internal-NetworkManager-openvpn-profiles-non-gnome
   - redhat-internal-cert-install
-  - redhat-lsb-core
-  - subscription-manager
+#  - redhat-lsb-core
+#  - subscription-manager
 
 development_packages_to_install:
-  - awscli
+#  - awscli # Interacting with AWS
   - buildah
-  - brewkoji
+#  - brewkoji
   - cabextract # Extract MS CAB files (https://www.cabextract.org.uk)
   - cmake
   - code # Visual Studio Code
@@ -211,21 +217,21 @@ development_packages_to_install:
   - fdupes # Find duplicate files
   - gcc-c++ # C++ Compiler
   - genisoimage # Use to create bootable USB images
-  - glide # Go dependency manager
-  - golang # Go language
-  - golang-bin
-  - hugo # CEKit Site Generator
-  - java-11-openjdk-devel
-  - java-11-openjdk-src
+  - git-crypt # For PNC Jenkins repo encryption
+#  - glide # Go dependency manager
+#  - golang # Go language
+#  - golang-bin
+#  - java-11-openjdk-devel
+#  - java-11-openjdk-src
   - krdc # Remote desktop
   - krb5-devel # cekit
   - libvirt # Virtualisation
   - lm_sensors
   - make
   - mock
-  - odcs-client # cekit
-  - pipenv
-  - plasma-sdk # For plasmoidviewer
+#  - odcs-client # cekit
+#  - pipenv
+#  - plasma-sdk # For plasmoidviewer
   - podman
   - poetry # Python3 Dependency Mgmt System
   - pylint # Check python code
@@ -233,11 +239,11 @@ development_packages_to_install:
   - python3-ansi2html # Convert console output (e.g. build logs) to HTML
   - python3-behave # cekit
   - python3-colorlog # cekit
-  - python3-docker # cekit
-  - python3-docker-squash # cekit
-  - python3-gitlab # gitlabber
+#  - python3-docker # cekit
+#  - python3-docker-squash # cekit
+#  - python3-gitlab # gitlabber
   - python3-gssapi # linfo
-  - python3-jenkins-job-builder
+#  - python3-jenkins-job-builder
   - python3-jinja2 # cekit
   - python3-kubernetes # cpaas
   - python3-ldap # cekit
@@ -253,13 +259,13 @@ development_packages_to_install:
   - python3-sphinx # cekit (sphinx)
 #  - python-sphinx-autobuild # cekit (sphinx) RETIRED BY FEDORA
   - python3-tomlkit # commitizen
-  - python3-tox # cekit
+#  - python3-tox # cekit
   - python3-virtualenv
   - qemu-kvm # Virtualisation
   - qgit # Visual git viewer
-  - rhpkg
+#  - rhpkg
   - rubygem-asciidoctor # CEKit
-  - rubygem-jekyll # jekyll site generator (PME)
+#  - rubygem-jekyll # jekyll site generator (PME)
   - rubygem-minitest
   - skopeo
   - source-to-image # cekit

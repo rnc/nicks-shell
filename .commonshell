@@ -715,6 +715,14 @@ function maven-3.9.12()
     echo "Maven home is $M2_HOME and mvn executable `which mvn`"
 }
 
+function maven-3.9.15()
+{
+    M2_HOME=$SW_PREFIX/apache-maven-3.9.15
+    MAVEN_HOME=$M2_HOME
+    PATH=$M2_HOME/bin:`echo $PATH | awk -v RS=: -v ORS=: '/apache-maven/ {next} {print}'`
+    echo "Maven home is $M2_HOME and mvn executable `which mvn`"
+}
+
 # https://github.com/gradle/gradle/issues/3117
 function _gradle_daemon_workaround()
 {

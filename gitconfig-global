@@ -83,3 +83,5 @@
 
         # Squash last commits: https://gist.github.com/jbub/5766366
         fixup = "!f(){ git reset --soft HEAD~${1-1} && git commit --amend -C HEAD; };f"
+
+        fetchupstream = "!f() { if [ -z \"$(git remote | grep upstream)\" ]; then echo 'No upstream detected' ;else if [ -n \"$(git remote show upstream | grep 'HEAD branch: main')\" ]; then echo 'Upstream is main' && git fetch upstream main && git rebase upstream/main ;else echo 'Upstream is master' && git fetch upstream master && git rebase upstream/master ;fi ;fi }; f"

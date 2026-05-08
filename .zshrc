@@ -630,7 +630,7 @@ zstyle ':completion:newest-files:*' matcher-list 'b:=*' # important
 # http://stackoverflow.com/questions/4221239/zsh-use-completions-for-command-x-when-i-type-command-y
 #
 # For makemead make completion
-compdef _make makemead
+# compdef _make makemead
 # For rgit git completion
 compdef '_dispatch git git' rgit
 

@@ -38,14 +38,14 @@
       state: present
     when:  '"rpmfusion-nonfree-release" not in ansible_facts.packages'
 
-  - name : Repository - Visual Studio Code
-    yum_repository:
-      name: vscode
-      description: Visual Studio Code
-      baseurl: https://packages.microsoft.com/yumrepos/vscode
-      gpgcheck: yes
-      enabled: yes
-      gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+  # - name : Repository - Visual Studio Code
+  #   yum_repository:
+  #     name: vscode
+  #     description: Visual Studio Code
+  #     baseurl: https://packages.microsoft.com/yumrepos/vscode
+  #     gpgcheck: yes
+  #     enabled: yes
+  #     gpgkey: https://packages.microsoft.com/keys/microsoft.asc
 
   # - name : InSyncHQ
   #   yum_repository:

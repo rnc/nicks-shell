@@ -209,7 +209,7 @@ development_packages_to_install:
 #  - brewkoji
   - cabextract # Extract MS CAB files (https://www.cabextract.org.uk)
   - cmake
-  - code # Visual Studio Code
+#  - code # Visual Studio Code
   - cpio # RPM
   - dmidecode
   - expect # Adds unbuffer command for piping with colours

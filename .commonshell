@@ -45,6 +45,9 @@ export PATH EDITOR SVN_EDITOR KRB5CCNAME GPG_TTY QUOTING_STYLE QT_LOGGING_RULES
 #export JAVA_HOME=`dirname $(dirname $(readlink -f $(which java)))`
 export QUAY_USERNAME=ncross
 
+# Rather than importing certificates (e.g. from RH or IBM) into each JDK force the JDK to read system certs
+export JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=/etc/pki/java/cacerts
+
 # https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
 # https://misc.flogisoft.com/bash/tip_colors_and_formatting
 if tput setaf 0 &>/dev/null
@@ -414,6 +417,7 @@ function _java_prompt_()
 {
     setopt LOCAL_OPTIONS NO_ALL_EXPORT NO_AUTO_PUSHD
 
+    local zulujdk8=$SW_PREFIX/zulu8
     local openjdk8=$SW_PREFIX/jdk8u392-b08
     local openjdk11=$SW_PREFIX/jdk-11
     local openjdk12=$SW_PREFIX/jdk-12.0.2+10
@@ -424,13 +428,16 @@ function _java_prompt_()
     local openjdk25=$SW_PREFIX/jdk-25.0.2+10
     local i
 
-    for i in $ibmjava6 $ibmjava7 $openjdk8 $$openjdk11 $openjdk12 $openjdk17 $openjdk18 $openjdk21
+    for i in $zulujdk8 $openjdk8 $$openjdk11 $openjdk12 $openjdk17 $openjdk18 $openjdk21
     do
         local replace="$i/bin:"
         PATH=`echo ${PATH//$replace/}`
     done
 
     case $1 in
+      "zulujdk8")
+        export JAVA_HOME=$zulujdk8
+        ;;
       "openjdk8")
         export JAVA_HOME=$openjdk8
         ;;
@@ -458,6 +465,13 @@ function _java_prompt_()
     esac
 
     export PATH=$JAVA_HOME/bin:$PATH
+}
+
+function zulujdk8()
+{
+    _java_prompt_ zulujdk8
+
+    PROMPT_JAVA="%{"$'\e[22;36m'"%}(JAVA8)%{"$'\e[00m''%}'
 }
 
 function openjdk8()
@@ -2036,7 +2050,7 @@ function rg()
     # Search hidden files (but not .git) by default: https://github.com/BurntSushi/ripgrep/issues/623
     # Sort output by path. Slightly slower as disable parallelism
     # Also exclude files like ./target/quinoa/build/main.bundle.js.map
-    /usr/bin/rg --hidden --sort path --glob '!.git' --glob '!target/quinoa/build/*bundle.js*' "$@"
+    /usr/bin/rg --follow --hidden --sort path --glob '!.git' --glob '!target/quinoa/build/*bundle.js*' "$@"
 }
 
 
@@ -2056,12 +2070,14 @@ function retrieveOCI()
 function createPNCImageBody()
 {
     # Takes:
-    # JDK, RHEL, MAVEN, [GRADLE], [SUFFIX]
+    # JDK, RHEL, MAVEN, [GRADLE], [SUFFIX], SBOM
     JDK=$1
     RHEL=$2
     MAVEN=$3
     GRADLE=""
     SUFFIX=""
+    SBOM=$6
+
     if [ $# -lt 3 ]
     then
         echo "Specify jdk rhel maven (optionally: gradle)  e.g. $0 25 8 3.9.12 9.2.1"
@@ -2077,6 +2093,9 @@ function createPNCImageBody()
         if [ "$5" == "gettext-jss" ]
         then
             SUFFIXCOMMENT="; Gettext; JSS"
+        elif [ "$5" == "rpmbuild" ]
+        then
+            SUFFIXCOMMENT="; rpmbuild"
         elif [ "$5" == "rpmbuild-eap" ]
         then
             SUFFIXCOMMENT="; rpmbuild - EAP"
@@ -2086,10 +2105,21 @@ function createPNCImageBody()
         fi
         SUFFIX="-$5"
     fi
+
+    echo "Running oras with rh-newcastle/builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX and $SBOM"
     IMAGETAG=$(oras repo tags quay.io/rh-newcastle/builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX | tail -2 | head -1)
+    echo "Located tag \"$IMAGETAG\""
+    if [ -z "$IMAGETAG" ] || [ "latest" = "$IMAGETAG" ]
+    then
+        echo "Image tag not set; check quay.io"
+        return 1
+    fi
+    echo "Running oras with rh-newcastle/builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:$IMAGETAG"
     DIGEST=$(oras resolve quay.io/rh-newcastle/builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:$IMAGETAG)
+
     echo "IMAGETAG: $IMAGETAG JDK: $JDK ; RHEL $RHEL ; MAVEN $MAVEN GRADLE $4 SUFFIX $5"
-    echo "{
+    if [ -n "$GRADLE" ]; then
+        echo "{
       \"name\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN$GRADLECOMMENT$SUFFIXCOMMENT\",
       \"description\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN$GRADLECOMMENT$SUFFIXCOMMENT [builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:$IMAGETAG]\",
       \"systemImageRepositoryUrl\": \"quay.io/rh-newcastle\",
@@ -2099,12 +2129,31 @@ function createPNCImageBody()
         \"MAVEN\": \"$MAVEN\",
         \"GRADLE\": \"$4\",
         \"OS\": \"Linux\",
-        \"IMAGE_DIGEST_REF\": \"$DIGEST\"
+        \"IMAGE_DIGEST_REF\": \"builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX@$DIGEST\",
+        \"IMAGE_MANIFEST_URL\": \"$SBOMER_PROD_HOST/api/v1beta1/manifests/$SBOM\"
       },
       \"systemImageType\": \"DOCKER_IMAGE\",
       \"deprecated\": false,
       \"hidden\": false
 }"
+    else
+        echo "{
+      \"name\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN$GRADLECOMMENT$SUFFIXCOMMENT\",
+      \"description\": \"OpenJDK $JDK; RHEL $RHEL; Mvn $MAVEN$GRADLECOMMENT$SUFFIXCOMMENT [builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:$IMAGETAG]\",
+      \"systemImageRepositoryUrl\": \"quay.io/rh-newcastle\",
+      \"systemImageId\": \"builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX:$IMAGETAG\",
+      \"attributes\": {
+        \"JDK\": \"$JDK\",
+        \"MAVEN\": \"$MAVEN\",
+        \"OS\": \"Linux\",
+        \"IMAGE_DIGEST_REF\": \"builder-rhel-$RHEL-j$JDK-mvn$MAVEN$GRADLE$SUFFIX@$DIGEST\",
+        \"IMAGE_MANIFEST_URL\": \"$SBOMER_PROD_HOST/api/v1beta1/manifests/$SBOM\"
+      },
+      \"systemImageType\": \"DOCKER_IMAGE\",
+      \"deprecated\": false,
+      \"hidden\": false
+}"
+        fi
 }
 
 function catall() {
